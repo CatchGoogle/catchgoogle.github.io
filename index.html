@@ -23,289 +23,6 @@
         const bcButton = document.getElementById("bc-button");
         const abButton = document.getElementById("ab-button");
 
-        const tableHTML = `
-            <table border="1" class="dataframe table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>id</th>
-                        <th>Value</th>
-                        <th>Province</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </thead>
-        <tbody>
-            <tr>
-                <td>2016SANT08</td>
-                <td>5.93</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2015RUSN01</td>
-                <td>7.08</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2020SUNB01</td>
-                <td>7.20</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018OUNK01</td>
-                <td>7.64</td>
-                <td>BC</td>
-            </tr>
-                        <tr>
-                <td>2016ZHON01</td>
-                <td>7.90</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021TULI01</td>
-                <td>8.04</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2019LIJA01</td>
-                <td>8.18</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2020HWAN01</td>
-                <td>8.60</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022BARN23</td>
-                <td>9.04</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017DAVI01</td>
-                <td>9.16</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2016KOPK01</td>
-                <td>9.69</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023RODR31</td>
-                <td>10.08</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023SUNX01</td>
-                <td>10.14</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023WOOD24</td>
-                <td>10.25</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2019TAMK01</td>
-                <td>10.31</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017LEET01</td>
-                <td>10.32</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021RENE01</td>
-                <td>10.45</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021HOUG02</td>
-                <td>10.58</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021NIGA01</td>
-                <td>10.63</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022MING02</td>
-                <td>10.86</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022XIAN06</td>
-                <td>10.96</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2016RIDD01</td>
-                <td>11.12</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023YANG28</td>
-                <td>11.30</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2019LISA01</td>
-                <td>11.43</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022POST09</td>
-                <td>11.80</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022HORB01</td>
-                <td>11.93</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2020MOSC01</td>
-                <td>12.14</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017CHAN47</td>
-                <td>12.50</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023WONG36</td>
-                <td>12.55</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018GAOA01</td>
-                <td>12.75</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022TURC03</td>
-                <td>12.77</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021JOBI01</td>
-                <td>13.21</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022KIRK02</td>
-                <td>13.39</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021SCHE01</td>
-                <td>13.45</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022HOEL03</td>
-                <td>13.76</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022TSOI01</td>
-                <td>13.90</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022KAUS02</td>
-                <td>14.39</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022ZHAN58</td>
-                <td>14.80</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021PERS02</td>
-                <td>14.83</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018CHEN05</td>
-                <td>15.46</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023BEDD01</td>
-                <td>15.83</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023SANT28</td>
-                <td>16.03</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023VOBA01</td>
-                <td>16.17</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023GRAY06</td>
-                <td>16.54</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2018NEUF01</td>
-                <td>17.08</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021MAHR01</td>
-                <td>17.61</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023PERR01</td>
-                <td>18.01</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023ZHAN47</td>
-                <td>18.26</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023YUDA01</td>
-                <td>18.30</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023DELL02</td>
-                <td>18.77</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023TYAN02</td>
-                <td>18.81</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022HUAN47</td>
-                <td>18.88</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023WRIG08</td>
-                <td>20.00</td>
-                <td>QC</td>
-            </tr>
-                </tbody>
-            </table>
-        `;
-
-        // Parse the table and convert it to the format expected by the program
         function parseTable(tableHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(tableHTML, 'text/html');
@@ -331,347 +48,72 @@
             return parsedData;
         }
 
-        const tableHTMLInput = `
-            <table border="1" class="dataframe table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>0</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                <td>2016SANT08</td>
-                <td>5.93</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2015RUSN01</td>
-                <td>7.08</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2020SUNB01</td>
-                <td>7.20</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018OUNK01</td>
-                <td>7.64</td>
-                <td>BC</td>
-            </tr>
-                        <tr>
-                <td>2016ZHON01</td>
-                <td>7.90</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021TULI01</td>
-                <td>8.04</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2019LIJA01</td>
-                <td>8.18</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2020HWAN01</td>
-                <td>8.60</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022BARN23</td>
-                <td>9.04</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017DAVI01</td>
-                <td>9.16</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2016KOPK01</td>
-                <td>9.69</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023RODR31</td>
-                <td>10.08</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023SUNX01</td>
-                <td>10.14</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023WOOD24</td>
-                <td>10.25</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2019TAMK01</td>
-                <td>10.31</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017LEET01</td>
-                <td>10.32</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021RENE01</td>
-                <td>10.45</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021HOUG02</td>
-                <td>10.58</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021NIGA01</td>
-                <td>10.63</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022MING02</td>
-                <td>10.86</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022XIAN06</td>
-                <td>10.96</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2016RIDD01</td>
-                <td>11.12</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023YANG28</td>
-                <td>11.30</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2019LISA01</td>
-                <td>11.43</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022POST09</td>
-                <td>11.80</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022HORB01</td>
-                <td>11.93</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2020MOSC01</td>
-                <td>12.14</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2017CHAN47</td>
-                <td>12.50</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023WONG36</td>
-                <td>12.55</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018GAOA01</td>
-                <td>12.75</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022TURC03</td>
-                <td>12.77</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021JOBI01</td>
-                <td>13.21</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022KIRK02</td>
-                <td>13.39</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021SCHE01</td>
-                <td>13.45</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022HOEL03</td>
-                <td>13.76</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022TSOI01</td>
-                <td>13.90</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2022KAUS02</td>
-                <td>14.39</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022ZHAN58</td>
-                <td>14.80</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2021PERS02</td>
-                <td>14.83</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2018CHEN05</td>
-                <td>15.46</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023BEDD01</td>
-                <td>15.83</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023SANT28</td>
-                <td>16.03</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023VOBA01</td>
-                <td>16.17</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023GRAY06</td>
-                <td>16.54</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2018NEUF01</td>
-                <td>17.08</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2021MAHR01</td>
-                <td>17.61</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023PERR01</td>
-                <td>18.01</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023ZHAN47</td>
-                <td>18.26</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023YUDA01</td>
-                <td>18.30</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2023DELL02</td>
-                <td>18.77</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023TYAN02</td>
-                <td>18.81</td>
-                <td>AB</td>
-            </tr>
-            <tr>
-                <td>2022HUAN47</td>
-                <td>18.88</td>
-                <td>BC</td>
-            </tr>
-            <tr>
-                <td>2023WRIG08</td>
-                <td>20.00</td>
-                <td>QC</td>
-            </tr>
-                </tbody>
-            </table>
-        `;
+        // Fetch the table data from an external HTML file
+        fetch('final_sorted_RESULTS.html')
+            .then(response => response.text())
+            .then(tableHTML => {
+                // Parse the table input
+                const parsedData = parseTable(tableHTML);
 
-        // Parse the table input
-        const parsedData = parseTable(tableHTMLInput);
+                function parseTimeToNumber(timeValue) {
+                    if (timeValue.includes(':')) {
+                        const [minutes, seconds] = timeValue.split(':');
+                        return parseFloat(minutes) * 60 + parseFloat(seconds);
+                    }
+                    return parseFloat(timeValue);
+                }
 
-        function parseTimeToNumber(timeValue) {
-            if (timeValue.includes(':')) {
-                const [minutes, seconds] = timeValue.split(':');
-                return parseFloat(minutes) * 60 + parseFloat(seconds);
-            }
-            return parseFloat(timeValue);
-        }
+                function createTable(rows) {
+                    const table = document.createElement("table");
+                    table.border = "1";
+                    table.className = "dataframe table table-bordered table-hover";
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>id</th>
+                                <th>Value</th>
+                                <th>Province</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    `;
 
-        function createTable(rows) {
-            const table = document.createElement("table");
-            table.border = "1";
-            table.className = "dataframe table table-bordered table-hover";
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>id</th>
-                        <th>Value</th>
-                        <th>Province</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            `;
+                    rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
 
-            rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td>${i + 1}</td>
+                            <td>${row.id}</td>
+                            <td>${row.value}</td>
+                            <td>${row.province}</td>
+                        `;
+                        table.querySelector("tbody").appendChild(tr);
+                    }
 
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td>${row.id}</td>
-                    <td>${row.value}</td>
-                    <td>${row.province}</td>
-                `;
-                table.querySelector("tbody").appendChild(tr);
-            }
+                    return table;
+                }
 
-            return table;
-        }
+                function showBC() {
+                    tablesContainer.innerHTML = "";
+                    const bcRows = parsedData.filter(row => row.province === "BC");
+                    tablesContainer.appendChild(createTable(bcRows));
+                }
 
-        function showBC() {
-            tablesContainer.innerHTML = "";
-            const bcRows = parsedData.filter(row => row.province === "BC");
-            tablesContainer.appendChild(createTable(bcRows));
-        }
+                function showAB() {
+                    tablesContainer.innerHTML = "";
+                    const abRows = parsedData.filter(row => row.province === "AB");
+                    tablesContainer.appendChild(createTable(abRows));
+                }
 
-        function showAB() {
-            tablesContainer.innerHTML = "";
-            const abRows = parsedData.filter(row => row.province === "AB");
-            tablesContainer.appendChild(createTable(abRows));
-        }
+                bcButton.addEventListener("click", showBC);
+                abButton.addEventListener("click", showAB);
 
-        bcButton.addEventListener("click", showBC);
-        abButton.addEventListener("click", showAB);
-
-        showBC();
+                showBC();
+            })
+            .catch(error => console.error(error));
     </script>
-<object type="text/html" data="final_sorted_RESULTS.html"></object>
-    
 </body>
 </html>
-
