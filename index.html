@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canadian Speedcubing Provincial Rankings</title>
-    <h1>Created by CatchGoogle, Data obtained from https://worldcubeassociation.org</h1>
     <style>
         th {
             text-align: center;
@@ -41,7 +40,9 @@
         }
 
         .dataframe {
-            width: 50%; /* Make the table take up the full width of its container */
+            width: 30%; /* Make the table take up the full width of its container */
+            display: flex;
+            justify-context: right;
         }
     </style>
 </head>
@@ -137,8 +138,6 @@
                     const abRows = parsedData.filter(row => row.province === "AB");
                     tablesContainer.appendChild(createTable(abRows));
                 }
-                bcButton.addEventListener("click", showBC);
-                abButton.addEventListener("click", showAB);
                 showBC();
             })
             .catch(error => console.error(error));
