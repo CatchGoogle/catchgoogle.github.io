@@ -11,9 +11,10 @@
             <tr style="text-align: right;">
                 <th>id</th>
                 <th>0</th>
+                <th>Province</th>
             </tr>
-  </thead>
-  <tbody>
+        </thead>
+        <tbody>
     <tr>
       <td>2016SANT08</td>
       <td>5.93</td>
@@ -331,8 +332,9 @@
       <td>1:49.24</td>
     </tr>
   </tbody>
-</table>
-     <div id="page-buttons">
+    </table>
+
+    <div id="page-buttons">
         <button id="prev-button">Previous</button>
         <button id="next-button">Next</button>
     </div>
@@ -342,8 +344,26 @@
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
         const rows = table.querySelectorAll("tbody tr");
-        const pageSize = 10;
+        const pageSize = rows.length; // Show all rows at once
         let currentPage = 0;
+
+        // Function to shuffle rows
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Function to add random Canadian province codes
+        function addProvinceCodes() {
+            const provinces = ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"];
+            shuffleArray(provinces);
+            rows.forEach((row, index) => {
+                const provinceCell = row.insertCell(2);
+                provinceCell.textContent = provinces[index % provinces.length];
+            });
+        }
 
         function showPage(page) {
             for (let i = 0; i < rows.length; i++) {
@@ -376,8 +396,8 @@
             }
         });
 
-        // Initialize and show the first page
-        showPage(currentPage);
+        addProvinceCodes(); // Add random province codes
+        showPage(currentPage); // Show the first page
         updateButtons();
     </script>
 </body>
