@@ -54,8 +54,6 @@
     </div>
 
     <div class="button-container">
-        <button class="button" id="bc-button">Show BC</button>
-        <button class="button" id="ab-button">Show AB</button>
         <button class="button" id="bc-button">British Columbia</button>
         <button class="button" id="ab-button">Alberta</button>
     </div>
@@ -107,8 +105,8 @@
                         <thead>
                             <tr>
                                 <th>Rank</th>
-                                <th>id</th>
-                                <th>Value</th>
+                                <th>wcaID</th>
+                                <th>PR Avg</th>
                                 <th>Province</th>
                             </tr>
                         </thead>
@@ -138,6 +136,8 @@
                     const abRows = parsedData.filter(row => row.province === "AB");
                     tablesContainer.appendChild(createTable(abRows));
                 }
+                bcButton.addEventListener("click", showBC);
+                abButton.addEventListener("click", showAB);
                 showBC();
             })
             .catch(error => console.error(error));
