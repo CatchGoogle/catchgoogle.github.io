@@ -60,6 +60,8 @@
         <button class="button" id="ab-button">Alberta</button>
         <button class="button" id="on-button">Ontario</button>
         <button class="button" id="qc-button">Quebec</button>
+        <button class="button" id="ns-button">Nova Scotia</button>
+        <button class="button" id="mb-button">Manitoba</button>
     </div>
 
     <div id="tables-container"></div>
@@ -69,6 +71,8 @@
         const abButton = document.getElementById("ab-button");
         const onButton = document.getElementById("on-button");
         const qcButton = document.getElementById("qc-button");
+        const nsButton = document.getElementById("ns-button");
+        const mbButton = document.getElementById("mb-button");
         function parseTable(tableHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(tableHTML, 'text/html');
@@ -140,6 +144,8 @@
                 abButton.classList.remove("active");
                 onButton.classList.remove("active");
                 qcButton.classList.remove("active");
+                nsButton.classList.remove("active");
+                mbButton.classList.remove("active");
                 }
 
                 function showAB() {
@@ -152,6 +158,8 @@
                 bcButton.classList.remove("active");
                 onButton.classList.remove("active");
                 qcButton.classList.remove("active");
+                nsButton.classList.remove("active");
+                mbButton.classList.remove("active");
                     }
 
                 function showON() {
@@ -164,6 +172,8 @@
                 bcButton.classList.remove("active");
                 abButton.classList.remove("active");
                 qcButton.classList.remove("active");
+                nsButton.classList.remove("active");
+                mbButton.classList.remove("active");
                 }
 
                 function showQC() {
@@ -176,12 +186,44 @@
                 bcButton.classList.remove("active");
                 abButton.classList.remove("active");
                 onButton.classList.remove("active");
+                nsButton.classList.remove("active");
+                mbButton.classList.remove("active");
+                }
+
+                function showNS() {
+                tablesContainer.innerHTML = "";
+                const onRows = parsedData.filter(row => row.province === "NS");
+                tablesContainer.appendChild(createTable(onRows));
+        
+                // Add the active class to BC button and remove it from AB button
+                nsButton.classList.add("active");
+                bcButton.classList.remove("active");
+                abButton.classList.remove("active");
+                onButton.classList.remove("active");
+                qcButton.classList.remove("active");
+                mbButton.classList.remove("active");
+                }
+
+                function showMB() {
+                tablesContainer.innerHTML = "";
+                const onRows = parsedData.filter(row => row.province === "MB");
+                tablesContainer.appendChild(createTable(onRows));
+        
+                // Add the active class to BC button and remove it from AB button
+                mbButton.classList.add("active");
+                bcButton.classList.remove("active");
+                abButton.classList.remove("active");
+                onButton.classList.remove("active");
+                qcButton.classList.remove("active");
+                nsButton.classList.remove("active");
                 }
                 
                 bcButton.addEventListener("click", showBC);
                 abButton.addEventListener("click", showAB);
                 onButton.addEventListener("click", showON);
                 qcButton.addEventListener("click", showQC);
+                nsButton.addEventListener("click", showNS);
+                mbButton.addEventListener("click", showMB);
 
                 // Initially set the BC button as active
                 bcButton.classList.add("active");
