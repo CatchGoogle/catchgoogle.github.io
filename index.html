@@ -119,7 +119,6 @@
                     <tr style="text-align: right;">
                         <th>id</th>
                         <th>0</th>
-                        <th>Province</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -133,7 +132,6 @@
                 tr.innerHTML = `
                     <td>${row.id}</td>
                     <td>${row.value}</td>
-                    <td>${row.province}</td>
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
@@ -145,9 +143,10 @@
             tablesContainer.innerHTML = "";
             const startIndex = currentTableIndex * pageSize;
             const endIndex = startIndex + pageSize;
+            const filteredRows = rows.filter((row) => row.province === "BC" || row.province === "AB");
 
-            for (let i = startIndex; i < endIndex && i < rows.length; i += pageSize) {
-                const tableRows = rows.slice(i, i + pageSize);
+            for (let i = startIndex; i < endIndex && i < filteredRows.length; i += pageSize) {
+                const tableRows = filteredRows.slice(i, i + pageSize);
                 const table = createTable(tableRows);
                 tablesContainer.appendChild(table);
             }
