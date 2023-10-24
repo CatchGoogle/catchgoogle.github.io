@@ -128,32 +128,32 @@
                     }
                     return table;
                 }
-    function showBC() {
-        tablesContainer.innerHTML = "";
-        const bcRows = parsedData.filter(row => row.province === "BC");
-        tablesContainer.appendChild(createTable(bcRows));
+                function showBC() {
+                tablesContainer.innerHTML = "";
+                const bcRows = parsedData.filter(row => row.province === "BC");
+                tablesContainer.appendChild(createTable(bcRows));
         
-        // Add the active class to BC button and remove it from AB button
-        bcButton.classList.add("active");
-        abButton.classList.remove("active");
-    }
+                // Add the active class to BC button and remove it from AB button
+                bcButton.classList.add("active");
+                abButton.classList.remove("active");
+                }
 
-    function showAB() {
-        tablesContainer.innerHTML = "";
-        const abRows = parsedData.filter(row => row.province === "AB");
-        tablesContainer.appendChild(createTable(abRows));
+                function showAB() {
+                tablesContainer.innerHTML = "";
+                const abRows = parsedData.filter(row => row.province === "AB");
+                tablesContainer.appendChild(createTable(abRows));
 
-        // Add the active class to AB button and remove it from BC button
-        abButton.classList.add("active");
-        bcButton.classList.remove("active");
-    }
+                // Add the active class to AB button and remove it from BC button
+                abButton.classList.add("active");
+                bcButton.classList.remove("active");
+                    }
 
-    bcButton.addEventListener("click", showBC);
-    abButton.addEventListener("click", showAB);
+                bcButton.addEventListener("click", showBC);
+                abButton.addEventListener("click", showAB);
 
-    // Initially set the BC button as active
-    bcButton.classList.add("active");
-    showBC();
+                // Initially set the BC button as active
+                bcButton.classList.add("active");
+                showBC();
             .catch(error => console.error(error));
     </script>
 </body>
