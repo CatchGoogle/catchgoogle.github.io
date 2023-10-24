@@ -6,12 +6,12 @@
     <title>GitHub Pages Table</title>
 </head>
 <body>
-  <table border="1" class="dataframe table table-bordered table-hover">
-  <thead>
-    <tr style="text-align: right;">
-      <th>id</th>
-      <th>pr</th>
-    </tr>
+    <table border="1" class="dataframe table table-bordered table-hover">
+        <thead>
+            <tr style="text-align: right;">
+                <th>id</th>
+                <th>0</th>
+            </tr>
   </thead>
   <tbody>
     <tr>
@@ -332,5 +332,53 @@
     </tr>
   </tbody>
 </table>
+     <div id="page-buttons">
+        <button id="prev-button">Previous</button>
+        <button id="next-button">Next</button>
+    </div>
+
+    <script>
+        const table = document.querySelector("table");
+        const prevButton = document.getElementById("prev-button");
+        const nextButton = document.getElementById("next-button");
+        const rows = table.querySelectorAll("tbody tr");
+        const pageSize = 10;
+        let currentPage = 0;
+
+        function showPage(page) {
+            for (let i = 0; i < rows.length; i++) {
+                if (i >= page * pageSize && i < (page + 1) * pageSize) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+        function updateButtons() {
+            prevButton.disabled = currentPage === 0;
+            nextButton.disabled = (currentPage + 1) * pageSize >= rows.length;
+        }
+
+        prevButton.addEventListener("click", () => {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+                updateButtons();
+            }
+        });
+
+        nextButton.addEventListener("click", () => {
+            if ((currentPage + 1) * pageSize < rows.length) {
+                currentPage++;
+                showPage(currentPage);
+                updateButtons();
+            }
+        });
+
+        // Initialize and show the first page
+        showPage(currentPage);
+        updateButtons();
+    </script>
 </body>
 </html>
