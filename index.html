@@ -4,73 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canadian Speedcubing Provincial Rankings</title>
-    <style>
-        th {
-            text-align: center;
-        }
-
-        .header {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .button {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>GitHub Pages Table</h1>
-    </div>
-
-    <div class="button-container">
-        <button class="button" id="bc-button">Show BC</button>
-        <button class="button" id="ab-button">Show AB</button>
-    </div>
-
-    <div id="tables-container"></div>
-
-    <script>
-        // Rest of your JavaScript code here
-        // ...
-    </script>
-</body>
-</html>
-In this updated code, I added a header at the top and moved the buttons to a centered button container. The buttons have a more stylish appearance with hover effects. You can adjust the button styles further to meet your design preferences if needed.
-
-
-
-
-User
-can you help center justify the table and make it a bit bigger
-
-ChatGPT
-To center justify the table and make it larger, you can apply additional CSS styles to the table element. Here's the modified code:
-
-html
-Copy code
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Pages Table</title>
+    <h1>Created by CatchGoogle, Data obtained from https://worldcubeassociation.org</h1>
     <style>
         th {
             text-align: center;
@@ -113,36 +47,35 @@ Copy code
 </head>
 <body>
     <div class="header">
+        <h1>GitHub Pages Table</h1>
         <h1>Canadian Speedcubing Provincial Rankings</h1>
         <p>Website developed by CatchGoogle, Data obtained from https://worldcubeassociation.org</p>
     </div>
 
     <div class="button-container">
+        <button class="button" id="bc-button">Show BC</button>
+        <button class="button" id="ab-button">Show AB</button>
         <button class="button" id="bc-button">British Columbia</button>
         <button class="button" id="ab-button">Alberta</button>
     </div>
 
     <div id="tables-container"></div>
-
     <script>
         const tablesContainer = document.getElementById("tables-container");
         const bcButton = document.getElementById("bc-button");
         const abButton = document.getElementById("ab-button");
-
         function parseTable(tableHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(tableHTML, 'text/html');
             const table = doc.querySelector('table');
             const rows = table.querySelectorAll('tbody tr');
             const parsedData = [];
-
             rows.forEach((row, index) => {
                 const columns = row.querySelectorAll('td');
                 if (columns.length >= 2) {
                     const id = columns[0].textContent;
                     const value = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC';
-
                     parsedData.push({
                         id,
                         value,
@@ -150,17 +83,14 @@ Copy code
                     });
                 }
             });
-
             return parsedData;
         }
-
         // Fetch the table data from an external HTML file
         fetch('final_sorted_RESULTS.html')
             .then(response => response.text())
             .then(tableHTML => {
                 // Parse the table input
                 const parsedData = parseTable(tableHTML);
-
                 function parseTimeToNumber(timeValue) {
                     if (timeValue.includes(':')) {
                         const [minutes, seconds] = timeValue.split(':');
@@ -168,7 +98,6 @@ Copy code
                     }
                     return parseFloat(timeValue);
                 }
-
                 function createTable(rows) {
                     const table = document.createElement("table");
                     table.border = "1";
@@ -184,9 +113,7 @@ Copy code
                         </thead>
                         <tbody></tbody>
                     `;
-
                     rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
-
                     for (let i = 0; i < rows.length; i++) {
                         const row = rows[i];
                         const tr = document.createElement("tr");
@@ -198,25 +125,20 @@ Copy code
                         `;
                         table.querySelector("tbody").appendChild(tr);
                     }
-
                     return table;
                 }
-
                 function showBC() {
                     tablesContainer.innerHTML = "";
                     const bcRows = parsedData.filter(row => row.province === "BC");
                     tablesContainer.appendChild(createTable(bcRows));
                 }
-
                 function showAB() {
                     tablesContainer.innerHTML = "";
                     const abRows = parsedData.filter(row => row.province === "AB");
                     tablesContainer.appendChild(createTable(abRows));
                 }
-
                 bcButton.addEventListener("click", showBC);
                 abButton.addEventListener("click", showAB);
-
                 showBC();
             })
             .catch(error => console.error(error));
