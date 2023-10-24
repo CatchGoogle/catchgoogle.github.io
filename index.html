@@ -44,7 +44,7 @@
         }
 
         .dataframe {
-            width: 30%; /* Make the table take up the full width of its container */
+            width: 40%; /* Make the table take up the full width of its container */
             justify-context: right;
         }
     </style>
@@ -113,7 +113,6 @@
                                 <th>Rank</th>
                                 <th>wcaID</th>
                                 <th>PR Avg</th>
-                                <th>Province</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -126,7 +125,6 @@
                             <td>${i + 1}</td>
                             <td>${row.id}</td>
                             <td>${row.value}</td>
-                            <td>${row.province}</td>
                         `;
                         table.querySelector("tbody").appendChild(tr);
                     }
