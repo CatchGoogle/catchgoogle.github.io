@@ -22,87 +22,349 @@
         const tablesContainer = document.getElementById("tables-container");
         const bcButton = document.getElementById("bc-button");
         const abButton = document.getElementById("ab-button");
-        const rows = [
-            { id: "2016SANT08", value: "5.93", province: "BC" },
-            { id: "2015RUSN01", value: "7.08", province: "AB" },
-            { id: "2020SUNB01", value: "7.20", province: "BC" },
-            { id: "2018OUNK01", value: "7.64", province: "AB" },
-            { id: "2016ZHON01", value: "7.90", province: "BC" },
-            { id: "2021TULI01", value: "8.04", province: "AB" },
-            { id: "2019LIJA01", value: "8.18", province: "BC" },
-            { id: "2020HWAN01", value: "8.60", province: "AB" },
-            { id: "2022BARN23", value: "9.04", province: "BC" },
-            { id: "2017DAVI01", value: "9.16", province: "AB" },
-            { id: "2014STEL02", value: "9.39", province: "BC" },
-            { id: "2015GOYD01", value: "9.43", province: "AB" },
-            { id: "2022WONG11", value: "9.47", province: "BC" },
-            { id: "2022KLEI01", value: "9.58", province: "AB" },
-            { id: "2010MATT02", value: "9.62", province: "BC" },
-            { id: "2016KOPK01", value: "9.69", province: "AB" },
-            { id: "2023RODR31", value: "10.08", province: "BC" },
-            { id: "2023SUNX01", value: "10.14", province: "AB" },
-            { id: "2023WOOD24", value: "10.25", province: "BC" },
-            { id: "2019TAMK01", value: "10.31", province: "AB" },
-            { id: "2017LEET01", value: "10.32", province: "BC" },
-            { id: "2021RENE01", value: "10.45", province: "AB" },
-            { id: "2021HOUG02", value: "10.58", province: "BC" },
-            { id: "2021NIGA01", value: "10.63", province: "AB" },
-            { id: "2022MING02", value: "10.86", province: "BC" },
-            { id: "2022XIAN06", value: "10.96", province: "AB" },
-            { id: "2016RIDD01", value: "11.12", province: "BC" },
-            { id: "2023YANG28", value: "11.30", province: "AB" },
-            { id: "2019LISA01", value: "11.43", province: "BC" },
-            { id: "2022POST09", value: "11.80", province: "AB" },
-            { id: "2022HORB01", value: "11.93", province: "BC" },
-            { id: "2020MOSC01", value: "12.14", province: "AB" },
-            { id: "2017CHAN47", value: "12.50", province: "BC" },
-            { id: "2023WONG36", value: "12.55", province: "AB" },
-            { id: "2018GAOA01", value: "12.75", province: "BC" },
-            { id: "2022TURC03", value: "12.77", province: "AB" },
-            { id: "2021JOBI01", value: "13.21", province: "BC" },
-            { id: "2022KIRK02", value: "13.39", province: "AB" },
-            { id: "2021SCHE01", value: "13.45", province: "BC" },
-            { id: "2022HOEL03", value: "13.76", province: "AB" },
-            { id: "2022TSOI01", value: "13.90", province: "BC" },
-            { id: "2022KAUS02", value: "14.39", province: "AB" },
-            { id: "2022ZHAN58", value: "14.80", province: "BC" },
-            { id: "2021PERS02", value: "14.83", province: "AB" },
-            { id: "2018CHEN05", value: "15.46", province: "BC" },
-            { id: "2023BEDD01", value: "15.83", province: "AB" },
-            { id: "2023SANT28", value: "16.03", province: "BC" },
-            { id: "2023VOBA01", value: "16.17", province: "AB" },
-            { id: "2023GRAY06", value: "16.54", province: "BC" },
-            { id: "2018NEUF01", value: "17.08", province: "AB" },
-            { id: "2021MAHR01", value: "17.61", province: "BC" },
-            { id: "2023PERR01", value: "18.01", province: "AB" },
-            { id: "2023ZHAN47", value: "18.26", province: "BC" },
-            { id: "2023YUDA01", value: "18.30", province: "AB" },
-            { id: "2023DELL02", value: "18.77", province: "BC" },
-            { id: "2023TYAN02", value: "18.81", province: "AB" },
-            { id: "2022HUAN47", value: "18.88", province: "BC" },
-            { id: "2023WRIG08", value: "20.00", province: "AB" },
-            { id: "2023WACK01", value: "20.12", province: "BC" },
-            { id: "2023TYAN01", value: "20.17", province: "AB" },
-            { id: "2023PITT04", value: "20.87", province: "BC" },
-            { id: "2023FONG01", value: "21.14", province: "AB" },
-            { id: "2022CHOW04", value: "21.57", province: "BC" },
-            { id: "2023GORA02", value: "25.31", province: "AB" },
-            { id: "2023ABRE02", value: "25.67", province: "BC" },
-            { id: "2023WOOD15", value: "26.25", province: "AB" },
-            { id: "2023SHAF01", value: "26.40", province: "BC" },
-            { id: "2023TAIA01", value: "26.58", province: "AB" },
-            { id: "2023SAIF02", value: "26.87", province: "BC" },
-            { id: "2023XIEZ02", value: "28.25", province: "AB" },
-            { id: "2022CHOW06", value: "28.61", province: "BC" },
-            { id: "2023MOHA25", value: "29.34", province: "AB" },
-            { id: "2023ROBI09", value: "29.64", province: "BC" },
-            { id: "2023HAGA02", value: "31.61", province: "AB" },
-            { id: "2023KAUS01", value: "40.50", province: "BC" },
-            { id: "2023HOMA02", value: "42.04", province: "AB" },
-            { id: "2023SRAN01", value: "44.79", province: "BC" },
-            { id: "2023GROS07", value: "45.28", province: "AB" },
-            { id: "2023CYRA01", value: "1:49.24", province: "BC" }
-        ];
+
+        const tableHTML = `
+            <table border="1" class="dataframe table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>id</th>
+                        <th>Value</th>
+                        <th>Province</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </thead>
+        <tbody>
+            <tr>
+                <td>2016SANT08</td>
+                <td>5.93</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2015RUSN01</td>
+                <td>7.08</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2020SUNB01</td>
+                <td>7.20</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2018OUNK01</td>
+                <td>7.64</td>
+                <td>BC</td>
+            </tr>
+                        <tr>
+                <td>2016ZHON01</td>
+                <td>7.90</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2021TULI01</td>
+                <td>8.04</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2019LIJA01</td>
+                <td>8.18</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2020HWAN01</td>
+                <td>8.60</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022BARN23</td>
+                <td>9.04</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2017DAVI01</td>
+                <td>9.16</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2016KOPK01</td>
+                <td>9.69</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023RODR31</td>
+                <td>10.08</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023SUNX01</td>
+                <td>10.14</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023WOOD24</td>
+                <td>10.25</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2019TAMK01</td>
+                <td>10.31</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2017LEET01</td>
+                <td>10.32</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2021RENE01</td>
+                <td>10.45</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2021HOUG02</td>
+                <td>10.58</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2021NIGA01</td>
+                <td>10.63</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2022MING02</td>
+                <td>10.86</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022XIAN06</td>
+                <td>10.96</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2016RIDD01</td>
+                <td>11.12</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023YANG28</td>
+                <td>11.30</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2019LISA01</td>
+                <td>11.43</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022POST09</td>
+                <td>11.80</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2022HORB01</td>
+                <td>11.93</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2020MOSC01</td>
+                <td>12.14</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2017CHAN47</td>
+                <td>12.50</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023WONG36</td>
+                <td>12.55</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2018GAOA01</td>
+                <td>12.75</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022TURC03</td>
+                <td>12.77</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2021JOBI01</td>
+                <td>13.21</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022KIRK02</td>
+                <td>13.39</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2021SCHE01</td>
+                <td>13.45</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022HOEL03</td>
+                <td>13.76</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2022TSOI01</td>
+                <td>13.90</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2022KAUS02</td>
+                <td>14.39</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2022ZHAN58</td>
+                <td>14.80</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2021PERS02</td>
+                <td>14.83</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2018CHEN05</td>
+                <td>15.46</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023BEDD01</td>
+                <td>15.83</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023SANT28</td>
+                <td>16.03</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023VOBA01</td>
+                <td>16.17</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023GRAY06</td>
+                <td>16.54</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2018NEUF01</td>
+                <td>17.08</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2021MAHR01</td>
+                <td>17.61</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023PERR01</td>
+                <td>18.01</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023ZHAN47</td>
+                <td>18.26</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023YUDA01</td>
+                <td>18.30</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2023DELL02</td>
+                <td>18.77</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023TYAN02</td>
+                <td>18.81</td>
+                <td>AB</td>
+            </tr>
+            <tr>
+                <td>2022HUAN47</td>
+                <td>18.88</td>
+                <td>BC</td>
+            </tr>
+            <tr>
+                <td>2023WRIG08</td>
+                <td>20.00</td>
+                <td>QC</td>
+            </tr>
+                </tbody>
+            </table>
+        `;
+
+        // Parse the table and convert it to the format expected by the program
+        function parseTable(tableHTML) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(tableHTML, 'text/html');
+            const table = doc.querySelector('table');
+            const rows = table.querySelectorAll('tbody tr');
+            const parsedData = [];
+
+            rows.forEach((row, index) => {
+                const columns = row.querySelectorAll('td');
+                if (columns.length >= 2) {
+                    const id = columns[0].textContent;
+                    const value = columns[1].textContent;
+                    const province = columns[2] ? columns[2].textContent : 'BC';
+
+                    parsedData.push({
+                        id,
+                        value,
+                        province,
+                    });
+                }
+            });
+
+            return parsedData;
+        }
+
+        const tableHTMLInput = `
+            <table border="1" class="dataframe table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>0</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2023DELL02</td>
+                        <td>18.77</td>
+                        <td>BC</td>
+                    </tr>
+                    <tr>
+                        <td>2023TYAN02</td>
+                        <td>18.81</td>
+                        <td>AB</td>
+                    </tr>
+                    <tr>
+                        <td>2022HUAN47</td>
+                        <td>18.88</td>
+                        <td>BC</td>
+                    </tr>
+                    <tr>
+                        <td>2023WRIG08</td>
+                        <td>20.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        // Parse the table input
+        const parsedData = parseTable(tableHTMLInput);
 
         function parseTimeToNumber(timeValue) {
             if (timeValue.includes(':')) {
@@ -147,13 +409,13 @@
 
         function showBC() {
             tablesContainer.innerHTML = "";
-            const bcRows = rows.filter(row => row.province === "BC");
+            const bcRows = parsedData.filter(row => row.province === "BC");
             tablesContainer.appendChild(createTable(bcRows));
         }
 
         function showAB() {
             tablesContainer.innerHTML = "";
-            const abRows = rows.filter(row => row.province === "AB");
+            const abRows = parsedData.filter(row => row.province === "AB");
             tablesContainer.appendChild(createTable(abRows));
         }
 
@@ -164,3 +426,4 @@
     </script>
 </body>
 </html>
+
