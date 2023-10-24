@@ -9,14 +9,14 @@
     <div id="tables-container"></div>
 
     <div id="page-buttons">
-        <button id="prev-button">Previous</button>
-        <button id="next-button">Next</button>
+        <button id="bc-button">BC</button>
+        <button id="ab-button">AB</button>
     </div>
 
     <script>
         const tablesContainer = document.getElementById("tables-container");
-        const prevButton = document.getElementById("prev-button");
-        const nextButton = document.getElementById("next-button");
+        const bcButton = document.getElementById("bc-button");
+        const abButton = document.getElementById("ab-button");
         const rows = [
             { id: "2016SANT08", value: "5.93", province: "BC" },
             { id: "2015RUSN01", value: "7.08", province: "AB" },
@@ -99,17 +99,6 @@
             { id: "2023CYRA01", value: "1:49.24", province: "BC" }
         ];
 
-        const pageSize = 10;
-        let currentPage = 0;
-        let currentTableIndex = 0;
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         function createTable(rows) {
             const table = document.createElement("table");
             table.border = "1";
@@ -124,10 +113,7 @@
                 <tbody></tbody>
             `;
 
-            shuffleArray(rows);
-
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
+            for (const row of rows) {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${row.id}</td>
@@ -139,42 +125,22 @@
             return table;
         }
 
-        function showTables() {
+        function showBC() {
             tablesContainer.innerHTML = "";
-            const startIndex = currentTableIndex * pageSize;
-            const endIndex = startIndex + pageSize;
-            const filteredRows = rows.filter((row) => row.province === "BC" || row.province === "AB");
-
-            for (let i = startIndex; i < endIndex && i < filteredRows.length; i += pageSize) {
-                const tableRows = filteredRows.slice(i, i + pageSize);
-                const table = createTable(tableRows);
-                tablesContainer.appendChild(table);
-            }
+            const bcRows = rows.filter(row => row.province === "BC");
+            tablesContainer.appendChild(createTable(bcRows));
         }
 
-        function updateButtons() {
-            prevButton.disabled = currentTableIndex === 0;
-            nextButton.disabled = (currentTableIndex + 1) * pageSize >= rows.length;
+        function showAB() {
+            tablesContainer.innerHTML = "";
+            const abRows = rows.filter(row => row.province === "AB");
+            tablesContainer.appendChild(createTable(abRows));
         }
 
-        prevButton.addEventListener("click", () => {
-            if (currentTableIndex > 0) {
-                currentTableIndex--;
-                showTables();
-                updateButtons();
-            }
-        });
+        bcButton.addEventListener("click", showBC);
+        abButton.addEventListener("click", showAB);
 
-        nextButton.addEventListener("click", () => {
-            if ((currentTableIndex + 1) * pageSize < rows.length) {
-                currentTableIndex++;
-                showTables();
-                updateButtons();
-            }
-        });
-
-        showTables();
-        updateButtons();
+        showBC();
     </script>
 </body>
 </html>
