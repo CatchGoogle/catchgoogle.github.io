@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canadian Speedcubing Provincial Rankings</title>
     <style>
-        th {
-            text-align: center;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
 
         .header {
             text-align: center;
             padding: 20px;
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            font-size: 14px;
         }
 
         .button-container {
             display: flex;
             justify-content: center;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px;
         }
 
         .button {
@@ -36,27 +52,41 @@
         .button.active {
             background-color: #FF5733; /* Change to the color you want for the active button */
         }
-        
+
         .table-container {
             text-align: center;
-            margin: 0 auto;
-            width: 80%; /* Adjust the width as needed */
+            margin: 20px auto;
+            max-width: 80%;
         }
 
         .dataframe {
-            width: 40%; /* Make the table take up the full width of its container */
-            justify-context: right;
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .dataframe th, .dataframe td {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+        }
+
+        .dataframe th {
+            background-color: #f2f2f2;
+        }
+
+        .dataframe tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Canadian Speedcubing Provincial Rankings</h1>
-        <p>Website developed by CatchGoogle, results obtained from https://worldcubeassociation.org/persons</p>
+        <p>Website developed by CatchGoogle, results obtained from <a href="https://worldcubeassociation.org/persons" target="_blank">worldcubeassociation.org</a></p>
     </div>
 
     <div class="button-container">
-        <button class="button" id="bc-button">British Columbia</button>
+        <button class="button active" id="bc-button">British Columbia</button>
         <button class="button" id="ab-button">Alberta</button>
         <button class="button" id="on-button">Ontario</button>
         <button class="button" id="qc-button">Quebec</button>
@@ -64,7 +94,8 @@
         <button class="button" id="mb-button">Manitoba</button>
     </div>
 
-    <div id="tables-container"></div>
+    <div class="table-container" id="tables-container"></div>
+
     <script>
         const tablesContainer = document.getElementById("tables-container");
         const bcButton = document.getElementById("bc-button");
