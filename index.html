@@ -58,6 +58,8 @@
     <div class="button-container">
         <button class="button" id="bc-button">British Columbia</button>
         <button class="button" id="ab-button">Alberta</button>
+        <button class="button" id="on-button">Ontario</button>
+        <button class="button" id="qc-button">Quebec</button>
     </div>
 
     <div id="tables-container"></div>
@@ -65,6 +67,7 @@
         const tablesContainer = document.getElementById("tables-container");
         const bcButton = document.getElementById("bc-button");
         const abButton = document.getElementById("ab-button");
+        const onbutton = document.getElementById("on-button");
         function parseTable(tableHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(tableHTML, 'text/html');
@@ -76,7 +79,7 @@
                 if (columns.length >= 2) {
                     const id = columns[0].textContent;
                     const value = columns[1].textContent;
-                    const province = columns[2] ? columns[2].textContent : 'BC';
+                    const province = columns[2] ? columns[2].textContent : 'BC'; // If no province specified, autopopulate with BC
                     parsedData.push({
                         id,
                         value,
@@ -136,6 +139,8 @@
                 // Add the active class to BC button and remove it from AB button
                 bcButton.classList.add("active");
                 abButton.classList.remove("active");
+                onButton.classList.remove("active");
+                qcButton.classList.remove("active");
                 }
 
                 function showAB() {
@@ -146,10 +151,38 @@
                 // Add the active class to AB button and remove it from BC button
                 abButton.classList.add("active");
                 bcButton.classList.remove("active");
+                onButton.classList.remove("active");
+                qcButton.classList.remove("active");
                     }
 
+                function showON() {
+                tablesContainer.innerHTML = "";
+                const onRows = parsedData.filter(row => row.province === "ON");
+                tablesContainer.appendChild(createTable(onRows));
+        
+                // Add the active class to BC button and remove it from AB button
+                onButton.classList.add("active");
+                bcButton.classList.remove("active);
+                abButton.classList.remove("active");
+                qcButton.classList.remove("active");
+                }
+
+                function showQC() {
+                tablesContainer.innerHTML = "";
+                const onRows = parsedData.filter(row => row.province === "QC");
+                tablesContainer.appendChild(createTable(onRows));
+        
+                // Add the active class to BC button and remove it from AB button
+                qcButton.classList.add("active");
+                bcButton.classList.remove("active);
+                abButton.classList.remove("active");
+                onButton.classList.remove("active");
+                }
+                
                 bcButton.addEventListener("click", showBC);
                 abButton.addEventListener("click", showAB);
+                onButton.addEventListener("click", showON);
+                qcButton.addEventListener("click", showQC);
 
                 // Initially set the BC button as active
                 bcButton.classList.add("active");
