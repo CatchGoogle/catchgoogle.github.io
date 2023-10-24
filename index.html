@@ -104,6 +104,14 @@
             { id: "2023CYRA01", value: "1:49.24", province: "BC" }
         ];
 
+        function parseTimeToNumber(timeValue) {
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
+            }
+            return parseFloat(timeValue);
+        }
+
         function createTable(rows) {
             const table = document.createElement("table");
             table.border = "1";
@@ -120,7 +128,7 @@
                 <tbody></tbody>
             `;
 
-            rows.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
+            rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
 
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
