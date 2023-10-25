@@ -15,8 +15,6 @@
         padding: 0;
     }
 
-    a {text-decoration: none;}
-
     .header {
         text-align: center;
         padding: 20px;
@@ -77,6 +75,12 @@
     /* Change the font size for the selected option */
     .select2-selection__rendered {
         font-size: 42px; /* Adjust the size as needed */
+    }
+
+    /* Style for tied positions */
+    .tied {
+        color: #888888;
+        font-weight: bold;
     }
 </style>
 </head>
@@ -152,20 +156,42 @@
                 </thead>
                 <tbody></tbody>
             `;
+            let previousRank = 0;
             rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                    <td>${row.value}</td>
-                `;
+                if (i > 0) {
+                    const prevRow = rows[i - 1];
+                    if (row.value === prevRow.value) {
+                        if (previousRank > 0) {
+                            previousRank++;
+                            tr.innerHTML = `
+                                <td class="tied">-</td>
+                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                                <td class="tied">${row.value}</td>
+                            `;
+                        }
+                    } else {
+                        previousRank = i + 1;
+                        tr.innerHTML = `
+                            <td>${i + 1}</td>
+                            <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                            <td>${row.value}</td>
+                        `;
+                    }
+                } else {
+                    previousRank = 1;
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                        <td>${row.value}</td>
+                    `;
+                }
                 table.querySelector("tbody").appendChild(tr);
             }
             return table;
         }
-
 
         function showTable(province) {
             tablesContainer.innerHTML = "";
