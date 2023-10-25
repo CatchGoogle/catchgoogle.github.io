@@ -141,12 +141,14 @@
                     const value = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC';
                     const single = columns[3].textContent;
-                    const name = columns[4].textContent;
+                    const photo = columns[4].textContent;
+                    const name = columns[5].textContent;
                     parsedData.push({
                         id,
                         value,
                         province,
                         single,
+                        photo,
                         name,
                     });
                 }
@@ -186,7 +188,12 @@
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${i + 1}</td>
-                    <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                    <td>
+                        <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                            <img src="${row.photo}" alt="${row.name}" width="30" height="30" style="margin-right: 10px">
+                            ${row.name}
+                        </a>
+                    </td>
                     <td>${row.value}</td>
                     <td>${row.single}</td>
                 `;
@@ -195,7 +202,6 @@
         
             return table;
         }
-
 
         function showTable(province) {
             tablesContainer.innerHTML = "";
