@@ -234,17 +234,27 @@
             return table;
         }
 
-        function showTable(province) {
-            tablesContainer.innerHTML = "";
-            const filteredRows = parsedData.filter(row => row.province === province);
-            tablesContainer.appendChild(createTable(filteredRows));
-        }
-
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
-
+        
             if (clickedColumn) {
+                // Remove any existing sorting classes
+                const headers = document.querySelectorAll('.sortable-header');
+                headers.forEach(header => header.classList.remove('sorted', 'sorted-asc', 'sorted-desc'));
+        
                 currentSortColumn = clickedColumn;
+        
+                // Add the sorting classes to the clicked header
+                event.target.classList.add('sorted', `sorted-${currentSortColumn}`);
+        
+                // Add or remove bold classes based on the sorting method
+                headers.forEach(header => header.classList.remove('bold-avg', 'bold-single'));
+                if (currentSortColumn === 'value') {
+                    headers.forEach(header => header.classList.add('bold-avg'));
+                } else if (currentSortColumn === 'single') {
+                    headers.forEach(header => header.classList.add('bold-single'));
+                }
+        
                 showTable(provinceDropdown.value);
             }
         }
