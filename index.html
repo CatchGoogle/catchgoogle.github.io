@@ -128,34 +128,6 @@
         let parsedData = [];
         let currentSortColumn = 'value'; // 'value' for PR Avg, 'single' for PR Single
 
-        function parseTable(tableHTML) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(tableHTML, 'text/html');
-            const table = doc.querySelector('table');
-            const rows = table.querySelectorAll('tbody tr');
-            const parsedData = [];
-            rows.forEach((row, index) => {
-                const columns = row.querySelectorAll('td');
-                if (columns.length >= 2) {
-                    const id = columns[0].textContent;
-                    const value = columns[1].textContent;
-                    const province = columns[2] ? columns[2].textContent : 'BC';
-                    const single = columns[3].textContent;
-                    const photo = columns[4].textContent;
-                    const name = columns[5].textContent;
-                    parsedData.push({
-                        id,
-                        value,
-                        province,
-                        single,
-                        photo,
-                        name,
-                    });
-                }
-            });
-            return parsedData;
-        }
-
         function parseTimeToNumber(timeValue) {
             if (timeValue.includes(':')) {
                 const [minutes, seconds] = timeValue.split(':');
@@ -221,7 +193,7 @@
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
             showTable(selectedProvince);
-        });
+        }
 
         function loadPhotoLinksFromHTML() {
             fetch('photos.html') // Replace 'photos.html' with the path to your HTML file.
@@ -230,28 +202,23 @@
                     // Parse the HTML to extract photo links
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    const photoRows = doc.querySelectorAll('tbody tr');
+                    const tableRows = doc.querySelectorAll('tbody tr');
 
-                    const photoLinks = [];
-
-                    photoRows.forEach((row) => {
+                    const data = Array.from(tableRows).map((row) => {
                         const columns = row.querySelectorAll('td');
-                        if (columns.length === 6) { // Ensure there are six columns as in your example
-                            const photoURL = columns[4].textContent;
-                            const name = columns[5].textContent;
-                            photoLinks.push({ name, photoURL });
+                        if (columns.length >= 6) {
+                            return {
+                                id: columns[0].textContent,
+                                value: columns[1].textContent,
+                                province: columns[2].textContent,
+                                single: columns[3].textContent,
+                                photo: columns[4].textContent,
+                                name: columns[5].textContent,
+                            };
                         }
-                    });
+                    }).filter(row => row);
 
-                    // Add the photo links to your existing parsedData
-                    parsedData = parsedData.map((dataRow) => {
-                        const matchingPhoto = photoLinks.find((photo) => photo.name === dataRow.name);
-                        if (matchingPhoto) {
-                            dataRow.photo = matchingPhoto.photoURL;
-                        }
-                        return dataRow;
-                    });
-
+                    parsedData = data;
                     showTable(provinceDropdown.value);
                 })
                 .catch((error) => console.error(error));
