@@ -223,13 +223,42 @@
             showTable(selectedProvince);
         });
 
-        fetch('final_sorted_RESULTS.html')
-            .then(response => response.text())
-            .then(tableHTML => {
-                parsedData = parseTable(tableHTML);
-                showTable(provinceDropdown.value);
-            })
-            .catch(error => console.error(error));
+        function loadPhotoLinksFromHTML() {
+            fetch('photos.html') // Replace 'photos.html' with the path to your HTML file.
+                .then((response) => response.text())
+                .then((html) => {
+                    // Parse the HTML to extract photo links
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const photoRows = doc.querySelectorAll('tbody tr');
+
+                    const photoLinks = [];
+
+                    photoRows.forEach((row) => {
+                        const columns = row.querySelectorAll('td');
+                        if (columns.length === 6) { // Ensure there are six columns as in your example
+                            const photoURL = columns[4].textContent;
+                            const name = columns[5].textContent;
+                            photoLinks.push({ name, photoURL });
+                        }
+                    });
+
+                    // Add the photo links to your existing parsedData
+                    parsedData = parsedData.map((dataRow) => {
+                        const matchingPhoto = photoLinks.find((photo) => photo.name === dataRow.name);
+                        if (matchingPhoto) {
+                            dataRow.photo = matchingPhoto.photoURL;
+                        }
+                        return dataRow;
+                    });
+
+                    showTable(provinceDropdown.value);
+                })
+                .catch((error) => console.error(error));
+        }
+
+        // Call the function to load photo links from the HTML file
+        loadPhotoLinksFromHTML();
 
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('sortable-header')) {
