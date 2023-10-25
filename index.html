@@ -149,7 +149,6 @@
                             <tr>
                                 <th>Rank</th>
                                 <th>Name</th>
-                                <th>wcaID</th>
                                 <th>PR Avg</th>
                             </tr>
                         </thead>
@@ -162,7 +161,6 @@
                         tr.innerHTML = `
                             <td>${i + 1}</td>
                             <td>${row.name}</td>
-                            <td>${row.id}</td>
                             <td>${row.value}</td>
                         `;
                         table.querySelector("tbody").appendChild(tr);
