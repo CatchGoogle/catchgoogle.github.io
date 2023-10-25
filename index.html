@@ -177,85 +177,24 @@
                 <tbody></tbody>
             `;
         
-            // Sort based on the currentSortColumn and apply tied styling
-            rows.sort((a, b) => {
-                const aValue = parseTimeToNumber(a[currentSortColumn]);
-                const bValue = parseTimeToNumber(b[currentSortColumn]);
-                if (aValue === bValue) {
-                    // If tied, use the tie-breaking column (single) for comparison
-                    const aSingleValue = parseTimeToNumber(a.single);
-                    const bSingleValue = parseTimeToNumber(b.single);
-                    if (aSingleValue === bSingleValue) {
-                        return 0;
-                    }
-                    return aSingleValue - bSingleValue;
-                }
-                return aValue - bValue;
-            });
+            // Sort based on the currentSortColumn
+            rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
         
-            let previousRank = 0;
-            let tieCount = 1;
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
-                if (i > 0) {
-                    const prevRow = rows[i - 1];
-                    if (row[currentSortColumn] === prevRow[currentSortColumn]) {
-                        if (previousRank > 0) {
-                            tieCount++;
-                            if (previousRank === i) {
-                                // Only add the "-" on the first row of the tie
-                                tr.innerHTML = `
-                                    <td class="tied">${previousRank}</td>
-                                    <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                    <td class="tied">${row.value}</td>
-                                    <td class="tied">${row.single}</td>
-                                `;
-                            } else {
-                                // For other rows of the tie, replace rank with "-"
-                                tr.innerHTML = `
-                                    <td class="tied">-</td>
-                                    <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                    <td class="tied">${row.value}</td>
-                                    <td class="tied">${row.single}</td>
-                                `;
-                            }
-                        }
-                    } else {
-                        if (tieCount > 1) {
-                            // If there was a tie, add "-" for the 2nd place of the tie
-                            const prevRow = rows[i - tieCount];
-                            tr.innerHTML = `
-                                <td class="tied">-</td>
-                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${prevRow.id}" target="_blank">${prevRow.name}</a></td>
-                                <td class="tied">${prevRow.value}</td>
-                                <td class="tied">${prevRow.single}</td>
-                            `;
-                            tieCount = 1;
-                        } else {
-                            previousRank = i + 1;
-                            tr.innerHTML = `
-                                <td class="tied">${previousRank}</td>
-                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                <td class="tied">${row.value}</td>
-                                <td class="tied">${row.single}</td>
-                            `;
-                        }
-                    }
-                } else {
-                    previousRank = 1;
-                    tr.innerHTML = `
-                        <td class="tied">${previousRank}</td>
-                        <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                        <td class="tied">${row.value}</td>
-                        <td class="tied">${row.single}</td>
-                    `;
-                }
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                    <td>${row.value}</td>
+                    <td>${row.single}</td>
+                `;
                 table.querySelector("tbody").appendChild(tr);
             }
         
             return table;
         }
+
 
         function showTable(province) {
             tablesContainer.innerHTML = "";
