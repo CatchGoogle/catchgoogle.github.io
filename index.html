@@ -183,7 +183,12 @@
                 const bValue = parseTimeToNumber(b[currentSortColumn]);
                 if (aValue === bValue) {
                     // If tied, use the tie-breaking column (single) for comparison
-                    return parseTimeToNumber(a.single) - parseTimeToNumber(b.single);
+                    const aSingleValue = parseTimeToNumber(a.single);
+                    const bSingleValue = parseTimeToNumber(b.single);
+                    if (aSingleValue === bSingleValue) {
+                        return 0;
+                    }
+                    return aSingleValue - bSingleValue;
                 }
                 return aValue - bValue;
             });
@@ -198,10 +203,10 @@
                         if (previousRank > 0) {
                             previousRank++;
                             tr.innerHTML = `
-                                <td class="tied">-</td>
+                                <td class="tied">${previousRank}</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                                 <td class="tied">${row.value}</td>
-                                <td>${row.single}</td>
+                                <td class="tied">${row.single}</td>
                             `;
                         } else {
                             previousRank = i + 1;
@@ -209,7 +214,7 @@
                                 <td class="tied">${previousRank}</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                                 <td class="tied">${row.value}</td>
-                                <td>${row.single}</td>
+                                <td class="tied">${row.single}</td>
                             `;
                         }
                     } else {
