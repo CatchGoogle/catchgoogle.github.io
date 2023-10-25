@@ -176,7 +176,7 @@
                 </thead>
                 <tbody></tbody>
             `;
-
+        
             // Sort based on the currentSortColumn and apply tied styling
             rows.sort((a, b) => {
                 const aValue = parseTimeToNumber(a[currentSortColumn]);
@@ -192,7 +192,7 @@
                 }
                 return aValue - bValue;
             });
-
+        
             let previousRank = 0;
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
@@ -203,7 +203,7 @@
                         if (previousRank > 0) {
                             previousRank++;
                             tr.innerHTML = `
-                                <td class="tied">${previousRank}</td>
+                                <td class="tied">${previousRank === 1 ? previousRank : '-'}</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                                 <td class="tied">${row.value}</td>
                                 <td class="tied">${row.single}</td>
@@ -237,7 +237,7 @@
                 }
                 table.querySelector("tbody").appendChild(tr);
             }
-
+        
             return table;
         }
 
