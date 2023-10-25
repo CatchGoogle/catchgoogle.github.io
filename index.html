@@ -161,7 +161,7 @@
                         const tr = document.createElement("tr");
                         tr.innerHTML = `
                             <td>${i + 1}</td>
-                            <td>${row.name}</td>
+                            <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                             <td>${row.value}</td>
                         `;
                         table.querySelector("tbody").appendChild(tr);
