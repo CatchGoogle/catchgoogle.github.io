@@ -130,6 +130,10 @@
         a {
             text-decoration: none;
         }
+
+        .table-wrapper {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -160,46 +164,17 @@
         let currentSortColumn = 'value'; // 'value' for PR Avg, 'single' for PR Single
 
         function parseTable(tableHTML) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(tableHTML, 'text/html');
-            const table = doc.querySelector('table');
-            const rows = table.querySelectorAll('tbody tr');
-            const parsedData = [];
-            rows.forEach((row, index) => {
-                const columns = row.querySelectorAll('td');
-                if (columns.length >= 2) {
-                    const id = columns[0].textContent;
-                    const value = columns[1].textContent;
-                    const province = columns[2] ? columns[2].textContent : 'BC';
-                    const single = columns[3].textContent;
-                    const photo = columns[4].textContent;
-                    const name = columns[5].textContent;
-                    parsedData.push({
-                        id,
-                        value,
-                        province,
-                        single,
-                        photo,
-                        name,
-                    });
-                }
-            });
-            return parsedData;
+            // ... (Your existing parseTable function) ...
         }
 
         function parseTimeToNumber(timeValue) {
-            if (timeValue.includes(':')) {
-                const [minutes, seconds] = timeValue.split(':');
-                return parseFloat(minutes) * 60 + parseFloat(seconds);
-            }
-            return parseFloat(timeValue);
+            // ... (Your existing parseTimeToNumber function) ...
         }
 
         function createTable(rows) {
             const table = document.createElement("table");
             table.border = "1";
             table.className = "dataframe table table-bordered table-hover";
-            table.style.display = "inline-block";
             table.innerHTML = `
                 <thead>
                     <tr>
@@ -231,33 +206,24 @@
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
+
+            // Wrap the table in a div with a class
+            const tableWrapper = document.createElement("div");
+            tableWrapper.className = "table-wrapper";
+            tableWrapper.appendChild(table);
         
-            return table;
+            return tableWrapper;
         }
 
         function onHeaderClick(event) {
-            const clickedColumn = event.target.getAttribute('data-sort-column');
-        
-            if (clickedColumn) {
-                // Remove any existing sorting classes
-                const headers = document.querySelectorAll('.sortable-header');
-                headers.forEach(header => header.classList.remove('sorted', 'sorted-asc', 'sorted-desc'));
-        
-                currentSortColumn = clickedColumn;
-        
-                // Add the sorting classes to the clicked header
-                event.target.classList.add('sorted', `sorted-${currentSortColumn}`);
-        
-                // Add or remove bold classes based on the sorting method
-                headers.forEach(header => header.classList.remove('bold-avg', 'bold-single'));
-                if (currentSortColumn === 'value') {
-                    headers.forEach(header => header.classList.add('bold-avg'));
-                } else if (currentSortColumn === 'single') {
-                    headers.forEach(header => header.classList.add('bold-single'));
-                }
-        
-                showTable(provinceDropdown.value);
-            }
+            // ... (Your existing onHeaderClick function) ...
+        }
+
+        function showTable(province) {
+            tablesContainer.innerHTML = "";
+            const filteredRows = parsedData.filter(row => row.province === province);
+            const table = createTable(filteredRows);
+            tablesContainer.appendChild(table);
         }
 
         provinceDropdown.addEventListener("change", (event) => {
