@@ -128,6 +128,34 @@
         let parsedData = [];
         let currentSortColumn = 'value'; // 'value' for PR Avg, 'single' for PR Single
 
+        function parseTable(tableHTML) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(tableHTML, 'text/html');
+            const table = doc.querySelector('table');
+            const rows = table.querySelectorAll('tbody tr');
+            const parsedData = [];
+            rows.forEach((row, index) => {
+                const columns = row.querySelectorAll('td');
+                if (columns.length >= 2) {
+                    const id = columns[0].textContent;
+                    const value = columns[1].textContent;
+                    const province = columns[2] ? columns[2].textContent : 'BC';
+                    const single = columns[3].textContent;
+                    const photo = columns[4].textContent;
+                    const name = columns[5].textContent;
+                    parsedData.push({
+                        id,
+                        value,
+                        province,
+                        single,
+                        photo,
+                        name,
+                    });
+                }
+            });
+            return parsedData;
+        }
+
         function parseTimeToNumber(timeValue) {
             if (timeValue.includes(':')) {
                 const [minutes, seconds] = timeValue.split(':');
@@ -151,17 +179,17 @@
                 </thead>
                 <tbody></tbody>
             `;
-
+        
             // Sort based on the currentSortColumn
             rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
-
+        
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${i + 1}</td>
                     <td>
-                        <a href="${row.photo}" target="_blank">
+                        <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
                             <img src="${row.photo}" alt="${row.name}" width="30" height="30" style="margin-right: 10px">
                             ${row.name}
                         </a>
@@ -171,7 +199,7 @@
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
-
+        
             return table;
         }
 
@@ -193,39 +221,15 @@
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
             showTable(selectedProvince);
-        }
+        });
 
-        function loadPhotoLinksFromHTML() {
-            fetch('photos.html') // Replace 'photos.html' with the path to your HTML file.
-                .then((response) => response.text())
-                .then((html) => {
-                    // Parse the HTML to extract photo links
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const tableRows = doc.querySelectorAll('tbody tr');
-
-                    const data = Array.from(tableRows).map((row) => {
-                        const columns = row.querySelectorAll('td');
-                        if (columns.length >= 6) {
-                            return {
-                                id: columns[0].textContent,
-                                value: columns[1].textContent,
-                                province: columns[2].textContent,
-                                single: columns[3].textContent,
-                                photo: columns[4].textContent,
-                                name: columns[5].textContent,
-                            };
-                        }
-                    }).filter(row => row);
-
-                    parsedData = data;
-                    showTable(provinceDropdown.value);
-                })
-                .catch((error) => console.error(error));
-        }
-
-        // Call the function to load photo links from the HTML file
-        loadPhotoLinksFromHTML();
+        fetch('final_sorted_RESULTS.html')
+            .then(response => response.text())
+            .then(tableHTML => {
+                parsedData = parseTable(tableHTML);
+                showTable(provinceDropdown.value);
+            })
+            .catch(error => console.error(error));
 
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('sortable-header')) {
