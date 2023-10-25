@@ -159,7 +159,7 @@
 
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
-            showTable(selectedProvince);
+            showTable(selectedProvince); // Call the showTable function to update the table
         });
 
         // Fetch the table data from an external HTML file
