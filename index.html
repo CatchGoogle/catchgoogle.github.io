@@ -116,10 +116,12 @@
                     const id = columns[0].textContent;
                     const value = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC'; // If no province specified, autopopulate with BC
+                    const name = columns[3].textContent;
                     parsedData.push({
                         id,
                         value,
                         province,
+                        name,
                     });
                 }
             });
@@ -158,7 +160,7 @@
                         const tr = document.createElement("tr");
                         tr.innerHTML = `
                             <td>${i + 1}</td>
-                            <td>${row.id}</td>
+                            <td>${row.name}</td>
                             <td>${row.value}</td>
                         `;
                         table.querySelector("tbody").appendChild(tr);
