@@ -254,6 +254,11 @@
             }
         }
 
+        provinceDropdown.addEventListener("change", (event) => {
+            const selectedProvince = event.target.value;
+            showTable(selectedProvince);
+        });
+        
         fetch('final_sorted_RESULTS.html')
             .then(response => response.text())
             .then(tableHTML => {
