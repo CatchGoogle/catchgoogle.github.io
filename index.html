@@ -59,6 +59,7 @@
             border: 1px solid #ddd;
             font-size: 24px;
             height: 60px;
+            position: relative;
         }
 
         .dataframe th {
@@ -95,6 +96,23 @@
 
         .pr-single {
             font-weight: normal;
+        }
+
+        .sortable-header:after {
+            content: '\25BC'; /* Downwards-facing arrow character */
+            font-size: 18px;
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            opacity: 0.5;
+        }
+
+        .sortable-header.sorted-asc:after {
+            content: '\25B2'; /* Upwards-facing arrow character for ascending sort */
+        }
+
+        .sortable-header.sorted-desc:after {
+            content: '\25BC'; /* Downwards-facing arrow character for descending sort */
         }
 
         a {
