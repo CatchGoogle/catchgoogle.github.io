@@ -8,86 +8,97 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        margin: 0;
-        padding: 0;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
 
-    .header {
-        text-align: center;
-        padding: 20px;
-        background-color: #888888;
-        color: #fff;
-    }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #888888;
+            color: #fff;
+        }
 
-    .header h1 {
-        margin: 0;
-    }
+        .header h1 {
+            margin: 0;
+        }
 
-    .header p {
-        font-size: 14px;
-    }
+        .header p {
+            font-size: 14px;
+        }
 
-    .dropdown-container {
-        text-align: center;
-        background-color: #fff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 10px;
-    }
+        .dropdown-container {
+            text-align: center;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
 
-    .dropdown {
-        width: 200px;
-        font-size: 16px; /* Adjust the size as needed */
-    }
+        .dropdown {
+            width: 200px;
+            font-size: 16px; /* Adjust the size as needed */
+        }
 
-    .table-container {
-        text-align: center;
-        margin: 20px auto;
-        max-width: 80%;
-    }
+        .table-container {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 80%;
+        }
 
-    .dataframe {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
+        .dataframe {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
 
-    .dataframe th, .dataframe td {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-    }
+        .dataframe th, .dataframe td {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+        }
 
-    .dataframe th {
-        background-color: #f2f2f2;
-    }
+        .dataframe th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
 
-    .dataframe tbody tr:nth-child(odd) {
-        background-color: #f9f9f9;
-    }
+        .dataframe th:hover {
+            background-color: #ddd;
+        }
 
-    /* Change the font size for the dropdown options */
-    .select2-results__option {
-        font-size: 42px; /* Adjust the size as needed */
-    }
+        .dataframe tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
 
-    /* Change the font size for the selected option */
-    .select2-selection__rendered {
-        font-size: 42px; /* Adjust the size as needed */
-    }
+        /* Change the font size for the dropdown options */
+        .select2-results__option {
+            font-size: 42px; /* Adjust the size as needed */
+        }
 
-    /* Style for tied positions */
-    .tied {
-        color: #888888;
-    }
+        /* Change the font size for the selected option */
+        .select2-selection__rendered {
+            font-size: 42px; /* Adjust the size as needed */
+        }
 
-    a {text-decoration: none;}
+        /* Style for tied positions */
+        .tied {
+            color: #888888;
+        }
 
-    .pr-single {
-        font-weight: normal; }
-        
-</style>
+        .sortable-header {
+            cursor: pointer;
+        }
+
+        .pr-single {
+            font-weight: normal;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
@@ -114,6 +125,8 @@
         const tablesContainer = document.getElementById("tables-container");
         const provinceDropdown = document.getElementById("province-dropdown");
         let parsedData = [];
+        let currentSortColumn = 'value'; // 'value' for PR Avg, 'single' for PR Single
+        let currentSortOrder = 'asc';
 
         function parseTable(tableHTML) {
             const parser = new DOMParser();
@@ -207,15 +220,40 @@
         function showTable(province) {
             tablesContainer.innerHTML = "";
             const filteredRows = parsedData.filter(row => row.province === province);
+
+            filteredRows.sort((a, b) => {
+                const aValue = a[currentSortColumn];
+                const bValue = b[currentSortColumn];
+
+                if (currentSortOrder === 'asc') {
+                    return parseTimeToNumber(aValue) - parseTimeToNumber(bValue);
+                } else {
+                    return parseTimeToNumber(bValue) - parseTimeToNumber(aValue);
+                }
+            });
+
             tablesContainer.appendChild(createTable(filteredRows));
         }
 
-        provinceDropdown.addEventListener("change", (event) => {
-            const selectedProvince = event.target.value;
-            showTable(selectedProvince);
-        });
+        function toggleSortOrder() {
+            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+        }
 
-        // Fetch the table data from an external HTML file
+        function onHeaderClick(event) {
+            const clickedColumn = event.target.getAttribute('data-sort-column');
+
+            if (clickedColumn) {
+                if (clickedColumn === currentSortColumn) {
+                    toggleSortOrder();
+                } else {
+                    currentSortColumn = clickedColumn;
+                    currentSortOrder = 'asc';
+                }
+
+                showTable(provinceDropdown.value);
+            }
+        }
+
         fetch('final_sorted_RESULTS.html')
             .then(response => response.text())
             .then(tableHTML => {
@@ -223,6 +261,12 @@
                 showTable(provinceDropdown.value);
             })
             .catch(error => console.error(error));
+
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('sortable-header')) {
+                onHeaderClick(event);
+            }
+        });
     </script>
 </body>
 </html>
