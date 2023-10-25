@@ -179,10 +179,10 @@
                 </thead>
                 <tbody></tbody>
             `;
-        
+
             // Sort based on the currentSortColumn
             rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
-        
+
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
@@ -199,7 +199,7 @@
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
-        
+
             return table;
         }
 
