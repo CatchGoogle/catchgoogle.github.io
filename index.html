@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
         }
+
         .header {
             text-align: center;
             padding: 20px;
@@ -21,6 +22,7 @@
         .header h1 {
             margin: 0;
         }
+
         .header p {
             font-size: 14px;
         }
@@ -41,18 +43,30 @@
             margin: 20px auto;
             max-width: 80%;
         }
+
         .dataframe {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
         }
+
         .dataframe th, .dataframe td {
             padding: 10px 15px;
             border: 1px solid #ddd;
         }
+
         .dataframe th {
             background-color: #f2f2f2;
         }
+
+        .dataframe tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍁Canadian Speedcubing Provincial Ranking🍁</h1>
         <p>Website developed by CatchGoogle, results obtained from <a href="https://worldcubeassociation.org/persons" target="_blank">worldcubeassociation.org</a></p>
     </div>
 
@@ -157,3 +171,4 @@
             .catch(error => console.error(error));
     </script>
 </body>
+</html>
