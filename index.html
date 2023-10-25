@@ -170,15 +170,16 @@
                     <tr>
                         <th>Rank</th>
                         <th>Name</th>
-                        <th>PR Avg</th>
+                        <th class="sortable-header" data-sort-column="value">PR Avg</th>
                         <th class="sortable-header" data-sort-column="single">PR Single</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             `;
-
-            rows.sort((a, b) => parseTimeToNumber(a.single) - parseTimeToNumber(b.single));
-
+        
+            // Sort based on the currentSortColumn
+            rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
+        
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
@@ -190,9 +191,10 @@
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
-
+        
             return table;
         }
+
 
         function showTable(province) {
             tablesContainer.innerHTML = "";
