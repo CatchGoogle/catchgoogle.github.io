@@ -201,21 +201,38 @@
                     const prevRow = rows[i - 1];
                     if (row[currentSortColumn] === prevRow[currentSortColumn]) {
                         if (previousRank > 0) {
-                            previousRank++;
-                            tr.innerHTML = `
-                                <td class="tied">${previousRank === 1 ? previousRank : '-'}</td>
-                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                <td class="tied">${row.value}</td>
-                                <td class="tied">${row.single}</td>
-                            `;
+                            if (previousRank === i) {
+                                tr.innerHTML = `
+                                    <td class="tied">${previousRank}</td>
+                                    <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                                    <td class="tied">${row.value}</td>
+                                    <td class="tied">${row.single}</td>
+                                `;
+                            } else {
+                                tr.innerHTML = `
+                                    <td class="tied">-</td>
+                                    <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                                    <td class="tied">${row.value}</td>
+                                    <td class="tied">${row.single}</td>
+                                `;
+                            }
                         } else {
-                            previousRank = i + 1;
+                            previousRank = i;
                             tr.innerHTML = `
+                                <td class="tied">${previousRank - 1}</td>
+                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${prevRow.id}" target="_blank">${prevRow.name}</a></td>
+                                <td class="tied">${prevRow.value}</td>
+                                <td class="tied">${prevRow.single}</td>
+                            `;
+                            const tr2 = document.createElement("tr");
+                            tr2.innerHTML = `
                                 <td class="tied">${previousRank}</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                                 <td class="tied">${row.value}</td>
                                 <td class="tied">${row.single}</td>
                             `;
+                            table.querySelector("tbody").appendChild(tr);
+                            table.querySelector("tbody").appendChild(tr2);
                         }
                     } else {
                         previousRank = 0;
