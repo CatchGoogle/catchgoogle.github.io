@@ -151,6 +151,7 @@
             return table;
         }
 
+
         function showTable(province) {
             tablesContainer.innerHTML = "";
             const filteredRows = parsedData.filter(row => row.province === province);
@@ -159,26 +160,17 @@
 
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
-            showTable(selectedProvince); // Call the showTable function to update the table
+            showTable(selectedProvince);
         });
 
         // Fetch the table data from an external HTML file
         fetch('final_sorted_RESULTS.html')
             .then(response => response.text())
             .then(tableHTML => {
-                // Parse the table input
                 parsedData = parseTable(tableHTML);
-
-                // Initially show the table for the selected province in the dropdown
                 showTable(provinceDropdown.value);
             })
             .catch(error => console.error(error));
-    </script>
-    <script>
-        // Initialize the Select2 dropdown
-        $(document).ready(function() {
-            $('#province-dropdown').select2();
-        });
     </script>
 </body>
 </html>
