@@ -128,7 +128,37 @@
         let currentSortColumn = 'single'; // 'value' for PR Avg, 'single' for PR Single
 
         function parseTable(tableHTML) {
-            // ... (your existing parseTable function) ...
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(tableHTML, 'text/html');
+            const table = doc.querySelector('table');
+            const rows = table.querySelectorAll('tbody tr');
+            const parsedData = [];
+            rows.forEach((row, index) => {
+                const columns = row.querySelectorAll('td');
+                if (columns.length >= 2) {
+                    const id = columns[0].textContent;
+                    const value = columns[1].textContent;
+                    const province = columns[2] ? columns[2].textContent : 'BC';
+                    const single = columns[3].textContent;
+                    const name = columns[4].textContent;
+                    parsedData.push({
+                        id,
+                        value,
+                        province,
+                        single,
+                        name,
+                    });
+                }
+            });
+            return parsedData;
+        }
+
+        function parseTimeToNumber(timeValue) {
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
+            }
+            return parseFloat(timeValue);
         }
 
         function createTable(rows) {
@@ -158,19 +188,32 @@
                 return aValue - bValue;
             });
 
+            let previousRank = 0;
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
                 if (i > 0) {
                     const prevRow = rows[i - 1];
                     if (row[currentSortColumn] === prevRow[currentSortColumn]) {
-                        tr.innerHTML = `
-                            <td class="tied">-</td>
-                            <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                            <td class="tied">${row.value}</td>
-                            <td>${row.single}</td>
-                        `;
+                        if (previousRank > 0) {
+                            previousRank++;
+                            tr.innerHTML = `
+                                <td class="tied">-</td>
+                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                                <td class="tied">${row.value}</td>
+                                <td>${row.single}</td>
+                            `;
+                        } else {
+                            previousRank = i + 1;
+                            tr.innerHTML = `
+                                <td class="tied">${previousRank}</td>
+                                <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
+                                <td class="tied">${row.value}</td>
+                                <td>${row.single}</td>
+                            `;
+                        }
                     } else {
+                        previousRank = 0;
                         tr.innerHTML = `
                             <td>${i + 1}</td>
                             <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
@@ -179,8 +222,9 @@
                         `;
                     }
                 } else {
+                    previousRank = 1;
                     tr.innerHTML = `
-                        <td>${i + 1}</td>
+                        <td>${previousRank}</td>
                         <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
                         <td>${row.value}</td>
                         <td>${row.single}</td>
