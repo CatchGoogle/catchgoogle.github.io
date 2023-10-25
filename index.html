@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canadian Speedcubing Provincial Rankings</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +30,7 @@
             font-size: 14px;
         }
 
-        .button-container {
+        .dropdown-container {
             display: flex;
             justify-content: center;
             background-color: #fff;
@@ -35,23 +38,8 @@
             padding: 10px;
         }
 
-        .button {
-            background-color: #fe4b25;
-            color: #fff;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background-color: #B8290B;
-        }
-
-        .button.active {
-            background-color: #ccff00; /* Change to the color you want for the active button */
-            color: #000000;
+        .dropdown {
+            width: 200px;
         }
 
         .table-container {
@@ -78,65 +66,6 @@
         .dataframe tbody tr:nth-child(odd) {
             background-color: #f9f9f9;
         }
-
-        /* Dark Mode Styles */
-        .dark-mode {
-            background-color: #222;
-            color: #fff;
-        }
-
-        /* Dark Mode Toggle Styles */
-        .dark-mode-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            color: #fff;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: #fff;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .toggle-label {
-            margin-left: 10px;
-        }
     </style>
 </head>
 <body>
@@ -145,181 +74,36 @@
         <p>Website developed by CatchGoogle, results obtained from <a href="https://worldcubeassociation.org/persons" target="_blank">worldcubeassociation.org</a></p>
     </div>
 
-    <div class="button-container">
-        <button class="button active" id="bc-button">British Columbia</button>
-        <button class="button" id="ab-button">Alberta</button>
-        <button class="button" id="mb-button">Manitoba</button>
-        <button class="button" id="on-button">Ontario</button>
-        <button class="button" id="qc-button">Quebec</button>
-        <button class="button" id="ns-button">Nova Scotia</button>
+    <div class="dropdown-container">
+        <select class="dropdown" id="province-dropdown">
+            <option value="BC">British Columbia</option>
+            <option value="AB">Alberta</option>
+            <option value="MB">Manitoba</option>
+            <option value="ON">Ontario</option>
+            <option value="QC">Quebec</option>
+            <option value="NS">Nova Scotia</option>
+        </select>
     </div>
 
     <div class="table-container" id="tables-container"></div>
 
     <script>
-        const tablesContainer = document.getElementById("tables-container");
-        const bcButton = document.getElementById("bc-button");
-        const abButton = document.getElementById("ab-button");
-        const onButton = document.getElementById("on-button");
-        const qcButton = document.getElementById("qc-button");
-        const nsButton = document.getElementById("ns-button");
-        const mbButton = document.getElementById("mb-button");
-        function parseTable(tableHTML) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(tableHTML, 'text/html');
-            const table = doc.querySelector('table');
-            const rows = table.querySelectorAll('tbody tr');
-            const parsedData = [];
-            rows.forEach((row, index) => {
-                const columns = row.querySelectorAll('td');
-                if (columns.length >= 2) {
-                    const id = columns[0].textContent;
-                    const value = columns[1].textContent;
-                    const province = columns[2] ? columns[2].textContent : 'BC'; // If no province specified, autopopulate with BC
-                    const name = columns[3].textContent;
-                    parsedData.push({
-                        id,
-                        value,
-                        province,
-                        name,
-                    });
-                }
+        $(document).ready(function() {
+            $('#province-dropdown').select2();
+            
+            // Attach an event listener to the dropdown to update the table
+            $('#province-dropdown').on('change', function() {
+                const selectedProvince = $(this).val();
+                // Call the appropriate function to update the table based on the selected province
+                updateTable(selectedProvince);
             });
-            return parsedData;
+        });
+
+        function updateTable(selectedProvince) {
+            // Replace this function with your logic to update the table based on the selected province
+            // You should use the selectedProvince parameter to filter your data
+            // and update the table accordingly.
         }
-        // Fetch the table data from an external HTML file
-        fetch('final_sorted_RESULTS.html')
-            .then(response => response.text())
-            .then(tableHTML => {
-                // Parse the table input
-                const parsedData = parseTable(tableHTML);
-                function parseTimeToNumber(timeValue) {
-                    if (timeValue includes(':')) {
-                        const [minutes, seconds] = timeValue.split(':');
-                        return parseFloat(minutes) * 60 + parseFloat(seconds);
-                    }
-                    return parseFloat(timeValue);
-                }
-                function createTable(rows) {
-                    const table = document.createElement("table");
-                    table.border = "1";
-                    table.className = "dataframe table table-bordered table-hover";
-                    table.innerHTML = `
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Name</th>
-                                <th>PR Avg</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    `;
-                    rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
-                    for (let i = 0; i < rows.length; i++) {
-                        const row = rows[i];
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td>${i + 1}</td>
-                            <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                            <td>${row.value}</td>
-                        `;
-                        table.querySelector("tbody").appendChild(tr);
-                    }
-                    return table;
-                }
-                function showBC() {
-                tablesContainer.innerHTML = "";
-                const bcRows = parsedData.filter(row => row.province === "BC");
-                tablesContainer.appendChild(createTable(bcRows);
-                // Add the active class to BC button and remove it from AB button
-                bcButton.classList.add("active");
-                abButton.classList.remove("active");
-                onButton.classList.remove("active");
-                qcButton.classList.remove("active");
-                nsButton.classList.remove("active");
-                mbButton.classList.remove("active");
-                }
-                function showAB() {
-                tablesContainer.innerHTML = "";
-                const abRows = parsedData.filter(row => row.province === "AB");
-                tablesContainer.appendChild(createTable(abRows));
-                // Add the active class to AB button and remove it from BC button
-                abButton.classList.add("active");
-                bcButton.classList.remove("active");
-                onButton.classList.remove("active");
-                qcButton.classList.remove("active");
-                nsButton.classList.remove("active");
-                mbButton.classList.remove("active");
-                    }
-                function showON() {
-                tablesContainer.innerHTML = "";
-                const onRows = parsedData.filter(row => row.province === "ON");
-                tablesContainer.appendChild(createTable(onRows));
-                // Add the active class to BC button and remove it from AB button
-                onButton.classList.add("active");
-                bcButton.classList remove("active");
-                abButton.classList.remove("active");
-                qcButton.classList.remove("active");
-                nsButton.classList.remove("active");
-                mbButton.classList.remove("active");
-                }
-                function showQC() {
-                tablesContainer.innerHTML = "";
-                const onRows = parsedData.filter(row => row.province === "QC");
-                tablesContainer.appendChild(createTable(onRows));
-                // Add the active class to BC button and remove it from AB button
-                qcButton.classList.add("active");
-                bcButton.classList.remove("active");
-                abButton.classList.remove("active");
-                onButton.classList.remove("active");
-                nsButton.classList.remove("active");
-                mbButton.classList.remove("active");
-                }
-                function showNS() {
-                tablesContainer.innerHTML = "";
-                const onRows = parsedData filter(row => row.province === "NS");
-                tablesContainer.appendChild(createTable(onRows));
-                // Add the active class to BC button and remove it from AB button
-                nsButton.classList.add("active");
-                bcButton.classList.remove("active");
-                abButton.classList.remove("active");
-                onButton.classList.remove("active");
-                qcButton.classList.remove("active");
-                mbButton.classList.remove("active");
-                }
-                function showMB() {
-                tablesContainer.innerHTML = "";
-                const onRows = parsedData.filter(row => row.province === "MB");
-                tablesContainer.appendChild(createTable(onRows));
-                // Add the active class to BC button and remove it from AB button
-                mbButton.classList.add("active");
-                bcButton.classList.remove("active");
-                abButton.classList.remove("active");
-                onButton.classList.remove("active");
-                qcButton.classList.remove("active");
-                nsButton.classList.remove("active");
-                }
-                
-                bcButton.addEventListener("click", showBC);
-                abButton.addEventListener("click", showAB);
-                onButton.addEventListener("click", showON);
-                qcButton.addEventListener("click", showQC);
-                nsButton.addEventListener("click", showNS);
-                mbButton.addEventListener("click", showMB);
-
-                // Initially set the BC button as active
-                bcButton.classList.add("active");
-                showBC();
-                })
-            .catch(error => console.error(error));
     </script>
-
-    <div class="dark-mode-toggle">
-        <label class="switch">
-            <input type="checkbox" id="dark-mode-toggle">
-            <span class="slider round"></span>
-        </label>
-        <span class="toggle-label">Dark Mode</span>
-    </div>
 </body>
 </html>
