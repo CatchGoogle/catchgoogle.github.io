@@ -59,7 +59,6 @@
             border: 1px solid #ddd;
             font-size: 24px;
             height: 60px;
-            position: relative;
         }
 
         .dataframe th {
@@ -98,41 +97,8 @@
             font-weight: normal;
         }
 
-        .sortable-header:after {
-            content: '\25BC'; /* Downwards-facing arrow character */
-            font-size: 18px;
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            opacity: 0.5;
-        }
-
-        .sortable-header.sorted-asc:after {
-            content: '\25B2'; /* Upwards-facing arrow character for ascending sort */
-        }
-
-        .sortable-header.sorted-desc:after {
-            content: '\25BC'; /* Downwards-facing arrow character for descending sort */
-        }
-
-        .sortable-header:not(.sorted):after {
-            content: '';
-        }
-
-        .bold-avg th {
-            font-weight: bold;
-        }
-
-        .bold-single th {
-            font-weight: bold;
-        }
-
         a {
             text-decoration: none;
-        }
-
-        .table-wrapper {
-            display: inline-block;
         }
     </style>
 </head>
@@ -164,11 +130,39 @@
         let currentSortColumn = 'value'; // 'value' for PR Avg, 'single' for PR Single
 
         function parseTable(tableHTML) {
-            // ... (Your existing parseTable function) ...
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(tableHTML, 'text/html');
+            const table = doc.querySelector('table');
+            const rows = table.querySelectorAll('tbody tr');
+            const parsedData = [];
+            rows.forEach((row, index) => {
+                const columns = row.querySelectorAll('td');
+                if (columns.length >= 2) {
+                    const id = columns[0].textContent;
+                    const value = columns[1].textContent;
+                    const province = columns[2] ? columns[2].textContent : 'BC';
+                    const single = columns[3].textContent;
+                    const photo = columns[4].textContent;
+                    const name = columns[5].textContent;
+                    parsedData.push({
+                        id,
+                        value,
+                        province,
+                        single,
+                        photo,
+                        name,
+                    });
+                }
+            });
+            return parsedData;
         }
 
         function parseTimeToNumber(timeValue) {
-            // ... (Your existing parseTimeToNumber function) ...
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
+            }
+            return parseFloat(timeValue);
         }
 
         function createTable(rows) {
@@ -206,24 +200,23 @@
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
-
-            // Wrap the table in a div with a class
-            const tableWrapper = document.createElement("div");
-            tableWrapper.className = "table-wrapper";
-            tableWrapper.appendChild(table);
         
-            return tableWrapper;
-        }
-
-        function onHeaderClick(event) {
-            // ... (Your existing onHeaderClick function) ...
+            return table;
         }
 
         function showTable(province) {
             tablesContainer.innerHTML = "";
             const filteredRows = parsedData.filter(row => row.province === province);
-            const table = createTable(filteredRows);
-            tablesContainer.appendChild(table);
+            tablesContainer.appendChild(createTable(filteredRows));
+        }
+
+        function onHeaderClick(event) {
+            const clickedColumn = event.target.getAttribute('data-sort-column');
+
+            if (clickedColumn) {
+                currentSortColumn = clickedColumn;
+                showTable(provinceDropdown.value);
+            }
         }
 
         provinceDropdown.addEventListener("change", (event) => {
