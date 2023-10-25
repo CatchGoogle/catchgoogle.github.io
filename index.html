@@ -222,13 +222,13 @@
             const filteredRows = parsedData.filter(row => row.province === province);
 
             filteredRows.sort((a, b) => {
-                const aValue = a[currentSortColumn];
-                const bValue = b[currentSortColumn];
+                const aValue = parseTimeToNumber(a[currentSortColumn]);
+                const bValue = parseTimeToNumber(b[currentSortColumn]);
 
                 if (currentSortOrder === 'asc') {
-                    return parseTimeToNumber(aValue) - parseTimeToNumber(bValue);
+                    return aValue - bValue;
                 } else {
-                    return parseTimeToNumber(bValue) - parseTimeToNumber(aValue);
+                    return bValue - aValue;
                 }
             });
 
