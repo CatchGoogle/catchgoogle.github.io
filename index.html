@@ -8,64 +8,75 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
 
-        .header {
-            text-align: center;
-            padding: 20px;
-            background-color: #888888;
-            color: #fff;
-        }
+    .header {
+        text-align: center;
+        padding: 20px;
+        background-color: #888888;
+        color: #fff;
+    }
 
-        .header h1 {
-            margin: 0;
-        }
+    .header h1 {
+        margin: 0;
+    }
 
-        .header p {
-            font-size: 14px;
-        }
+    .header p {
+        font-size: 14px;
+    }
 
-        .dropdown-container {
-            text-align: center;
-            background-color: #fff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-        }
+    .dropdown-container {
+        text-align: center;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
 
-        .dropdown {
-            width: 300px; /* Increase the width to make the dropdown larger */
-        }
+    .dropdown {
+        width: 200px;
+        font-size: 16px; /* Adjust the size as needed */
+    }
 
-        .table-container {
-            text-align: center;
-            margin: 20px auto;
-            max-width: 80%;
-        }
+    .table-container {
+        text-align: center;
+        margin: 20px auto;
+        max-width: 80%;
+    }
 
-        .dataframe {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+    .dataframe {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
 
-        .dataframe th, .dataframe td {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-        }
+    .dataframe th, .dataframe td {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+    }
 
-        .dataframe th {
-            background-color: #f2f2f2;
-        }
+    .dataframe th {
+        background-color: #f2f2f2;
+    }
 
-        .dataframe tbody tr:nth-child(odd) {
-            background-color: #f9f9f9;
-        }
-    </style>
+    .dataframe tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    /* Change the font size for the dropdown options */
+    .select2-results__option {
+        font-size: 16px; /* Adjust the size as needed */
+    }
+
+    /* Change the font size for the selected option */
+    .select2-selection__rendered {
+        font-size: 16px; /* Adjust the size as needed */
+    }
+</style>
 </head>
 <body>
     <div class="header">
