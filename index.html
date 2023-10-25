@@ -84,6 +84,8 @@
 
     a {text-decoration: none;}
 
+    .pr-single {
+        font-weight: normal; }
         
 </style>
 </head>
@@ -123,13 +125,13 @@
                 const columns = row.querySelectorAll('td');
                 if (columns.length >= 2) {
                     const id = columns[0].textContent;
-                    const avg = columns[1].textContent;
+                    const value = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC';
                     const single = columns[3].textContent;
                     const name = columns[4].textContent;
                     parsedData.push({
                         id,
-                        avg,
+                        value,
                         province,
                         single,
                         name,
@@ -157,24 +159,26 @@
                         <th>Rank</th>
                         <th>Name</th>
                         <th>PR Avg</th>
+                        <th>PR Single</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             `;
             let previousRank = 0;
-            rows.sort((a, b) => parseTimeToNumber(a.avg) - parseTimeToNumber(b.avg));
+            rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
                 if (i > 0) {
                     const prevRow = rows[i - 1];
-                    if (row.avg === prevRow.avg) {
+                    if (row.value === prevRow.value) {
                         if (previousRank > 0) {
                             previousRank++;
                             tr.innerHTML = `
                                 <td class="tied">-</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                <td class="tied">${row.avg}</td>
+                                <td class="tied">${row.value}</td>
+                                <td>${row.single}</td>
                             `;
                         }
                     } else {
@@ -182,7 +186,8 @@
                         tr.innerHTML = `
                             <td>${i + 1}</td>
                             <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                            <td>${row.avg}</td>
+                            <td>${row.value}</td>
+                            <td>${row.single}</td>
                         `;
                     }
                 } else {
@@ -190,7 +195,8 @@
                     tr.innerHTML = `
                         <td>${i + 1}</td>
                         <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                        <td>${row.avg}</td>
+                        <td>${row.value}</td>
+                        <td>${row.single}</td>
                     `;
                 }
                 table.querySelector("tbody").appendChild(tr);
@@ -205,7 +211,7 @@
         }
 
         provinceDropdown.addEventListener("change", (event) => {
-            const selectedProvince = event.target.avg;
+            const selectedProvince = event.target.value;
             showTable(selectedProvince);
         });
 
@@ -214,7 +220,7 @@
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
-                showTable(provinceDropdown.avg);
+                showTable(provinceDropdown.value);
             })
             .catch(error => console.error(error));
     </script>
