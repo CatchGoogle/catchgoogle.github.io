@@ -123,13 +123,15 @@
                 const columns = row.querySelectorAll('td');
                 if (columns.length >= 2) {
                     const id = columns[0].textContent;
-                    const value = columns[1].textContent;
+                    const avg = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC';
-                    const name = columns[3].textContent;
+                    const single = columns[3].textContent;
+                    const name = columns[4].textContent;
                     parsedData.push({
                         id,
-                        value,
+                        avg,
                         province,
+                        single,
                         name,
                     });
                 }
@@ -160,19 +162,19 @@
                 <tbody></tbody>
             `;
             let previousRank = 0;
-            rows.sort((a, b) => parseTimeToNumber(a.value) - parseTimeToNumber(b.value));
+            rows.sort((a, b) => parseTimeToNumber(a.avg) - parseTimeToNumber(b.avg));
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const tr = document.createElement("tr");
                 if (i > 0) {
                     const prevRow = rows[i - 1];
-                    if (row.value === prevRow.value) {
+                    if (row.avg === prevRow.avg) {
                         if (previousRank > 0) {
                             previousRank++;
                             tr.innerHTML = `
                                 <td class="tied">-</td>
                                 <td class="tied"><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                                <td class="tied">${row.value}</td>
+                                <td class="tied">${row.avg}</td>
                             `;
                         }
                     } else {
@@ -180,7 +182,7 @@
                         tr.innerHTML = `
                             <td>${i + 1}</td>
                             <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                            <td>${row.value}</td>
+                            <td>${row.avg}</td>
                         `;
                     }
                 } else {
@@ -188,7 +190,7 @@
                     tr.innerHTML = `
                         <td>${i + 1}</td>
                         <td><a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a></td>
-                        <td>${row.value}</td>
+                        <td>${row.avg}</td>
                     `;
                 }
                 table.querySelector("tbody").appendChild(tr);
@@ -203,7 +205,7 @@
         }
 
         provinceDropdown.addEventListener("change", (event) => {
-            const selectedProvince = event.target.value;
+            const selectedProvince = event.target.avg;
             showTable(selectedProvince);
         });
 
@@ -212,7 +214,7 @@
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
-                showTable(provinceDropdown.value);
+                showTable(provinceDropdown.avg);
             })
             .catch(error => console.error(error));
     </script>
