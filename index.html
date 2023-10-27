@@ -136,13 +136,13 @@
     <div class="table-container" id="tables-container"></div>
 
     <script>
-    const tablesContainer = document.getElementById("tables-container");
-    const provinceDropdown = document.getElementById("province-dropdown");
-    const cubeTypeDropdown = document.getElementById("wcaevent-dropdown");
-    let parsedData = [];
-    let currentSortColumnAvg = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
-    let currentSortColumnSingle = `single${cubeTypeDropdown.value}`; // 'single333' or 'single222'
-    let sortAscending = true;
+        const tablesContainer = document.getElementById("tables-container");
+        const provinceDropdown = document.getElementById("province-dropdown");
+        const cubeTypeDropdown = document.getElementById("wcaevent-dropdown");
+        let parsedData = [];
+        let sortAscendingAvg = true;
+        let sortAscendingSingle = true;
+
 
     function parseTable(tableHTML) {
         const parser = new DOMParser();
@@ -185,75 +185,76 @@
     }
 
     function createTable(rows) {
-        const table = document.createElement("table");
-        table.border = "1";
-        table.className = "dataframe table table-bordered table-hover";
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th class="sortable-header" data-sort-column="avg">PR Avg</th>
-                    <th class="sortable-header" data-sort-column="single">PR Single</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        `;
-
-        // Sort based on the currentSortColumn
-        rows.sort((a, b) => {
-            const aValue = parseTimeToNumber(a[currentSortColumnAvg] || a[currentSortColumnSingle]);
-            const bValue = parseTimeToNumber(b[currentSortColumnAvg] || b[currentSortColumnSingle]);
-            return sortAscending ? aValue - bValue : bValue - aValue;
-        });
-
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${i + 1}</td>
-                <td>
-                    <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                        <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                        ${row.name}
-                    </a>
-                </td>
-                <td>${row[currentSortColumnAvg]}</td>
-                <td>${row[currentSortColumnSingle]}</td>
+            const table = document.createElement("table");
+            table.border = "1";
+            table.className = "dataframe table table-bordered table-hover";
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th class="sortable-header" data-sort-column="avg">PR Avg</th>
+                        <th class="sortable-header" data-sort-column="single">PR Single</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
             `;
-            table.querySelector("tbody").appendChild(tr);
-        }
 
-        return table;
-    }
+            // Sort based on the currentSortColumn
+            rows.sort((a, b) => {
+                if (currentSortColumn === "avg") {
+                    return sortAscendingAvg ? parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn])
+                        : parseTimeToNumber(b[currentSortColumn]) - parseTimeToNumber(a[currentSortColumn]);
+                } else if (currentSortColumn === "single") {
+                    return sortAscendingSingle ? parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn])
+                        : parseTimeToNumber(b[currentSortColumn]) - parseTimeToNumber(a[currentSortColumn]);
+                }
+            });
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>
+                        <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                            <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                            ${row.name}
+                        </a>
+                    </td>
+                    <td>${row["avg333"]}</td>
+                    <td>${row["single333"]}</td>
+                `;
+                table.querySelector("tbody").appendChild(tr);
+            }
+
+            return table;
+        }
 
     function showTable(province, cubeType) {
-        tablesContainer.innerHTML = "";
-        currentSortColumnAvg = `avg${cubeType}`;
-        currentSortColumnSingle = `single${cubeType}`;
-        const filteredRows = parsedData.filter(row => row.province === province);
-        tablesContainer.appendChild(createTable(filteredRows));
-    }
-
-    function onHeaderClick(event) {
-        const clickedColumn = event.target.getAttribute('data-sort-column');
-
-        if (clickedColumn) {
-            if (currentSortColumnAvg === clickedColumn || currentSortColumnSingle === clickedColumn) {
-                sortAscending = !sortAscending;
-            } else {
-                if (clickedColumn === "avg") {
-                    currentSortColumnAvg = `avg${cubeTypeDropdown.value}`;
-                    currentSortColumnSingle = `single${cubeTypeDropdown.value}`;
-                } else if (clickedColumn === "single") {
-                    currentSortColumnAvg = `single${cubeTypeDropdown.value}`;
-                    currentSortColumnSingle = `avg${cubeTypeDropdown.value}`;
-                }
-                sortAscending = true;
-            }
-            showTable(provinceDropdown.value, cubeTypeDropdown.value);
+            tablesContainer.innerHTML = "";
+            const filteredRows = parsedData.filter(row => row.province === province);
+            tablesContainer.appendChild(createTable(filteredRows));
         }
-    }
+
+        function onHeaderClick(event) {
+            const clickedColumn = event.target.getAttribute('data-sort-column');
+
+            if (clickedColumn) {
+                if (currentSortColumn === clickedColumn) {
+                    if (currentSortColumn === "avg") {
+                        sortAscendingAvg = !sortAscendingAvg;
+                    } else if (currentSortColumn === "single") {
+                        sortAscendingSingle = !sortAscendingSingle;
+                    }
+                } else {
+                    currentSortColumn = clickedColumn;
+                    sortAscendingAvg = true;
+                    sortAscendingSingle = true;
+                }
+                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+            }
+        }
 
     provinceDropdown.addEventListener("change", (event) => {
         const selectedProvince = event.target.value;
