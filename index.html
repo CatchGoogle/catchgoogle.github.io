@@ -255,21 +255,23 @@
                             return -1;
                         }
         
-                        const aValueNumber = parseTimeToNumber(aValue);
-                        const bValueNumber = parseTimeToNumber(bValue);
-        
                         if (currentSortColumn.startsWith('single')) {
                             // For single times, sort accordingly
+                            const aValueNumber = parseTimeToNumber(aValue);
+                            const bValueNumber = parseTimeToNumber(bValue);
                             return aValueNumber - bValueNumber;
                         } else {
-                            // For average times, sort accordingly
-                            return aValueNumber - bValueNumber;
+                            // For average times, sort based on single times
+                            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
+                            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+                            return aSingle - bSingle;
                         }
                     });
                 }
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
             }
         }
+
 
 
         provinceDropdown.addEventListener("change", (event) => {
