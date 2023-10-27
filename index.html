@@ -202,7 +202,12 @@
     rows = rows.filter(row => !isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`]));
 
     // Sort based on the currentSortColumn
-    rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
+    // Sort based on the currentSortColumn
+    rows.sort((a, b) => {
+        const aTime = currentSortColumn === `single${cubeTypeDropdown.value}` ? parseTimeToNumber(a[currentSortColumn]) : parseTimeToNumber(a[currentSortColumn]);
+        const bTime = currentSortColumn === `single${cubeTypeDropdown.value}` ? parseTimeToNumber(b[currentSortColumn]) : parseTimeToNumber(b[currentSortColumn]);
+        return aTime - bTime;
+    });
 
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
