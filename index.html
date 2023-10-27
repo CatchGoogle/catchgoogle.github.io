@@ -183,44 +183,47 @@
         }
 
         function createTable(rows) {
-            const table = document.createElement("table");
-            table.border = "1";
-            table.className = "dataframe table table-bordered table-hover";
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Name</th>
-                        <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-                        <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            `;
-        
-            // Sort based on the currentSortColumn
-            rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
-        
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td>
-                        <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                            <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                            ${row.name}
-                        </a>
-                    </td>
-                    <td>${row[currentSortColumn]}</td>
-                    <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-                `;
-                table.querySelector("tbody").appendChild(tr);
-            }
-        
-            return table;
-        }
-        
+    const table = document.createElement("table");
+    table.border = "1";
+    table.className = "dataframe table table-bordered table-hover";
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    // Filter rows with both average and single times not equal to "NaN"
+    rows = rows.filter(row => !isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`]));
+
+    // Sort based on the currentSortColumn
+    rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${row[currentSortColumn]}</td>
+            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+        `;
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    return table;
+}
+
         function showTable(province, cubeType) {
             tablesContainer.innerHTML = "";
             currentSortColumn = `avg${cubeType}`;
