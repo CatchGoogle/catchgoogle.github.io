@@ -151,16 +151,18 @@
                 const columns = row.querySelectorAll('td');
                 if (columns.length >= 2) {
                     const id = columns[0].textContent;
-                    const value = columns[1].textContent;
+                    const avg333 = columns[1].textContent;
                     const province = columns[2] ? columns[2].textContent : 'BC';
-                    const single = columns[3].textContent;
+                    const single333 = columns[3].textContent;
                     const photo = columns[4].textContent;
-                    const name = columns[5].textContent;
+                    const avg222 = columns[5].textContent;
+                    const single222 = columns[6].textContent;
+                    const name = columns[7].textContent;
                     parsedData.push({
                         id,
-                        value,
+                        avg333,
                         province,
-                        single,
+                        single333,
                         photo,
                         name,
                     });
@@ -186,8 +188,8 @@
                     <tr>
                         <th>Rank</th>
                         <th>Name</th>
-                        <th class="sortable-header" data-sort-column="value">PR Avg</th>
-                        <th class="sortable-header" data-sort-column="single">PR Single</th>
+                        <th class="sortable-header" data-sort-column="avg333">PR Avg</th>
+                        <th class="sortable-header" data-sort-column="single333">PR Single</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -207,8 +209,8 @@
                             ${row.name}
                         </a>
                     </td>
-                    <td>${row.value}</td>
-                    <td>${row.single}</td>
+                    <td>${row.avg333}</td>
+                    <td>${row.single333}</td>
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
