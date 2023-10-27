@@ -24,7 +24,7 @@
 
         .header h1 {
             margin: 0;
-            fontsize: 96px;
+            font-size: 96px;
         }
 
         .header p {
@@ -112,7 +112,7 @@
         <h1>🍁Canadian Speedcubing Provincial Ranking🍁</h1>
         <p>Website developed by Catch, results obtained from <a href="https://worldcubeassociation.org/persons" target="_blank">worldcubeassociation.org</a></p>
         <p>Please go to <a href="https://forms.gle/irjy2yMLvZPfoPj16" target="_blank">this form</a> to submit a province affiliation for yourself or another cuber</p>
-        <psmall>This website is independently run by an enthusiastic speedcuber and is in NO way endorsed or otherwise affiliated with the World Cube Association</psmall>
+        <p class="psmall">This website is independently run by an enthusiastic speedcuber and is in NO way endorsed or otherwise affiliated with the World Cube Association</p>
     </div>
 
     <div class="dropdown-container">
@@ -138,8 +138,9 @@
     <script>
         const tablesContainer = document.getElementById("tables-container");
         const provinceDropdown = document.getElementById("province-dropdown");
+        const eventTypeDropdown = document.getElementById("wcaevent-dropdown");
         let parsedData = [];
-        let currentSortColumn = 'avg333'; // 'value' for PR Avg, 'single' for PR Single
+        let currentSortColumn = 'avg333'; // Default to 3x3x3 Cube
 
         function parseTable(tableHTML) {
             const parser = new DOMParser();
@@ -173,25 +174,33 @@
             return parsedData;
         }
 
-        function parseTimeToNumber(timeValue) {
-            if (timeValue.includes(':')) {
-                const [minutes, seconds] = timeValue.split(':');
-                return parseFloat(minutes) * 60 + parseFloat(seconds);
+        function updateSortColumn() {
+            if (eventTypeDropdown.value === "222") {
+                currentSortColumn = 'avg222'; // 2x2x2 Cube
+            } else if (eventTypeDropdown.value === "333") {
+                currentSortColumn = 'avg333'; // 3x3x3 Cube
             }
-            return parseFloat(timeValue);
+            showTable(provinceDropdown.value);
         }
 
         function createTable(rows) {
             const table = document.createElement("table");
             table.border = "1";
             table.className = "dataframe table table-bordered table-hover";
+
+            // Determine event names based on the selected event
+            const eventNames = {
+                "222": "2x2 Avg",
+                "333": "3x3 Avg",
+            };
+
             table.innerHTML = `
                 <thead>
                     <tr>
                         <th>Rank</th>
                         <th>Name</th>
-                        <th class="sortable-header" data-sort-column="avg333">PR Avg</th>
-                        <th class="sortable-header" data-sort-column="single333">PR Single</th>
+                        <th class="sortable-header" data-sort-column="${currentSortColumn}">${eventNames[eventTypeDropdown.value]}</th>
+                        <th class="sortable-header" data-sort-column="single${eventTypeDropdown.value}">${eventNames[eventTypeDropdown.value]} Single</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -211,8 +220,8 @@
                             ${row.name}
                         </a>
                     </td>
-                    <td>${row.avg333}</td>
-                    <td>${row.single333}</td>
+                    <td>${row[currentSortColumn]}</td>
+                    <td>${row[`single${eventTypeDropdown.value}`]}</td>
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
@@ -235,10 +244,8 @@
             }
         }
 
-        provinceDropdown.addEventListener("change", (event) => {
-            const selectedProvince = event.target.value;
-            showTable(selectedProvince);
-        });
+        // Add event listener for the eventTypeDropdown to dynamically update the table
+        eventTypeDropdown.addEventListener("change", updateSortColumn);
 
         fetch('final_sorted_RESULTS.html')
             .then(response => response.text())
