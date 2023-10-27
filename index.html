@@ -183,20 +183,20 @@
         }
 
         function createTable(rows) {
-    const table = document.createElement("table");
-    table.border = "1";
-    table.className = "dataframe table table-bordered table-hover";
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    `;
+            const table = document.createElement("table");
+            table.border = "1";
+            table.className = "dataframe table table-bordered table-hover";
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+                        <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
 
     // Filter rows with both average and single times not equal to "NaN"
     rows = rows.filter(row => !isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`]));
@@ -261,8 +261,6 @@
                         return aValueNumber - bValueNumber;
                     });
                 }
-                // Comment out the following line to sort the entire list
-                // showTable(provinceDropdown.value, cubeTypeDropdown.value);
                 tablesContainer.innerHTML = "";
                 tablesContainer.appendChild(createTable(parsedData));
             }
