@@ -246,13 +246,21 @@
                 } else {
                     currentSortColumn = clickedColumn;
                     parsedData.sort((a, b) => {
-                        const aValue = currentSortColumn === `single${cubeTypeDropdown.value}` ? a[currentSortColumn] : a[`avg${cubeTypeDropdown.value}`];
-                        const bValue = currentSortColumn === `single${cubeTypeDropdown.value}` ? b[currentSortColumn] : b[`avg${cubeTypeDropdown.value}`];
+                        const aValue = a[currentSortColumn];
+                        const bValue = b[currentSortColumn];
         
                         // Handle special cases when values are 'DNF' or 'DNS' or empty
                         if (aValue === 'DNF' || aValue === 'DNS' || aValue === '') {
                             return 1;
                         } else if (bValue === 'DNF' || bValue === 'DNS' || bValue === '') {
+                            return -1;
+                        }
+        
+                        if (aValue === 'NaN' && bValue === 'NaN') {
+                            return 0;
+                        } else if (aValue === 'NaN') {
+                            return 1;
+                        } else if (bValue === 'NaN') {
                             return -1;
                         }
         
