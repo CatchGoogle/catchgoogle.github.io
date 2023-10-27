@@ -217,7 +217,7 @@
                             ${row.name}
                         </a>
                     </td>
-                    <td>${row[currentSortColumn]}</td>
+                    <td>${row[`avg${cubeTypeDropdown.value}`]}</td>
                     <td>${row[`single${cubeTypeDropdown.value}`]}</td>
                 `;
                 table.querySelector("tbody").appendChild(tr);
