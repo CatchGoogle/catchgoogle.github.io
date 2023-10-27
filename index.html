@@ -247,7 +247,7 @@
             showTable(provinceDropdown.value, selectedCubeType);
         });
 
-        fetch(`final_sorted_RESULTS_${cubeTypeDropdown.value}.html`)
+        fetch(`final_sorted_RESULTS${cubeTypeDropdown.value}.html`)
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
