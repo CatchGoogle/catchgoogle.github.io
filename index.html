@@ -231,40 +231,40 @@
 
         function showTable(province, cubeType) {
             tablesContainer.innerHTML = "";
-            currentSortColumn = `avg${cubeType}`;
-            const filteredRows = parsedData.filter(row => row.province === province);
+        
+            // Filter rows for the selected province and cube type
+            const filteredRows = parsedData.filter(row => row.province === province && row.cubeType === cubeType);
+        
+            // Sort the filtered rows based on the currentSortColumn
+            filteredRows.sort((a, b) => {
+                const aValue = a[currentSortColumn];
+                const bValue = b[currentSortColumn];
+        
+                if (aValue === 'DNF' || aValue === 'DNS' || aValue === '' || aValue === 'NaN') {
+                    return 1;
+                } else if (bValue === 'DNF' || bValue === 'DNS' || bValue === '' || bValue === 'NaN') {
+                    return -1;
+                }
+        
+                const aValueNumber = parseTimeToNumber(aValue);
+                const bValueNumber = parseTimeToNumber(bValue);
+        
+                return aValueNumber - bValueNumber;
+            });
+        
             tablesContainer.appendChild(createTable(filteredRows));
         }
 
+
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
-            
+        
             if (clickedColumn) {
-                if (currentSortColumn === clickedColumn) {
-                    // If the same column is clicked again, reverse the sorting order
-                    parsedData.reverse();
-                } else {
-                    currentSortColumn = clickedColumn;
-                    parsedData.sort((a, b) => {
-                        const aValue = a[currentSortColumn];
-                        const bValue = b[currentSortColumn];
-        
-                        if (aValue === 'DNF' || aValue === 'DNS' || aValue === '' || aValue === 'NaN') {
-                            return 1;
-                        } else if (bValue === 'DNF' || bValue === 'DNS' || bValue === '' || bValue === 'NaN') {
-                            return -1;
-                        }
-        
-                        const aValueNumber = parseTimeToNumber(aValue);
-                        const bValueNumber = parseTimeToNumber(bValue);
-        
-                        return aValueNumber - bValueNumber;
-                    });
-                }
-                tablesContainer.innerHTML = "";
-                tablesContainer.appendChild(createTable(parsedData));
+                currentSortColumn = clickedColumn;
+                showTable(provinceDropdown.value, cubeTypeDropdown.value);
             }
         }
+
 
 
 
