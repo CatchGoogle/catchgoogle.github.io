@@ -237,41 +237,36 @@
         }
 
         function onHeaderClick(event) {
-            const clickedColumn = event.target.getAttribute('data-sort-column');
-            
-            if (clickedColumn) {
-                if (currentSortColumn === clickedColumn) {
-                    // If the same column is clicked again, reverse the sorting order
-                    parsedData.reverse();
-                } else {
-                    currentSortColumn = clickedColumn;
-                    parsedData.sort((a, b) => {
-                        const aValue = a[currentSortColumn];
-                        const bValue = b[currentSortColumn];
-        
-                        if (aValue === 'DNF' || aValue === 'DNS' || aValue === '' || aValue === 'NaN') {
-                            return 1;
-                        } else if (bValue === 'DNF' || bValue === 'DNS' || bValue === '' || bValue === 'NaN') {
-                            return -1;
-                        }
-        
-                        if (currentSortColumn.startsWith('single')) {
-                            // For single times, sort accordingly
-                            const aValueNumber = parseTimeToNumber(aValue);
-                            const bValueNumber = parseTimeToNumber(bValue);
-                            return aValueNumber - bValueNumber;
-                        } else {
-                            // For average times, sort based on single times
-                            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
-                            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
-                            return aSingle - bSingle;
-                        }
-                    });
-                }
-                showTable(provinceDropdown.value, cubeTypeDropdown.value);
-            }
-        }
+    const clickedColumn = event.target.getAttribute('data-sort-column');
 
+    if (clickedColumn) {
+        currentSortColumn = clickedColumn;
+        parsedData.sort((a, b) => {
+            const aValue = a[currentSortColumn];
+            const bValue = b[currentSortColumn];
+
+            if (aValue === 'DNF' || aValue === 'DNS' || aValue === '' || aValue === 'NaN') {
+                return 1;
+            } else if (bValue === 'DNF' || bValue === 'DNS' || bValue === '' || bValue === 'NaN') {
+                return -1;
+            }
+
+            if (currentSortColumn.startsWith('single')) {
+                // For single times, sort accordingly
+                const aValueNumber = parseTimeToNumber(aValue);
+                const bValueNumber = parseTimeToNumber(bValue);
+                return aValueNumber - bValueNumber;
+            } else {
+                // For average times, sort based on single times
+                const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
+                const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+                return aSingle - bSingle;
+            }
+        });
+
+        showTable(provinceDropdown.value, cubeTypeDropdown.value);
+    }
+}
 
 
         provinceDropdown.addEventListener("change", (event) => {
