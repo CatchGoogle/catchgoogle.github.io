@@ -261,7 +261,10 @@
                         return aValueNumber - bValueNumber;
                     });
                 }
-                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+                // Comment out the following line to sort the entire list
+                // showTable(provinceDropdown.value, cubeTypeDropdown.value);
+                tablesContainer.innerHTML = "";
+                tablesContainer.appendChild(createTable(parsedData));
             }
         }
 
