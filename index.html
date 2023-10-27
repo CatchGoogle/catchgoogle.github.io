@@ -233,21 +233,12 @@
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
-        
+
             if (clickedColumn) {
-                if (currentSortColumn === clickedColumn) {
-                    // If the same column is clicked again, reverse the sorting order
-                    parsedData.reverse();
-                } else {
-                    currentSortColumn = clickedColumn;
-                    parsedData.sort((a, b) => {
-                        return parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]);
-                    });
-                }
+                currentSortColumn = clickedColumn;
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
             }
         }
-
 
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
