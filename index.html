@@ -24,7 +24,7 @@
 
         .header h1 {
             margin: 0;
-            font-size: 96px;
+            fontsize: 96px;
         }
 
         .header p {
@@ -44,7 +44,7 @@
 
         .dropdown {
             width: 200px;
-            font-size: 24px; /* Adjust the size as needed */
+            font-size: 24px;
         }
 
         .table-container {
@@ -81,12 +81,12 @@
 
         /* Change the font size for the dropdown options */
         .select2-results__option {
-            font-size: 42px; /* Adjust the size as needed */
+            font-size: 42px;
         }
 
         /* Change the font size for the selected option */
         .select2-selection__rendered {
-            font-size: 42px; /* Adjust the size as needed */
+            font-size: 42px;
         }
 
         /* Style for tied positions */
@@ -138,9 +138,9 @@
     <script>
         const tablesContainer = document.getElementById("tables-container");
         const provinceDropdown = document.getElementById("province-dropdown");
-        const eventTypeDropdown = document.getElementById("wcaevent-dropdown");
+        const cubeTypeDropdown = document.getElementById("wcaevent-dropdown");
         let parsedData = [];
-        let currentSortColumn = 'avg333'; // Default to 3x3x3 Cube
+        let currentSortColumn = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
 
         function parseTable(tableHTML) {
             const parser = new DOMParser();
@@ -174,33 +174,25 @@
             return parsedData;
         }
 
-        function updateSortColumn() {
-            if (eventTypeDropdown.value === "222") {
-                currentSortColumn = 'avg222'; // 2x2x2 Cube
-            } else if (eventTypeDropdown.value === "333") {
-                currentSortColumn = 'avg333'; // 3x3x3 Cube
+        function parseTimeToNumber(timeValue) {
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
             }
-            showTable(provinceDropdown.value);
+            return parseFloat(timeValue);
         }
 
         function createTable(rows) {
             const table = document.createElement("table");
             table.border = "1";
             table.className = "dataframe table table-bordered table-hover";
-
-            // Determine event names based on the selected event
-            const eventNames = {
-                "222": "2x2 Avg",
-                "333": "3x3 Avg",
-            };
-
             table.innerHTML = `
                 <thead>
                     <tr>
                         <th>Rank</th>
                         <th>Name</th>
-                        <th class="sortable-header" data-sort-column="${currentSortColumn}">${eventNames[eventTypeDropdown.value]}</th>
-                        <th class="sortable-header" data-sort-column="single${eventTypeDropdown.value}">${eventNames[eventTypeDropdown.value]} Single</th>
+                        <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+                        <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -221,7 +213,7 @@
                         </a>
                     </td>
                     <td>${row[currentSortColumn]}</td>
-                    <td>${row[`single${eventTypeDropdown.value}`]}</td>
+                    <td>${row[`single${cubeTypeDropdown.value}`]}</td>
                 `;
                 table.querySelector("tbody").appendChild(tr);
             }
@@ -229,8 +221,9 @@
             return table;
         }
 
-        function showTable(province) {
+        function showTable(province, cubeType) {
             tablesContainer.innerHTML = "";
+            currentSortColumn = `avg${cubeType}`;
             const filteredRows = parsedData.filter(row => row.province === province);
             tablesContainer.appendChild(createTable(filteredRows));
         }
@@ -240,18 +233,25 @@
 
             if (clickedColumn) {
                 currentSortColumn = clickedColumn;
-                showTable(provinceDropdown.value);
+                showTable(provinceDropdown.value, cubeTypeDropdown.value);
             }
         }
 
-        // Add event listener for the eventTypeDropdown to dynamically update the table
-        eventTypeDropdown.addEventListener("change", updateSortColumn);
+        provinceDropdown.addEventListener("change", (event) => {
+            const selectedProvince = event.target.value;
+            showTable(selectedProvince, cubeTypeDropdown.value);
+        });
 
-        fetch('final_sorted_RESULTS.html')
+        cubeTypeDropdown.addEventListener("change", (event) => {
+            const selectedCubeType = event.target.value;
+            showTable(provinceDropdown.value, selectedCubeType);
+        });
+
+        fetch(`final_sorted_RESULTS_${cubeTypeDropdown.value}.html`)
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
-                showTable(provinceDropdown.value);
+                showTable(provinceDropdown.value, cubeTypeDropdown.value);
             })
             .catch(error => console.error(error));
 
