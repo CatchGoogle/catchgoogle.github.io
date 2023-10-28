@@ -275,35 +275,48 @@
 	        <tbody></tbody>
 	    `;
 	rows = rows.filter(row => !(isNaN(parseTimeToNumber(row[currentSortColumn])) && isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`]))));
-	    // Sort the rows based on the current sort column
-	    rows.sort((a, b) => {
-        const aAvg = parseTimeToNumber(a[currentSortColumn]);
-        const bAvg = parseTimeToNumber(b[currentSortColumn]);
-        const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
-        const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
 
-        if (!isNaN(aAvg) && !isNaN(bAvg)) {
-            return aAvg - bAvg;
-        } 
-        else if (!isNaN(aAvg)){
-            return -1;  // If aAvg is valid and bAvg is NaN, a comes first
-        } 
-        else if (!isNaN(bAvg)){
-            return 1;  // If bAvg is valid and aAvg is NaN, b comes first
-        }
-        else if (!isNaN(aSingle) && !isNaN(bSingle)){
-            return aSingle - bSingle;  // If both averages are NaN, sort per single values
-        }
-        else if (!isNaN(aSingle)){
-            return -1;  // If aSingle is valid and bSingle is NaN, a comes first
-        }
-        else if (!isNaN(bSingle)){
-            return 1;  // If bSingle is valid and aSingle is NaN, b comes first
-        } 
-        else {
-            return 0;  // If both are NaN, they are equal
-        }
-    });
+    // Event specific sort logic
+    if (cubeTypeDropdown.value === 'mbld') {
+        rows.sort((a, b) => {
+            const aVal = a[currentSortColumn].split('/');
+            const bVal = b[currentSortColumn].split('/');
+            const aPoints = aVal.length === 2 ? aVal[0] - Math.abs(aVal[0] - aVal[1]) : NaN;
+            const bPoints = bVal.length === 2 ? bVal[0] - Math.abs(bVal[0] - bVal[1]) : NaN;
+
+            return aPoints - bPoints;
+        });
+    }
+    else {
+        rows.sort((a, b) => {
+            const aAvg = parseTimeToNumber(a[currentSortColumn]);
+            const bAvg = parseTimeToNumber(b[currentSortColumn]);
+            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
+            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+
+            if (!isNaN(aAvg) && !isNaN(bAvg)) {
+                return aAvg - bAvg;
+            } 
+            else if (!isNaN(aAvg)) {
+                return -1;
+            } 
+            else if (!isNaN(bAvg)) {
+                return 1;
+            }
+            else if (!isNaN(aSingle) && !isNaN(bSingle)) {
+                return aSingle - bSingle;
+            }
+            else if (!isNaN(aSingle)) {
+                return -1;
+            }
+            else if (!isNaN(bSingle)) {
+                return 1;
+            } 
+            else {
+                return 0; 
+            }
+        });
+    }
 	
 	    for (let i = 0; i < rows.length; i++) {
 	        const row = rows[i];
