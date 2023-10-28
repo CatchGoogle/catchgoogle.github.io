@@ -274,7 +274,7 @@
 	        </thead>
 	        <tbody></tbody>
 	    `;
-	
+	rows = rows.filter(row => !(isNaN(parseTimeToNumber(row[currentSortColumn])) && isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`]))));
 	    // Sort the rows based on the current sort column
 	    rows.sort((a, b) => {
         const aAvg = parseTimeToNumber(a[currentSortColumn]);
