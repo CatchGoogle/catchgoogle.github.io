@@ -253,21 +253,22 @@
 
         function parseTimeToNumber(timeValue) {
 	    if (timeValue.toLowerCase() === 'nan') {
-	        return NaN; // Handle 'NaN' values
+	        return NaN;
 	    }
 	
 	    if (timeValue.includes(':')) {
 	        // Handle 'minutes:seconds' format
-	        const [minutes, seconds] = timeValue.split(':');
-	        if (minutes && seconds) {
-	            return parseFloat(minutes) * 60 + parseFloat(seconds);
+	        const timeParts = timeValue.split(':');
+	        if (timeParts.length === 2) {
+	            const minutes = parseFloat(timeParts[0]);
+	            const seconds = parseFloat(timeParts[1]);
+	            return minutes * 60 + seconds;
 	        }
-	    } else {
-	        // Handle floating-point numbers
+	    } else if (!isNaN(parseFloat(timeValue))) {
 	        return parseFloat(timeValue);
 	    }
 	
-	    return NaN; // Handle unexpected or invalid formats
+	    return NaN;
 	}
 
 
@@ -310,16 +311,25 @@
         `;
         table.querySelector("tbody").appendChild(tr);
     }
-
+	sortTable(rows, currentSortColumn);
     return table;
 }
 
-        function showTable(province, cubeType) {
-            tablesContainer.innerHTML = "";
-            currentSortColumn = `avg${cubeType}`;
-            const filteredRows = parsedData.filter(row => row.province === province);
-            tablesContainer.appendChild(createTable(filteredRows));
-        }
+        function sortTable(rows, sortByColumn) {
+	    rows.sort((a, b) => {
+	        const aValue = parseTimeToNumber(a[sortByColumn]);
+	        const bValue = parseTimeToNumber(b[sortByColumn]);
+	
+	        if (!isNaN(aValue) && !isNaN(bValue)) {
+	            return aValue - bValue;
+	        } else {
+	            // Handle 'NaN' values
+	            if (isNaN(aValue) && isNaN(bValue)) return 0;
+	            if (isNaN(aValue)) return 1;
+	            if (isNaN(bValue)) return -1;
+	        }
+	    });
+	}
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
