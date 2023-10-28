@@ -275,36 +275,23 @@
         <tbody></tbody>
     `;
 
-    // Sort the rows based on the current sort column
-    rows.sort((a, b) => {
-        const aValue = a[currentSortColumn];
-        const bValue = b[currentSortColumn];
-
-        // Handle NaN values
-        if (isNaN(aValue) && !isNaN(bValue)) {
-            return 1;
-        } else if (!isNaN(aValue) && isNaN(bValue)) {
-            return -1;
-        } else {
-            return parseTimeToNumber(aValue) - parseTimeToNumber(bValue);
-        }
-    });
-
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>
-                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                    ${row.name}
-                </a>
-            </td>
-            <td>${row[currentSortColumn]}</td>
-            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-        `;
-        table.querySelector("tbody").appendChild(tr);
+        if (!isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`])) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${i + 1}</td>
+                <td>
+                    <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                        <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                        ${row.name}
+                    </a>
+                </td>
+                <td>${row[currentSortColumn]}</td>
+                <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+            `;
+            table.querySelector("tbody").appendChild(tr);
+        }
     }
 
     return table;
