@@ -274,49 +274,41 @@
 	        </thead>
 	        <tbody></tbody>
 	    `;
-	rows = rows.filter(row => !(isNaN(parseTimeToNumber(row[currentSortColumn])) && isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`]))));
+	rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`])));
 
-    // Event specific sort logic
-    if (cubeTypeDropdown.value === 'mbld') {
-        rows.sort((a, b) => {
+    // Sorting logic
+    rows.sort((a, b) => {
+        const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
+        const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+        
+        // For 'bld' events, sort by single.
+        if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
+            return aSingle - bSingle;
+        }
+
+        const aAvg = parseTimeToNumber(a[currentSortColumn]);
+        const bAvg = parseTimeToNumber(b[currentSortColumn]);
+
+        // For 'mbld' event, sort by points.
+        if (cubeTypeDropdown.value === 'mbld') {
             const aVal = a[currentSortColumn].split('/');
             const bVal = b[currentSortColumn].split('/');
-            const aPoints = aVal.length === 2 ? aVal[0] - Math.abs(aVal[0] - aVal[1]) : NaN;
-            const bPoints = bVal.length === 2 ? bVal[0] - Math.abs(bVal[0] - bVal[1]) : NaN;
-
+            const aPoints = aVal.length == 2 ? aVal[0] - Math.abs(aVal[0] - aVal[1]) : NaN;
+            const bPoints = bVal.length == 2 ? bVal[0] - Math.abs(bVal[0] - bVal[1]) : NaN;
             return aPoints - bPoints;
-        });
-    }
-    else {
-        rows.sort((a, b) => {
-            const aAvg = parseTimeToNumber(a[currentSortColumn]);
-            const bAvg = parseTimeToNumber(b[currentSortColumn]);
-            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
-            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+        }
 
-            if (!isNaN(aAvg) && !isNaN(bAvg)) {
-                return aAvg - bAvg;
-            } 
-            else if (!isNaN(aAvg)) {
-                return -1;
-            } 
-            else if (!isNaN(bAvg)) {
-                return 1;
-            }
-            else if (!isNaN(aSingle) && !isNaN(bSingle)) {
-                return aSingle - bSingle;
-            }
-            else if (!isNaN(aSingle)) {
-                return -1;
-            }
-            else if (!isNaN(bSingle)) {
-                return 1;
-            } 
-            else {
-                return 0; 
-            }
-        });
-    }
+        // For all other events
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
+            return -1;
+        } else if (!isNaN(bAvg)) {
+            return 1;
+        } else {
+            return aSingle - bSingle;
+        }
+    });
 	
 	    for (let i = 0; i < rows.length; i++) {
 	        const row = rows[i];
