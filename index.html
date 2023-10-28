@@ -7,7 +7,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
-    <style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.7/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.7/js/jquery.dataTables.min.js"></script>
+
+	<style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -252,26 +255,12 @@
         }
 
         function parseTimeToNumber(timeValue) {
-	    if (timeValue.toLowerCase() === 'nan') {
-	        return NaN;
-	    }
-	
-	    if (timeValue.includes(':')) {
-	        // Handle 'minutes:seconds' format
-	        const timeParts = timeValue.split(':');
-	        if (timeParts.length === 2) {
-	            const minutes = parseFloat(timeParts[0]);
-	            const seconds = parseFloat(timeParts[1]);
-	            return minutes * 60 + seconds;
-	        }
-	    } else if (!isNaN(parseFloat(timeValue))) {
-	        return parseFloat(timeValue);
-	    }
-	
-	    return NaN;
-	}
-
-
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
+            }
+            return parseFloat(timeValue);
+        }
 
         function createTable(rows) {
     const table = document.createElement("table");
@@ -311,25 +300,26 @@
         `;
         table.querySelector("tbody").appendChild(tr);
     }
-	sortTable(rows, currentSortColumn);
+
     return table;
 }
 
-        function sortTable(rows, sortByColumn) {
-	    rows.sort((a, b) => {
-	        const aValue = parseTimeToNumber(a[sortByColumn]);
-	        const bValue = parseTimeToNumber(b[sortByColumn]);
+        function showTable(province, cubeType) {
+	        tablesContainer.innerHTML = "";
 	
-	        if (!isNaN(aValue) && !isNaN(bValue)) {
-	            return aValue - bValue;
-	        } else {
-	            // Handle 'NaN' values
-	            if (isNaN(aValue) && isNaN(bValue)) return 0;
-	            if (isNaN(aValue)) return 1;
-	            if (isNaN(bValue)) return -1;
-	        }
-	    });
-	}
+	        // Create a new table element
+	        const table = createTable(parsedData.filter(row => row.province === province));
+	
+	        // Add the table to the tablesContainer
+	        tablesContainer.appendChild(table);
+	
+	        // Initialize DataTables for the new table
+	        $(table).DataTable({
+	            paging: false, // Disable pagination
+	            searching: false, // Disable search bar
+	            order: [], // Disable default sorting
+	        });
+	    }
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
