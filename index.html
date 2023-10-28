@@ -302,9 +302,6 @@
         }
     });
 
-    // Remove individuals with both NaN averages and NaN singles from the table
-    rows = rows.filter(row => !isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`]));
-
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const tr = document.createElement("tr");
@@ -324,8 +321,6 @@
 
     return table;
 }
-
-
 
 
 	    
