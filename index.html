@@ -130,23 +130,7 @@
         <select class="dropdown" id="wcaevent-dropdown">
             <option value="333">3x3x3 Cube</option>
             <option value="222">2x2x2 Cube</option>
-            <option value="3oh">3x3x3 One-Handed</option>
-            <option value="444">4x4x4 Cube</option>
-            <option value="555">5x5x5 Cube</option>
-            <option value="666">6x6x6 Cube</option>
-            <option value="777">7x7x7 Cube</option>
-            <option value="3bld">3x3x3 Blindfolded</option>
-            <option value="fmc">3x3x3 Fewest Moves</option>
-            <option value="3oh">3x3x3 One-Handed</option>
-            <option value="clock">Clock</option>
-            <option value="mega">Megaminx</option>
-            <option value="pyra">Pyraminx</option>
-            <option value="skewb">Skewb</option>
-            <option value="sq1">Square-1</option>
-            <option value="4bld">4x4x4 Blindfolded</option>
-            <option value="5bld">5x5x5 Blindfolded</option>
-            <option value="mbld">3x3x3 Multi-Blind</option>
-            
+            <option value="3oh">3x3x3 One-Handed (coming soon)</option>
         </select>
     </div>
 
@@ -202,9 +186,8 @@
                     const single4bld = columns[31].textContent;
                     const avg5bld = columns[32].textContent;
                     const single5bld = columns[33].textContent;
-                    const avgmbld = columns[34].textContent;
-                    const singlembld = columns[35].textContent;
-                    const name = columns[36].textContent;
+                    const singlembld = columns[34].textContent;
+                    const name = columns[35].textContent;
                     parsedData.push({
                         id,
                         avg333,
@@ -241,7 +224,6 @@
                         single4bld,
                         avg5bld,
                         single5bld,
-                        avgmbld,
                         singlembld,
                         name,
                     });
@@ -326,14 +308,13 @@
             showTable(provinceDropdown.value, selectedCubeType);
         });
 
-        fetch("final_sorted_RESULTS.html")
+        fetch(`final_sorted_RESULTS.html`)
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
             })
             .catch(error => console.error(error));
-
 
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('sortable-header')) {
