@@ -260,23 +260,23 @@
         }
 
         function createTable(rows) {
-    const table = document.createElement("table");
-    table.border = "1";
-    table.className = "dataframe table table-bordered table-hover";
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    `;
-
-    // Sort the rows based on the current sort column
-    rows.sort((a, b) => {
+	    const table = document.createElement("table");
+	    table.border = "1";
+	    table.className = "dataframe table table-bordered table-hover";
+	    table.innerHTML = `
+	        <thead>
+	            <tr>
+	                <th>Rank</th>
+	                <th>Name</th>
+	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+	                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
+	            </tr>
+	        </thead>
+	        <tbody></tbody>
+	    `;
+	
+	    // Sort the rows based on the current sort column
+	    rows.sort((a, b) => {
         const aAvg = parseTimeToNumber(a[currentSortColumn]);
         const bAvg = parseTimeToNumber(b[currentSortColumn]);
 
@@ -287,40 +287,36 @@
         } else if (!isNaN(bAvg)) {
             return 1;
         } else {
-            // Both have NaN average, sort based on single time
-            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
-            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
-
-            // Sort individuals with numeric singles but NaN averages to the top
-            if (!isNaN(aSingle) && isNaN(aAvg)) {
-                return -1;
-            } else if (!isNaN(bSingle) && isNaN(bAvg)) {
-                return 1;
-            } else {
-                return aSingle - bSingle;
-            }
+            return 0; // Both aAvg and bAvg are NaN
         }
     });
 
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>
-                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                    ${row.name}
-                </a>
-            </td>
-            <td>${row[currentSortColumn]}</td>
-            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-        `;
-        table.querySelector("tbody").appendChild(tr);
-    }
+    let numericSingleNaNAvgRows = rows.filter(row => isNaN(parseTimeToNumber(row[currentSortColumn])) && !isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`])));
+    numericSingleNaNAvgRows.sort((a, b) => parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]) - parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]));
 
-    return table;
-}
+    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[currentSortColumn])) || !isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`])));
+
+    rows = [...rows, ...numericSingleNaNAvgRows];
+	
+	    for (let i = 0; i < rows.length; i++) {
+	        const row = rows[i];
+	        const tr = document.createElement("tr");
+	        tr.innerHTML = `
+	            <td>${i + 1}</td>
+	            <td>
+	                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+	                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+	                    ${row.name}
+	                </a>
+	            </td>
+	            <td>${row[currentSortColumn]}</td>
+	            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+	        `;
+	        table.querySelector("tbody").appendChild(tr);
+	    }
+	
+	    return table;
+	}
 
 
 	    
