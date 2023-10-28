@@ -290,7 +290,15 @@
             // Both have NaN average, sort based on single time
             const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
             const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
-            return aSingle - bSingle;
+
+            // Sort individuals with numeric singles but NaN averages to the top
+            if (!isNaN(aSingle) && isNaN(aAvg)) {
+                return -1;
+            } else if (!isNaN(bSingle) && isNaN(bAvg)) {
+                return 1;
+            } else {
+                return aSingle - bSingle;
+            }
         }
     });
 
@@ -313,6 +321,7 @@
 
     return table;
 }
+
 
 	    
         function showTable(province, cubeType) {
