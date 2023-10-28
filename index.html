@@ -275,7 +275,7 @@
         <tbody></tbody>
     `;
 
-    // Sort the rows using a custom sorting function
+    // Sort the rows based on the current sort column
     rows.sort((a, b) => customSort(a, b, currentSortColumn, `single${cubeTypeDropdown.value}`));
 
     for (let i = 0; i < rows.length; i++) {
@@ -300,38 +300,33 @@
 
 
 	function customSort(a, b, sortColumn, singleSortColumn) {
-	    const aIsNaN = isNaN(a[sortColumn]);
-	    const bIsNaN = isNaN(b[sortColumn]);
-	
-	    // First, sort individuals with non-NaN average times
-	    if (!aIsNaN && !bIsNaN) {
-	        return parseTimeToNumber(a[sortColumn]) - parseTimeToNumber(b[sortColumn]);
-	    }
-	
-	    // Sort those with non-NaN single times after non-NaN averages
-	    if (!aIsNaN && isNaN(b[sortColumn]) && !isNaN(b[singleSortColumn])) {
-	        return -1;
-	    }
-	    if (isNaN(a[sortColumn]) && !isNaN(a[singleSortColumn]) && !bIsNaN) {
-	        return 1;
-	    }
-	
-	    // Exclude individuals with both NaN singles and NaN averages
-	    if (aIsNaN && bIsNaN) {
-	        return 0;
-	    }
-	
-	    // Sort individuals with NaN average but non-NaN single times
-	    if (aIsNaN && !bIsNaN) {
-	        return 1;
-	    }
-	    if (!aIsNaN && bIsNaN) {
-	        return -1;
-	    }
-	
-	    // Preserve the original order among other cases
-	    return 0;
-	}
+    const aIsNaN = isNaN(a[sortColumn]);
+    const bIsNaN = isNaN(b[sortColumn]);
+
+    // Sort based on the current sort column
+    if (!aIsNaN && !bIsNaN) {
+        return parseTimeToNumber(a[sortColumn]) - parseTimeToNumber(b[sortColumn]);
+    }
+
+    if (!aIsNaN && isNaN(b[sortColumn]) && !isNaN(b[singleSortColumn])) {
+        return -1;
+    }
+    if (isNaN(a[sortColumn]) && !isNaN(a[singleSortColumn]) && !bIsNaN) {
+        return 1;
+    }
+
+    if (aIsNaN && bIsNaN) {
+        return 0;
+    }
+
+    if (aIsNaN && !bIsNaN) {
+        return 1;
+    }
+    if (!aIsNaN && bIsNaN) {
+        return -1;
+    }
+    return 0;
+}
 
 	    
         function showTable(province, cubeType) {
