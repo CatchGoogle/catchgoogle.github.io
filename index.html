@@ -302,6 +302,13 @@
         }
     });
 
+    // Re-sort individuals with numeric singles but NaN averages at the end
+    const lastNaNIndex = rows.findIndex(row => isNaN(parseTimeToNumber(row[currentSortColumn]));
+    if (lastNaNIndex > 0) {
+        const lastNaNRows = rows.splice(lastNaNIndex);
+        rows = rows.concat(lastNaNRows);
+    }
+
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const tr = document.createElement("tr");
@@ -321,6 +328,7 @@
 
     return table;
 }
+
 
 
 	    
