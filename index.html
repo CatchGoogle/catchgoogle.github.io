@@ -275,54 +275,40 @@
         <tbody></tbody>
     `;
 
-    // Sort the rows to display individuals with numeric average first, then those with NaN average but non-NaN single
+    // Sort the rows based on the current sort column
     rows.sort((a, b) => {
-        const aIsNumericAvg = !isNaN(a[currentSortColumn]);
-        const bIsNumericAvg = !isNaN(b[currentSortColumn]);
-        const aIsNaNSingle = isNaN(a[`single${cubeTypeDropdown.value}`]);
-        const bIsNaNSingle = isNaN(b[`single${cubeTypeDropdown.value}`]);
+        const aAvg = parseTimeToNumber(a[currentSortColumn]);
+        const bAvg = parseTimeToNumber(b[currentSortColumn]);
 
-        if (aIsNumericAvg && bIsNumericAvg) {
-            // Both have numeric averages, sort based on the current sort column
-            return parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]);
-        } else if (aIsNumericAvg) {
-            // 'a' has numeric average, 'b' doesn't
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
             return -1;
-        } else if (bIsNumericAvg) {
-            // 'b' has numeric average, 'a' doesn't
-            return 1;
-        } else if (!aIsNaNSingle && !bIsNaNSingle) {
-            // Both have NaN average but non-NaN single, sort based on single
-            return parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]) - parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
-        } else if (!aIsNaNSingle) {
-            // 'a' has NaN average but non-NaN single, 'b' doesn't
-            return -1;
-        } else if (!bIsNaNSingle) {
-            // 'b' has NaN average but non-NaN single, 'a' doesn't
+        } else if (!isNaN(bAvg)) {
             return 1;
         } else {
-            // Both have NaN average and NaN single
-            return 0;
+            // Both have NaN average, sort based on single time
+            const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
+            const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+            return aSingle - bSingle;
         }
     });
 
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        if (!isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`])) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${i + 1}</td>
-                <td>
-                    <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                        <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                        ${row.name}
-                    </a>
-                </td>
-                <td>${row[currentSortColumn]}</td>
-                <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-            `;
-            table.querySelector("tbody").appendChild(tr);
-        }
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${row[currentSortColumn]}</td>
+            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+        `;
+        table.querySelector("tbody").appendChild(tr);
     }
 
     return table;
