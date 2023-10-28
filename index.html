@@ -252,12 +252,17 @@
         }
 
         function parseTimeToNumber(timeValue) {
-            if (timeValue.includes(':')) {
-                const [minutes, seconds] = timeValue.split(':');
-                return parseFloat(minutes) * 60 + parseFloat(seconds);
-            }
-            return parseFloat(timeValue);
-        }
+	    if (timeValue.includes(':')) {
+	        const [minutes, seconds] = timeValue.split(':');
+	        if (minutes && seconds) {
+	            return parseFloat(minutes) * 60 + parseFloat(seconds);
+	        } else if (seconds) {
+	            return parseFloat(seconds);
+	        }
+	    }
+	    return parseFloat(timeValue);
+	}
+
 
         function createTable(rows) {
     const table = document.createElement("table");
