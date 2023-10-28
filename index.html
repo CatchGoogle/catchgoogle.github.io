@@ -326,13 +326,14 @@
             showTable(provinceDropdown.value, selectedCubeType);
         });
 
-        fetch(`final_sorted_RESULTS.html`)
+        fetch("final_sorted_RESULTS.html")
             .then(response => response.text())
             .then(tableHTML => {
                 parsedData = parseTable(tableHTML);
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
             })
             .catch(error => console.error(error));
+
 
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('sortable-header')) {
