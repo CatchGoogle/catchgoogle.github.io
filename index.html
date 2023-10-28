@@ -275,14 +275,44 @@
         <tbody></tbody>
     `;
 
-    // Filter rows with both average and single times not equal to "NaN"
-    rows = rows.filter(row => !isNaN(row[currentSortColumn]) || !isNaN(row[`single${cubeTypeDropdown.value}`]));
+    // Separate rows with NaN average results from normal average results
+    const rowsWithNormalAvg = rows.filter(row => !isNaN(row[currentSortColumn]));
+    const rowsWithNaNAvg = rows.filter(row => isNaN(row[currentSortColumn]));
 
-    // Sort based on the currentSortColumn
-    rows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
+    // Sort normal average results based on the currentSortColumn
+    rowsWithNormalAvg.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
 
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
+    // Add rows with normal average results to the table
+    for (let i = 0; i < rowsWithNormalAvg.length; i++) {
+        const row = rowsWithNormalAvg[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${row[currentSortColumn]}</td>
+            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+        `;
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    // Add a separator row
+    const separatorTr = document.createElement("tr");
+    separatorTr.innerHTML = `
+        <td colspan="4" class="tied">Individuals with NaN Average Results</td>
+    `;
+    table.querySelector("tbody").appendChild(separatorTr);
+
+    // Sort rows with NaN average results based on other criteria, or you can choose not to sort them
+    // based on your specific requirements.
+
+    // Add rows with NaN average results to the table
+    for (let i = 0; i < rowsWithNaNAvg.length; i++) {
+        const row = rowsWithNaNAvg[i];
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${i + 1}</td>
@@ -300,6 +330,7 @@
 
     return table;
 }
+
 
         function showTable(province, cubeType) {
             tablesContainer.innerHTML = "";
