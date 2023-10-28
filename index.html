@@ -7,10 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.7/css/jquery.dataTables.min.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.7/js/jquery.dataTables.min.js"></script>
-
-	<style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -305,21 +302,11 @@
 }
 
         function showTable(province, cubeType) {
-	        tablesContainer.innerHTML = "";
-	
-	        // Create a new table element
-	        const table = createTable(parsedData.filter(row => row.province === province));
-	
-	        // Add the table to the tablesContainer
-	        tablesContainer.appendChild(table);
-	
-	        // Initialize DataTables for the new table
-	        $(table).DataTable({
-	            paging: false, // Disable pagination
-	            searching: false, // Disable search bar
-	            order: [], // Disable default sorting
-	        });
-	    }
+            tablesContainer.innerHTML = "";
+            currentSortColumn = `avg${cubeType}`;
+            const filteredRows = parsedData.filter(row => row.province === province);
+            tablesContainer.appendChild(createTable(filteredRows));
+        }
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
