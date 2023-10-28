@@ -130,7 +130,8 @@
         <select class="dropdown" id="wcaevent-dropdown">
             <option value="333">3x3x3 Cube</option>
             <option value="222">2x2x2 Cube</option>
-            <option value="3oh">3x3x3 One-Handed (coming soon)</option>
+            <option value="3oh">3x3x3 One-Handed</option>
+            
         </select>
     </div>
 
@@ -186,8 +187,9 @@
                     const single4bld = columns[31].textContent;
                     const avg5bld = columns[32].textContent;
                     const single5bld = columns[33].textContent;
-                    const singlembld = columns[34].textContent;
-                    const name = columns[35].textContent;
+                    const avgmbld = columns[34].textContent;
+                    const singlembld = columns[35].textContent;
+                    const name = columns[36].textContent;
                     parsedData.push({
                         id,
                         avg333,
@@ -224,6 +226,7 @@
                         single4bld,
                         avg5bld,
                         single5bld,
+                        avgmbld,
                         singlembld,
                         name,
                     });
