@@ -260,61 +260,77 @@
         }
 
         function createTable(rows) {
-	    const table = document.createElement("table");
-	    table.border = "1";
-	    table.className = "dataframe table table-bordered table-hover";
-	    table.innerHTML = `
-	        <thead>
-	            <tr>
-	                <th>Rank</th>
-	                <th>Name</th>
-	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-	                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
-	            </tr>
-	        </thead>
-	        <tbody></tbody>
-	    `;
-	
-	    // Sort the rows using a custom sorting function
-	    rows.sort((a, b) => customSort(a, b, currentSortColumn, `single${cubeTypeDropdown.value}`));
-	
-	    for (let i = 0; i < rows.length; i++) {
-	        const row = rows[i];
-	        const tr = document.createElement("tr");
-	        tr.innerHTML = `
-	            <td>${i + 1}</td>
-	            <td>
-	                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-	                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-	                    ${row.name}
-	                </a>
-	            </td>
-	            <td>${row[currentSortColumn]}</td>
-	            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-	        `;
-	        table.querySelector("tbody").appendChild(tr);
-	    }
-	
-	    return table;
-	}
+    const table = document.createElement("table");
+    table.border = "1";
+    table.className = "dataframe table table-bordered table-hover";
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    // Sort the rows using a custom sorting function
+    rows.sort((a, b) => customSort(a, b, currentSortColumn, `single${cubeTypeDropdown.value}`));
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${row[currentSortColumn]}</td>
+            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
+        `;
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    return table;
+}
 
 
 	function customSort(a, b, sortColumn, singleSortColumn) {
 	    const aIsNaN = isNaN(a[sortColumn]);
 	    const bIsNaN = isNaN(b[sortColumn]);
 	
-	    // Sort individuals with NaN average results to the bottom
-	    if (aIsNaN && !bIsNaN) {
-	        return 1;
-	    } else if (!aIsNaN && bIsNaN) {
-	        return -1;
-	    } else if (aIsNaN && bIsNaN) {
-	        // Preserve the original order among individuals with NaN average results
-	        return 0;
-	    } else {
-	        // Sort normally based on the sortColumn
+	    // First, sort individuals with non-NaN average times
+	    if (!aIsNaN && !bIsNaN) {
 	        return parseTimeToNumber(a[sortColumn]) - parseTimeToNumber(b[sortColumn]);
 	    }
+	
+	    // Sort those with non-NaN single times after non-NaN averages
+	    if (!aIsNaN && isNaN(b[sortColumn]) && !isNaN(b[singleSortColumn])) {
+	        return -1;
+	    }
+	    if (isNaN(a[sortColumn]) && !isNaN(a[singleSortColumn]) && !bIsNaN) {
+	        return 1;
+	    }
+	
+	    // Exclude individuals with both NaN singles and NaN averages
+	    if (aIsNaN && bIsNaN) {
+	        return 0;
+	    }
+	
+	    // Sort individuals with NaN average but non-NaN single times
+	    if (aIsNaN && !bIsNaN) {
+	        return 1;
+	    }
+	    if (!aIsNaN && bIsNaN) {
+	        return -1;
+	    }
+	
+	    // Preserve the original order among other cases
+	    return 0;
 	}
 
 	    
