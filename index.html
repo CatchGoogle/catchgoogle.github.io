@@ -290,24 +290,9 @@
             // Both have NaN average, sort based on single time
             const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
             const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
-
-            // Sort individuals with numeric singles but NaN averages to the top
-            if (!isNaN(aSingle) && isNaN(aAvg)) {
-                return -1;
-            } else if (!isNaN(bSingle) && isNaN(bAvg)) {
-                return 1;
-            } else {
-                return aSingle - bSingle;
-            }
+            return aSingle - bSingle;
         }
     });
-
-    // Re-sort individuals with numeric singles but NaN averages at the end
-    const lastNaNIndex = rows.findIndex(row => isNaN(parseTimeToNumber(row[currentSortColumn]));
-    if (lastNaNIndex > 0) {
-        const lastNaNRows = rows.splice(lastNaNIndex);
-        rows = rows.concat(lastNaNRows);
-    }
 
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -328,6 +313,7 @@
 
     return table;
 }
+
 
 
 
