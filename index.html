@@ -130,7 +130,21 @@
         <select class="dropdown" id="wcaevent-dropdown">
             <option value="333">3x3x3 Cube</option>
             <option value="222">2x2x2 Cube</option>
-            <option value="oh">3x3x3 One-Handed (coming soon)</option>
+	    <option value="444">4x4x4 Cube</option>
+	    <option value="555">5x5x5 Cube</option>
+	    <option value="666">6x6x6 Cube</option>
+	    <option value="777">7x7x7 Cube</option>
+	    <option value="3bld">3x3x3 Blindfolded</option>
+	    <option value="fmc">3x3x3 Fewest Moves</option>
+            <option value="oh">3x3x3 One-Handed</option>
+	    <option value="clock">Clock</option>
+	    <option value="mega">Megaminx</option>
+	    <option value="pyra">Pyraminx</option>
+	    <option value="skewb">Skewb</option>
+	    <option value="sq1">Square-1</option>
+	    <option value="4bld">4x4x4 Blindfolded</option>
+	    <option value="5bld">5x5x5 Blindfolded</option>
+	    <option value="mbld">3x3x3 Multi-Blind</option>
         </select>
     </div>
 
@@ -173,6 +187,22 @@
                     const singlefmc = columns[18].textContent;
                     const avgoh = columns[19].textContent;
                     const singleoh = columns[20].textContent;
+		    const avgclock = columns[21].textContent;
+                    const singleclock = columns[22].textContent;
+                    const avgmega = columns[23].textContent;
+                    const singlemega = columns[24].textContent;
+                    const avgpyra = columns[25].textContent;
+                    const singlepyra = columns[26].textContent;
+                    const avgskewb = columns[27].textContent;
+                    const singleskewb = columns[28].textContent;
+                    const avgsq1 = columns[29].textContent;
+                    const singlesq1 = columns[30].textContent;
+                    const avg4bld = columns[31].textContent;
+                    const single4bld = columns[32].textContent;
+                    const avg5bld = columns[33].textContent;
+                    const single5bld = columns[34].textContent;
+                    const avgmbld = columns[35].textContent;
+                    const singlembld = columns[36].textContent;
                     const name = columns[37].textContent;
                     parsedData.push({
                         id,
@@ -196,6 +226,22 @@
                         singlefmc,
                         avgoh,
                         singleoh,
+			avgclock,
+                        singleclock,
+                        avgmega,
+                        singlemega,
+                        avgpyra,
+                        singlepyra,
+                        avgskewb,
+                        singleskewb,
+                        avgsq1,
+                        singlesq1,
+                        avg4bld,
+                        single4bld,
+                        avg5bld,
+                        single5bld,
+                        avgmbld,
+                        singlembld,
                         name,
                     });
                 }
