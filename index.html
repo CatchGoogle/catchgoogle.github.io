@@ -335,11 +335,11 @@
 
 	    
         function showTable(province, cubeType) {
-            tablesContainer.innerHTML = "";
-            currentSortColumn = `avg${cubeType}`;
-            const filteredRows = parsedData.filter(row => row.province === province);
-            tablesContainer.appendChild(createTable(filteredRows));
-        }
+	    tablesContainer.innerHTML = "";
+	    currentSortColumn = `avg${cubeType}`;
+	    const filteredRows = parsedData.filter(row => row.province === province);
+	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+	}
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
