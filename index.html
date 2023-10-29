@@ -279,14 +279,14 @@
 	                <th>Rank</th>
 	                <th>Name</th>
 	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-	                <th class="sortable-header" data-sort-column="single${cubeTypeDropdown.value}">PR Single</th>
+	                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
 	            </tr>
 	        </thead>
 	        <tbody></tbody>
 	    `;
-	    
-	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`]));
 	
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`]));  // Fix this line
+
 	    // Sorting logic
 	    rows.sort((a, b) => {
 	        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
@@ -294,11 +294,6 @@
         
         // For 'bld' events, sort by single.
         if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
-            return aSingle - bSingle;
-        }
-
-	if (cubeType === 'mbld') {
-            // For 'mbld' events, sort by single.
             return aSingle - bSingle;
         }
 
