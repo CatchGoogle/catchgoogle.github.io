@@ -285,7 +285,7 @@
 	        <tbody></tbody>
 	    `;
 	
-	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`]));  // Fix this line
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
 
 	    // Sorting logic
 	    rows.sort((a, b) => {
