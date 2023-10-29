@@ -159,6 +159,15 @@
         let parsedData = [];
         let currentSortColumn = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
 
+	function decodeSingleMBLD(value) {
+	  const difference = 99 - parseInt(value.substring(0, 2));
+	  const timeInSeconds = parseInt(value.substring(2, 7));
+	  const missed = parseInt(value.substring(7, 9));
+	  const solved = difference + missed;
+	  const attempted = solved + missed;
+	  return `${solved}/${attempted} ${Math.floor(timeInSeconds / 60).toString().padStart(2, '0')}:${(timeInSeconds % 60).toString().padStart(2, '0')}`;
+	}
+	    
         function parseTable(tableHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(tableHTML, 'text/html');
@@ -205,6 +214,7 @@
                     const single5bld = columns[34].textContent;
                     const avgmbld = columns[35].textContent;
                     const singlembld = columns[36].textContent;
+		    const decodedSingleMBLD = decodeSingleMBLD(singlembld);
                     const name = columns[37].textContent;
                     parsedData.push({
                         id,
@@ -250,7 +260,7 @@
             });
             return parsedData;
         }
-
+	
         function parseTimeToNumber(timeValue) {
             if (timeValue.includes(':')) {
                 const [minutes, seconds] = timeValue.split(':');
@@ -259,7 +269,7 @@
             return parseFloat(timeValue);
         }
 
-        function createTable(rows) {
+        function createTable(rows, cubeType) {
 	    const table = document.createElement("table");
 	    table.border = "1";
 	    table.className = "dataframe table table-bordered table-hover";
@@ -274,29 +284,26 @@
 	        </thead>
 	        <tbody></tbody>
 	    `;
-	rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeTypeDropdown.value}`])));
-
-    // Sorting logic
-    rows.sort((a, b) => {
-        const aSingle = parseTimeToNumber(a[`single${cubeTypeDropdown.value}`]);
-        const bSingle = parseTimeToNumber(b[`single${cubeTypeDropdown.value}`]);
+	    
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`]));
+	
+	    // Sorting logic
+	    rows.sort((a, b) => {
+	        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
+	        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
         
         // For 'bld' events, sort by single.
         if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
             return aSingle - bSingle;
         }
 
+	if (cubeType === 'mbld') {
+            // For 'mbld' events, sort by single.
+            return aSingle - bSingle;
+        }
+
         const aAvg = parseTimeToNumber(a[currentSortColumn]);
         const bAvg = parseTimeToNumber(b[currentSortColumn]);
-
-        // For 'mbld' event, sort by points.
-        if (cubeTypeDropdown.value === 'mbld') {
-            const aVal = a[currentSortColumn].split('/');
-            const bVal = b[currentSortColumn].split('/');
-            const aPoints = aVal.length == 2 ? aVal[0] - Math.abs(aVal[0] - aVal[1]) : NaN;
-            const bPoints = bVal.length == 2 ? bVal[0] - Math.abs(bVal[0] - bVal[1]) : NaN;
-            return aPoints - bPoints;
-        }
 
         // For all other events
         if (!isNaN(aAvg) && !isNaN(bAvg)) {
@@ -309,26 +316,26 @@
             return aSingle - bSingle;
         }
     });
-	
-	    for (let i = 0; i < rows.length; i++) {
-	        const row = rows[i];
-	        const tr = document.createElement("tr");
-	        tr.innerHTML = `
-	            <td>${i + 1}</td>
-	            <td>
-	                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-	                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-	                    ${row.name}
-	                </a>
-	            </td>
-	            <td>${row[currentSortColumn]}</td>
-	            <td>${row[`single${cubeTypeDropdown.value}`]}</td>
-	        `;
-	        table.querySelector("tbody").appendChild(tr);
-	    }
-	
-	    return table;
-	}
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${row[currentSortColumn]}</td>
+            <td>${cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]}</td>
+        `;
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    return table;
+}
 
 
 	    
