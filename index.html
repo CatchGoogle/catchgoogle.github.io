@@ -313,21 +313,25 @@
     });
 
     for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>
-                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                    ${row.name}
-                </a>
-            </td>
-            <td>${row[currentSortColumn]}</td>
-            <td>${cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]}</td>
-        `;
-        table.querySelector("tbody").appendChild(tr);
-    }
+    const row = rows[i];
+    const tr = document.createElement("tr");
+
+    const prAvg = row[currentSortColumn] !== 'NaN' ? row[currentSortColumn] : '';
+    const prSingle = (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) !== 'NaN' ? (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) : '';
+
+    tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>
+            <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                ${row.name}
+            </a>
+        </td>
+        <td>${prAvg}</td>
+        <td>${prSingle}</td>
+    `;
+    table.querySelector("tbody").appendChild(tr);
+}
 
     return table;
 }
