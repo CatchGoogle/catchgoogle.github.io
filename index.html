@@ -60,6 +60,10 @@
 	    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a box shadow for the border effect */
         }
 
+	.dataframe td.name-cell {
+            text-align: left;
+        }
+	
         .dataframe th, .dataframe td {
             padding: 10px 15px;
             border: 1px solid #ddd;
@@ -415,14 +419,14 @@
 
     tr.innerHTML = `
         <td>${i + 1}</td>
-        <td>
+    	<td class="name-cell">
             <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
-                ${row.name}
-            </a>
-        </td>
-        <td>${prAvg}</td>
-        <td>${prSingle}</td>
+            <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+            ${row.name}
+        </a>
+    </td>
+    <td>${prAvg}</td>
+    <td>${prSingle}</td>
     `;
     table.querySelector("tbody").appendChild(tr);
 }
