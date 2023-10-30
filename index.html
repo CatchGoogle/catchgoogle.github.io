@@ -442,10 +442,21 @@
         }
 
 	function toggleDarkMode() {
-	    var body = document.body;
+	    const body = document.body;
 	    body.classList.toggle("dark-mode");
+	
+	    // Save the dark mode preference to localStorage
+	    if (body.classList.contains("dark-mode")) {
+	        localStorage.setItem("dark-mode", "enabled");
+	    } else {
+	        localStorage.setItem("dark-mode", "disabled");
+	    }
 	}
 	    
+	if (localStorage.getItem("dark-mode") === "enabled") {
+	    document.body.classList.add("dark-mode");
+	}
+		    
         provinceDropdown.addEventListener("change", (event) => {
             const selectedProvince = event.target.value;
             showTable(selectedProvince, cubeTypeDropdown.value);
