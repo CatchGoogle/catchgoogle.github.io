@@ -376,37 +376,36 @@
 	            <tr>
 	                <th>Rank</th>
 	                <th>Name</th>
-	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-	                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
+	                <th class="sortable-header" data-sort-column="${'avg'+cubeType}">PR Avg</th>
+	                <th class="sortable-header" data-sort-column="${'single'+cubeType}">PR Single</th>
 	            </tr>
 	        </thead>
 	        <tbody></tbody>
 	    `;
 	
-	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row['single'+cubeType])));  
 
-	    // Sorting logic
 	    rows.sort((a, b) => {
-    const aVal = cubeType === 'mbld' ? decodeMBLD(a[currentSortColumn]) : convertToSeconds(a[currentSortColumn]);
-    const bVal = cubeType === 'mbld' ? decodeMBLD(b[currentSortColumn]) : convertToSeconds(b[currentSortColumn]);
+	        const aSingle = parseTimeToNumber(a['single'+cubeType]);
+	        const bSingle = parseTimeToNumber(b['single'+cubeType]);
         
-    if (['3bld', '4bld', '5bld'].includes(cubeType)) {
-        return aVal - bVal;
-    }
-        
-    const aSingle = convertToSeconds(a[`single${cubeType}`]);
-    const bSingle = convertToSeconds(b[`single${cubeType}`]);
-        
-    if (!isNaN(aVal) && !isNaN(bVal)) {
-        return aVal - bVal;
-    } else if (!isNaN(aVal)) {
-        return -1;
-    } else if (!isNaN(bVal)) {
-        return 1;
-    } else {
-        return aSingle - bSingle;
-    }
-});
+        if (cubeType.endsWith('bld')) {
+            return aSingle - bSingle;
+        }
+
+        const aAvg = parseTimeToNumber(a['avg'+cubeType]);
+        const bAvg = parseTimeToNumber(b['avg'+cubeType]);
+
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
+            return -1;
+        } else if (!isNaN(bAvg)) {
+            return 1;
+        } else {
+            return aSingle - bSingle;
+        }
+    });
 
     for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -427,7 +426,7 @@
     <td>${prSingle}</td>
     `;
     table.querySelector("tbody").appendChild(tr);
-}
+    }
 
     return table;
 }
@@ -436,12 +435,9 @@
 	    
         function showTable(province, cubeType) {
 	    tablesContainer.innerHTML = "";
+	    currentSortColumn = `avg${cubeType}`;
 	    const filteredRows = parsedData.filter(row => row.province === province);
-	    const sortFunction = currentSortColumn === `avg${cubeType}` ?
-	        (a, b) => parseTimeToNumber(a.avg) - parseTimeToNumber(b.avg) :
-	        (a, b) => parseTimeToNumber(a.single) - parseTimeToNumber(b.single);
-	    filteredRows.sort(sortFunction);
-	    tablesContainer.append(createTable(filteredRows, cubeType));
+	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
 	}
 
         function onHeaderClick(event) {
@@ -453,19 +449,6 @@
             }
         }
 
-	function convertToSeconds(value) {
-	    let [minutes = "0", seconds = "0"] = (value || "").split(":");
-	    return parseFloat(minutes) * 60 + parseFloat(seconds)
-	}
-
-	function parseTimeToNumber(timeValue) {
-	    if (timeValue.includes(':')) {
-	        const [minutes, seconds] = timeValue.split(':');
-	        return parseFloat(minutes) * 60 + parseFloat(seconds);
-	    }
-	    return parseFloat(timeValue);
-	}
-	    
 	function toggleDarkMode() {
 	    const body = document.body;
 	    body.classList.toggle("dark-mode");
@@ -500,12 +483,11 @@
             })
             .catch(error => console.error(error));
 
-        document.addEventListener('click', function(event) {
-	    if (event.target.classList.contains('sortable-header')) {
-	        currentSortColumn = event.target.dataset.sortColumn;
-	        showTable(provinceDropdown.value, cubeTypeDropdown.value);
-	    }
-	});
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('sortable-header')) {
+                onHeaderClick(event);
+            }
+        });
     </script>
 </body>
 </html>
