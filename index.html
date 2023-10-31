@@ -52,7 +52,19 @@
             text-align: center;
             margin: 20px auto;
             max-width: 75%;
+	    animation: fadeInAnimation ease 1s;
+	    animation-iteration-count: 1;
+	    animation-fill-mode: forwards;
         }
+
+	@keyframes fadeInAnimation {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
 
         .dataframe {
 	    width: 100%;
