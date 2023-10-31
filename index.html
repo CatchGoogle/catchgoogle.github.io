@@ -368,45 +368,47 @@
         }
 
         function createTable(rows, cubeType) {
-	    const table = document.createElement("table");
-	    table.border = "1";
-	    table.className = "dataframe table table-bordered table-hover";
-	    table.innerHTML = `
-	        <thead>
-	            <tr>
-	                <th>Rank</th>
-	                <th>Name</th>
-	                <th class="sortable-header" data-sort-column="avg${cubeType}">PR Avg</th>
-	                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
-	            </tr>
-	        </thead>
-	        <tbody></tbody>
-	    `;
+            const table = document.createElement("table");
+            table.border = "1";
+            table.className = "dataframe table table-bordered table-hover";
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th class="sortable-header" data-sort-column="avg${cubeType}">PR Avg</th>
+                        <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
 	
-	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row['single'+cubeType])));  
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
 
+	    // Sorting logic
 	    rows.sort((a, b) => {
-	    let aVal, bVal;
-	    
-	    if(cubeType.endsWith('bld') && currentSortColumn.endsWith('single')){
-	        aVal = a[currentSortColumn]
-	        bVal = b[currentSortColumn]
-	        return aVal - bVal;
-	    }
+	        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
+	        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
+        
+        // For 'bld' events, sort by single.
+        if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
+            return aSingle - bSingle;
+        }
 
-        aVal = parseTimeToNumber(a[currentSortColumn]);
-	bVal = parseTimeToNumber(b[currentSortColumn]);
-	
-	    if(!isNaN(aVal) && !isNaN(bVal)){
-	        return aVal - bVal;
-	    } else if (!isNaN(aVal)) {
-	        return -1;
-	    } else if (!isNaN(bVal)) {
-	        return 1;
-	    } else {
-	        return 0;
-	    }
-	});
+        const aAvg = parseTimeToNumber(a[currentSortColumn]);
+        const bAvg = parseTimeToNumber(b[currentSortColumn]);
+
+        // For all other events
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
+            return -1;
+        } else if (!isNaN(bAvg)) {
+            return 1;
+        } else {
+            return aSingle - bSingle;
+        }
+    });
 
     for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -427,7 +429,7 @@
     <td>${prSingle}</td>
     `;
     table.querySelector("tbody").appendChild(tr);
-    }
+}
 
     return table;
 }
@@ -435,16 +437,13 @@
 
 	    
         function showTable(province, cubeType) {
-	    tablesContainer.innerHTML = "";
-	    currentSortColumn = `avg${cubeType}`;
-	    const filteredRows = parsedData.filter(row => row.province === province);
-	    const sortedRows = filteredRows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
-	    tablesContainer.appendChild(createTable(sortedRows, cubeType));
-	}
+            tablesContainer.innerHTML = "";
+            const filteredRows = parsedData.filter(row => row.province === province);
+            tablesContainer.appendChild(createTable(filteredRows, cubeType));
+        }
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
-
             if (clickedColumn) {
                 currentSortColumn = clickedColumn;
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
@@ -490,6 +489,13 @@
                 onHeaderClick(event);
             }
         });
+
+	const headers = document.querySelectorAll(".sortable-header");
+        headers.forEach(header => {
+            header.addEventListener("click", onHeaderClick);
+        });
+
+
     </script>
 </body>
 </html>
