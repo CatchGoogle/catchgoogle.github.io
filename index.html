@@ -436,9 +436,12 @@
 	    
         function showTable(province, cubeType) {
 	    tablesContainer.innerHTML = "";
-	    currentSortColumn = `avg${cubeType}`;
-	    const filteredRows = parsedData.filter(row => row.province === province && row[currentSortColumn] !== "NaN");
-	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+	    const filteredRows = parsedData.filter(row => row.province === province);
+	    const sortFunction = currentSortColumn === `avg${cubeType}` ?
+	        (a, b) => parseTimeToNumber(a.avg) - parseTimeToNumber(b.avg) :
+	        (a, b) => parseTimeToNumber(a.single) - parseTimeToNumber(b.single);
+	    filteredRows.sort(sortFunction);
+	    tablesContainer.append(createTable(filteredRows, cubeType));
 	}
 
         function onHeaderClick(event) {
@@ -453,6 +456,14 @@
 	function convertToSeconds(value) {
 	    let [minutes = "0", seconds = "0"] = (value || "").split(":");
 	    return parseFloat(minutes) * 60 + parseFloat(seconds)
+	}
+
+	function parseTimeToNumber(timeValue) {
+	    if (timeValue.includes(':')) {
+	        const [minutes, seconds] = timeValue.split(':');
+	        return parseFloat(minutes) * 60 + parseFloat(seconds);
+	    }
+	    return parseFloat(timeValue);
 	}
 	    
 	function toggleDarkMode() {
@@ -489,11 +500,12 @@
             })
             .catch(error => console.error(error));
 
-        document.addEventListener('click', (event) => {
-            if (event.target.classList.contains('sortable-header')) {
-                onHeaderClick(event);
-            }
-        });
+        document.addEventListener('click', function(event) {
+	    if (event.target.classList.contains('sortable-header')) {
+	        currentSortColumn = event.target.dataset.sortColumn;
+	        showTable(provinceDropdown.value, cubeTypeDropdown.value);
+	    }
+	});
     </script>
 </body>
 </html>
