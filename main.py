@@ -6,14 +6,25 @@ import csv
 import os
 from functools import partial
 import pandas as pd
+import requests
+
+MAX_RETRY = 5 # maximum number of retries for each request
 
 async def fetch_url(session, url):
-    try:
-        async with session.get(url) as response:
-            return await response.text()
-    except Exception as e:
-        print(f'Error fetching URL: {url}\nError: {str(e)}')
-        return None
+    retry_count = 0
+    while retry_count < MAX_RETRY:
+        try:
+            async with session.get(url) as response:
+                return await response.text()
+        except Exception as e:
+            if isinstance(e, ConnectionAbortedError): # catch WinError 10053
+                print(f'Error: ConnectionAbortedError (WinError 10053) for URL: {url}. Retry #{retry_count}')
+                retry_count += 1
+                continue
+            print(f'Error fetching URL: {url}\nError: {str(e)}')
+            return None
+    return None # after MAX_RETRY attempts
+
 
 async def scrape_wca(i, session, wcaidv, namesv, photos_dict, **kwargs):
     total_tasks = kwargs['total_tasks']
@@ -55,109 +66,132 @@ async def scrape_wca(i, session, wcaidv, namesv, photos_dict, **kwargs):
     buffersingmbld = "NaN"
     buffernames = []
     photo = ""
+
+
+    icap = "".join([x.upper() for x in i])
+
+    try:
+        response = requests.get(
+            f"https://raw.githubusercontent.com/robiningelbrecht/wca-rest-api/master/api/persons/{icap}.json")
+        data = response.json()
+        name = data.get('name')
+        namesv.append([i, name])
+        print(f'Name: {name}')
+        singles = data['rank']['singles']
+        averages = data['rank']['averages']
+
+        def format_time(time_in_seconds):
+            if isinstance(time_in_seconds, (int, float)):
+                if time_in_seconds < 60:
+                    # Format times under 60 seconds as x.xx or xx.xx
+                    return '{:.2f}'.format(time_in_seconds)
+                else:
+                    minutes, seconds = divmod(time_in_seconds, 60)
+                    centiseconds = int((seconds - int(seconds)) * 100)  # Convert centiseconds to an integer
+                    centiseconds_str = f'{centiseconds:02d}'  # Ensure two decimal places for centiseconds
+                    return '{:02d}:{:02d}.{}'.format(int(minutes), int(seconds), centiseconds_str)
+            else:
+                # Return a placeholder value for non-numeric input
+                return 'NaN'
+
+        for single in singles:
+            event_id = single.get('eventId')
+            result = single['best'] / 100 if event_id != '333mbf' else single['best']
+            if result == result and event_id != '333mbf':
+                result = format_time(result)
+            if event_id == '333':
+                buffersing3 = result
+            if event_id == '222':
+                buffersing2 = result
+            if event_id == '444':
+                buffersing4 = result
+            if event_id == '555':
+                buffersing5 = result
+            if event_id == '666':
+                buffersing6 = result
+            if event_id == '777':
+                buffersing7 = result
+            if event_id == '333bf':
+                buffersing3bld = result
+            if event_id == '333fm':
+                buffersingfmc = single['best']
+            if event_id == '333oh':
+                buffersingoh = result
+            if event_id == 'clock':
+                buffersingclock = result
+            if event_id == 'minx':
+                buffersingmega = result
+            if event_id == 'pyram':
+                buffersingpyra = result
+            if event_id == 'skewb':
+                buffersingskewb = result
+            if event_id == 'sq1':
+                buffersingsq1 = result
+            if event_id == '444bf':
+                buffersing4bld = result
+            if event_id == '555bf':
+                buffersing5bld = result
+            if event_id == '333mbf':
+                buffersingmbld = single['best']
+
+        for average in averages:
+            event_id = average.get('eventId')
+            result = average['best'] / 100 if event_id != '333mbf' else average['best']
+            if result == result and event_id != '333mbf':
+                result = format_time(result)
+            if event_id == '333':
+                bufferpr3 = result
+            if event_id == '222':
+                bufferpr2 = result
+            if event_id == '444':
+                bufferpr4 = result
+            if event_id == '555':
+                bufferpr5 = result
+            if event_id == '666':
+                bufferpr6 = result
+            if event_id == '777':
+                bufferpr7 = result
+            if event_id == '333bf':
+                bufferpr3bld = result
+            if event_id == '333fm':
+                bufferprfmc = result
+            if event_id == '333oh':
+                bufferproh = result
+            if event_id == 'clock':
+                bufferprclock = result
+            if event_id == 'minx':
+                bufferprmega = result
+            if event_id == 'pyram':
+                bufferprpyra = result
+            if event_id == 'skewb':
+                bufferprskewb = result
+            if event_id == 'sq1':
+                bufferprsq1 = result
+            if event_id == '444bf':
+                bufferpr4bld = result
+            if event_id == '555bf':
+                bufferpr5bld = result
+            if event_id == '333mbf':
+                bufferprmbld = average['best']
+
+
+
+    except:
+        print(f"Error getting results for {icap}")
+
+
+
     url = f'https://www.worldcubeassociation.org/persons/{i}'
-    html = await fetch_url(session, url)
-    soup = BeautifulSoup(html, 'html.parser')
-
-    div = soup.find('div', {'class': 'personal-records'})
-    if div is not None:
-        rows = div.find_all('tr')
-        with open(f'newresults{i}.csv', mode='w', newline='') as file:
-            writer = csv.writer(file)
-            for row in rows:
-                cells = row.find_all('td')
-                data = [unidecode.unidecode(cell.get_text(strip=True)) for cell in cells]
-                writer.writerow(data)
-
-        with open(f'newresults{i}.csv', 'r') as file:
-            csvreader = csv.reader(file)
-            header = next(csvreader)
-            bufferevents = csvreader
-            # print(bufferevents[1][0])
-            if bufferevents:
-                    try:
-                        for row in bufferevents:
-                            if "3x3x3 Cube" in row:
-                                bufferpr3 = row[5]
-                                buffersing3 = row[4]
-                            if "2x2x2 Cube" in row:
-                                bufferpr2 = row[5]
-                                buffersing2 = row[4]
-                            if "4x4x4 Cube" in row:
-                                bufferpr4 = row[5]
-                                buffersing4 = row[4]
-                            if "5x5x5 Cube" in row:
-                                bufferpr5 = row[5]
-                                buffersing5 = row[4]
-                            if "6x6x6 Cube" in row:
-                                bufferpr6 = row[5]
-                                buffersing6 = row[4]
-                            if "7x7x7 Cube" in row:
-                                bufferpr7 = row[5]
-                                buffersing7 = row[4]
-                            if "3x3x3 Blindfolded" in row:
-                                bufferpr3bld = row[5]
-                                buffersing3bld = row[4]
-                            if "3x3x3 Fewest Moves" in row:
-                                bufferprfmc = row[5]
-                                buffersingfmc = row[4]
-                            if "3x3x3 One-Handed" in row:
-                                bufferproh = row[5]
-                                buffersingoh = row[4]
-                            if "Clock" in row:
-                                bufferprclock = row[5]
-                                buffersingclock = row[4]
-                            if "Megaminx" in row:
-                                bufferprmega = row[5]
-                                buffersingmega = row[4]
-                            if "Pyraminx" in row:
-                                bufferprpyra = row[5]
-                                buffersingpyra = row[4]
-                            if "Skewb" in row:
-                                bufferprskewb = row[5]
-                                buffersingskewb = row[4]
-                            if "Square-1" in row:
-                                bufferprsq1 = row[5]
-                                buffersingsq1 = row[4]
-                            if "4x4x4 Blindfolded" in row:
-                                bufferpr4bld = row[5]
-                                buffersing4bld = row[4]
-                            if "5x5x5 Blindfolded" in row:
-                                bufferpr5bld = row[5]
-                                buffersing5bld = row[4]
-                            if "3x3x3 Multi-Blind" in row:
-                                bufferprmbld = row[4]
-                                buffersingmbld = row[4]
-                    except:
-                        print(f"error extracting data for {i}")
-
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
     div = soup.find('div', {'class': 'text-center'})
     if div is not None:
         rows = div.find_all('img', {'class': 'avatar'})
         for row in rows:
-            link = row['src']
-            photo = link
+            photos_dict[i] = row['src']
 
-    url = f'https://www.worldcubeassociation.org/search?q={i}'
-    html = await fetch_url(session, url)
-    if html is not None:
-        soup = BeautifulSoup(html, 'html.parser')
-        divtable = soup.find('table', {'class': 'table table-nonfluid table-vertical-align-middle'})
-        if divtable is not None:
-            rows = divtable.find_all('tr')
-            with open(f'name{i}.csv', mode='w', newline='') as file:
-                writer = csv.writer(file)
-                for row in rows:
-                    cells = row.find_all('td')
-                    data = [unidecode.unidecode(cell.get_text(strip=True)) for cell in cells]
-                    writer.writerow(data)
 
-            with open(f'name{i}.csv', 'r') as file:
-                csvreader = csv.reader(file)
-                for row in csvreader:
-                    namesv.append([i, row[2]])
-
-    photos_dict[i] = photo  # Store the photo link in the dictionary
+    # photos_dict[i] = 'https://www.worldcubeassociation.org/assets/missing_avatar_thumb-d77f478a307a91a9d4a083ad197012a391d5410f6dd26cb0b0e3118a5de71438.png'  # Store the photo link in the dictionary'
 
     return i, bufferpr3, namesv, buffersing3, bufferpr2, buffersing2, bufferpr4, buffersing4, bufferpr5, buffersing5, bufferpr6, buffersing6, bufferpr7, buffersing7, bufferpr3bld, buffersing3bld, bufferprfmc, buffersingfmc, bufferproh, buffersingoh, bufferprclock, buffersingclock, bufferprmega, buffersingmega, bufferprpyra, buffersingpyra, bufferprskewb, buffersingskewb, bufferprsq1, buffersingsq1, bufferpr4bld, buffersing4bld, bufferpr5bld, buffersing5bld, bufferprmbld, buffersingmbld
 
@@ -167,14 +201,20 @@ async def main():
     namesv = [['wcaid', 'name']]
     photos_dict = {}
 
-    with open('provinceID.csv', 'r') as file:
-        csvreader = csv.reader(file)
-        header = next(csvreader)
-        for row in csvreader:
-            if "\t" in row[0]:
-                row[0] = row[0].replace("\t", "")
-            wcaidv.append(row[0])
-            providv.append(row[1])
+    df = pd.read_csv('provinceID.csv', delimiter=',')
+
+    # List DataFrame column names
+    print(df.columns)
+
+    # Remove whitespaces from column names if necessary
+    df.columns = df.columns.str.strip()
+
+    # Convert to lower case
+    df.columns = df.columns.str.lower()
+
+    df.drop_duplicates(subset='wcaid', keep='first', inplace=True)
+    wcaidv = df['wcaid'].to_list()
+    providv = df['provid'].to_list()
 
     results = [['wcaid', '0', 'name', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']]
     idlength = len(wcaidv)
@@ -203,7 +243,7 @@ async def main():
             os.remove(file_path)
 
     # Sorting and saving to CSV
-    sorted_RESULTS = sorted(results, key=lambda x: float(x[1]) if x[1].replace('.', '', 1).isdigit() else float('inf'))
+    sorted_RESULTS = sorted(results, key=lambda x: (float(x[1]) if isinstance(x[1], str) and x[1].replace('.', '', 1).isdigit() else float('inf')))
 
     final_sorted_RESULTS = []
 
@@ -253,12 +293,12 @@ async def main():
 
         final_sorted_RESULTS.append([wcaid, bufferpr3, province_id, buffersing3, photo, bufferpr2, buffersing2, bufferpr4, buffersing4, bufferpr5, buffersing5, bufferpr6, buffersing6, bufferpr7, buffersing7, bufferpr3bld, buffersing3bld, bufferprfmc, buffersingfmc, bufferproh, buffersingoh, bufferprclock, buffersingclock, bufferprmega, buffersingmega, bufferprpyra, buffersingpyra, bufferprskewb, buffersingskewb, bufferprsq1, buffersingsq1, bufferpr4bld, buffersing4bld, bufferpr5bld, buffersing5bld, bufferprmbld, buffersingmbld])
 
-    with open(f'final_wcaid_names.csv', mode='w', newline='') as file:
+    with open(f'final_wcaid_names.csv', mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         for row in namesv:
             writer.writerow(row)
 
-    with open(f'final_sorted_RESULTS.csv', mode='w', newline='') as file:
+    with open(f'final_sorted_RESULTS.csv', mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         for row in final_sorted_RESULTS:
             writer.writerow(row)
@@ -266,18 +306,14 @@ async def main():
     df1 = pd.read_csv('final_sorted_RESULTS.csv')
     df2 = pd.read_csv('final_wcaid_names.csv')
     merged_df = pd.merge(df1, df2, on='wcaid', how='left')
-    merged_df.to_csv('FINAL.csv', index=False)
+    merged_df.to_csv('FINAL.csv', index=False, encoding='utf-8')
 
     # Converting to HTML
     df = pd.read_csv('FINAL.csv')
-    html_table = df.to_html(
-        classes='table table-bordered table-hover',
-        index=False,
-        escape=False
-    )
+    html_table = df.to_html(classes='table table-bordered table-hover', index=False, escape=False)
     html_table = html_table.replace('[', '').replace(']', '')
 
-    with open('final_sorted_RESULTS.html', 'w') as f:
+    with open('final_sorted_RESULTS.html', 'w', encoding='utf-8') as f:
         f.write(html_table)
 
 if __name__ == '__main__':
