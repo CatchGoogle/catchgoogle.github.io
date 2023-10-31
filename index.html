@@ -399,16 +399,30 @@
         const bAvg = parseTimeToNumber(b[currentSortColumn]);
 
         // For all other events
-        if (!isNaN(aAvg) && !isNaN(bAvg)) {
-            return aAvg - bAvg;
-        } else if (!isNaN(aAvg)) {
-            return -1;
-        } else if (!isNaN(bAvg)) {
-            return 1;
-        } else {
-            return aSingle - bSingle;
+        function sortRowsByPoints(rows, cubeType) {
+            if (cubeType === "mbld") {
+                rows.sort((a, b) => {
+                    const pointsA = decodeSingleMBLD(a[`single${cubeType}`]) || 0;
+                    const pointsB = decodeSingleMBLD(b[`single${cubeType}`]) || 0;
+                    return pointsB - pointsA; // Descending order (higher points first)
+                });
+            } else {
+                // Default sorting by time for other events
+                rows.sort((a, b) => {
+                    const aAvg = parseTimeToNumber(a[`avg${cubeType}`]);
+                    const bAvg = parseTimeToNumber(b[`avg${cubeType}`]);
+                    if (!isNaN(aAvg) && !isNaN(bAvg)) {
+                        return aAvg - bAvg;
+                    } else if (!isNaN(aAvg)) {
+                        return -1;
+                    } else if (!isNaN(bAvg)) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
         }
-    });
 
     for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
