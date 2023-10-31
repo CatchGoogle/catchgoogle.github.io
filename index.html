@@ -368,20 +368,20 @@
         }
 
         function createTable(rows, cubeType) {
-            const table = document.createElement("table");
-            table.border = "1";
-            table.className = "dataframe table table-bordered table-hover";
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Name</th>
-                        <th class="sortable-header" data-sort-column="avg${cubeType}">PR Avg</th>
-                        <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            `;
+	    const table = document.createElement("table");
+	    table.border = "1";
+	    table.className = "dataframe table table-bordered table-hover";
+	    table.innerHTML = `
+	        <thead>
+	            <tr>
+	                <th>Rank</th>
+	                <th>Name</th>
+	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+	                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
+	            </tr>
+	        </thead>
+	        <tbody></tbody>
+	    `;
 	
 	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
 
@@ -399,30 +399,16 @@
         const bAvg = parseTimeToNumber(b[currentSortColumn]);
 
         // For all other events
-        function sortRowsByPoints(rows, cubeType) {
-            if (cubeType === "mbld") {
-                rows.sort((a, b) => {
-                    const pointsA = decodeSingleMBLD(a[`single${cubeType}`]) || 0;
-                    const pointsB = decodeSingleMBLD(b[`single${cubeType}`]) || 0;
-                    return pointsB - pointsA; // Descending order (higher points first)
-                });
-            } else {
-                // Default sorting by time for other events
-                rows.sort((a, b) => {
-                    const aAvg = parseTimeToNumber(a[`avg${cubeType}`]);
-                    const bAvg = parseTimeToNumber(b[`avg${cubeType}`]);
-                    if (!isNaN(aAvg) && !isNaN(bAvg)) {
-                        return aAvg - bAvg;
-                    } else if (!isNaN(aAvg)) {
-                        return -1;
-                    } else if (!isNaN(bAvg)) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                });
-            }
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
+            return -1;
+        } else if (!isNaN(bAvg)) {
+            return 1;
+        } else {
+            return aSingle - bSingle;
         }
+    });
 
     for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -451,13 +437,15 @@
 
 	    
         function showTable(province, cubeType) {
-            tablesContainer.innerHTML = "";
-            const filteredRows = parsedData.filter(row => row.province === province);
-            tablesContainer.appendChild(createTable(filteredRows, cubeType));
-        }
+	    tablesContainer.innerHTML = "";
+	    currentSortColumn = `avg${cubeType}`;
+	    const filteredRows = parsedData.filter(row => row.province === province);
+	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+	}
 
         function onHeaderClick(event) {
             const clickedColumn = event.target.getAttribute('data-sort-column');
+
             if (clickedColumn) {
                 currentSortColumn = clickedColumn;
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
@@ -503,13 +491,6 @@
                 onHeaderClick(event);
             }
         });
-
-	const headers = document.querySelectorAll(".sortable-header");
-        headers.forEach(header => {
-            header.addEventListener("click", onHeaderClick);
-        });
-
-
     </script>
 </body>
 </html>
