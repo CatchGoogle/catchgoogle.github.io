@@ -386,16 +386,29 @@
 	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row['single'+cubeType])));  
 
 	    rows.sort((a, b) => {
-	    let comparison = 0;
-	    if (currentSortColumn.includes('avg')) {
-	      comparison = parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]);
-	    } else if (currentSortColumn.includes('single')) {
-	      comparison = parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]);
+	    let aVal, bVal;
+	    
+	    if(cubeType.endsWith('bld') && currentSortColumn.endsWith('single')){
+	        aVal = a[currentSortColumn]
+	        bVal = b[currentSortColumn]
+	        return aVal - bVal;
 	    }
-	    return comparison;
-	  });
+
+        aVal = parseTimeToNumber(a[currentSortColumn]);
+	bVal = parseTimeToNumber(b[currentSortColumn]);
 	
-	  for (let i = 0; i < rows.length; i++) {
+	    if(!isNaN(aVal) && !isNaN(bVal)){
+	        return aVal - bVal;
+	    } else if (!isNaN(aVal)) {
+	        return -1;
+	    } else if (!isNaN(bVal)) {
+	        return 1;
+	    } else {
+	        return 0;
+	    }
+	});
+
+    for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const tr = document.createElement("tr");
 
@@ -425,7 +438,8 @@
 	    tablesContainer.innerHTML = "";
 	    currentSortColumn = `avg${cubeType}`;
 	    const filteredRows = parsedData.filter(row => row.province === province);
-	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+	    const sortedRows = filteredRows.sort((a, b) => parseTimeToNumber(a[currentSortColumn]) - parseTimeToNumber(b[currentSortColumn]));
+	    tablesContainer.appendChild(createTable(sortedRows, cubeType));
 	}
 
         function onHeaderClick(event) {
