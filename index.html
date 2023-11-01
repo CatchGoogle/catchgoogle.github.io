@@ -283,6 +283,7 @@
 	.avatar-popup img {
 	    max-width: 100%;
 	    max-height: 90%;
+	    transition: all 0.3s;
 	}
 	
 	</style>
@@ -521,12 +522,13 @@
             avatarImage.addEventListener("mouseover", () => {
                 avatarPopupTimer = setTimeout(() => {
                     showAvatarPopup(row.photo, row.name);
-                }, 2000); // 2000 milliseconds (2 seconds) delay
+                }, 750); // 750ms (0.75 seconds) delay
             });
 
-            // Add a mouseout event to clear the timer if the cursor leaves the image
+            // Add a mouseout event to hide the pop-up when the cursor leaves the image
             avatarImage.addEventListener("mouseout", () => {
                 clearTimeout(avatarPopupTimer);
+                hideAvatarPopup();
             });
         }
 
@@ -588,6 +590,15 @@
 	        avatarPopup.style.display = "none";
 	    });
 	}
+	    
+	function hideAvatarPopup() {
+	    // Get the element or container that displays the avatar pop-up, and hide it
+	    const avatarPopupElement = document.getElementById("avatar-popup"); // Replace "avatar-popup" with the actual ID or class of your pop-up element
+	    if (avatarPopupElement) {
+	        avatarPopupElement.style.display = "none";
+	    }
+	}
+
 	    
 	if (localStorage.getItem("dark-mode") === "enabled") {
 	    document.body.classList.add("dark-mode");
