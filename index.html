@@ -440,8 +440,8 @@
 	            <tr>
 	                <th>Rank</th>
 	                <th>Name</th>
+		 	<th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
 	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-	                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
 	            </tr>
 	        </thead>
 	        <tbody></tbody>
@@ -489,8 +489,8 @@
             ${row.name}
         </a>
     </td>
-    <td>${prAvg}</td>
     <td>${prSingle}</td>
+    <td>${prAvg}</td>
     `;
     table.querySelector("tbody").appendChild(tr);
 }
