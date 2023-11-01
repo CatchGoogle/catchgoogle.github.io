@@ -56,7 +56,7 @@
             text-align: center;
             margin: 20px auto;
             max-width: 75%;
-	    animation: fadeInAnimation ease 2.5s;
+	    animation: fadeInAnimation ease 4s;
 	    animation-iteration-count: 1;
 	    animation-fill-mode: forwards;
         }
@@ -64,6 +64,9 @@
 	@keyframes fadeInAnimation {
 		0% {
 			opacity: 0;
+		}
+		50% {
+			opacity: 0.2;
 		}
 		100% {
 			opacity: 1;
@@ -82,6 +85,7 @@
 
 	.dataframe td.name-cell {
             text-align: left;
+	    cursor: pointer;
         }
 	
         .dataframe th, .dataframe td {
@@ -94,7 +98,7 @@
 
         .dataframe th {
             background-color: #f2f2f2;
-            cursor: pointer;
+            cursor: default;
 	    transition: background-color 2s;
         }
 
