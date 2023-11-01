@@ -266,6 +266,24 @@
 	     background-color: #555;
 	}
 
+	.avatar-popup {
+	    display: none;
+	    position: fixed;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    z-index: 9999;
+	    background-color: rgba(0, 0, 0, 0.7);
+	    padding: 10px;
+	    border-radius: 10px;
+	    text-align: center;
+	    transition: all 0.3s;
+	}
+	
+	.avatar-popup img {
+	    max-width: 100%;
+	    max-height: 90%;
+	}
 	
 	</style>
 	</head>
@@ -484,6 +502,8 @@
     const prAvg = row[currentSortColumn] !== 'NaN' ? row[currentSortColumn] : '';
     const prSingle = (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) !== 'NaN' ? (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) : '';
 
+    
+	    
     tr.innerHTML = `
         <td>${i + 1}</td>
     	<td class="name-cell">
@@ -496,6 +516,14 @@
     <td>${prAvg}</td>
     `;
     table.querySelector("tbody").appendChild(tr);
+}
+
+    const avatarImage = tr.querySelector("img");
+    avatarImage.addEventListener("mouseover", () => {
+        showAvatarPopup(row.photo, row.name);
+    });
+
+    return tr;
 }
 
     return table;
@@ -531,6 +559,30 @@
 	    }
 	}
 
+	function showAvatarPopup(imageUrl, name) {
+	    // Create the avatar pop-up element
+	    const avatarPopup = document.createElement("div");
+	    avatarPopup.className = "avatar-popup";
+	
+	    // Create the image element inside the pop-up
+	    const avatarImage = document.createElement("img");
+	    avatarImage.src = imageUrl;
+	    avatarImage.alt = name;
+	
+	    // Append the image to the pop-up
+	    avatarPopup.appendChild(avatarImage);
+	
+	    // Append the pop-up to the body
+	    document.body.appendChild(avatarPopup);
+	
+	    // Display the pop-up
+	    avatarPopup.style.display = "block";
+	
+	    // Add an event listener to close the pop-up when clicking outside of it
+	    avatarPopup.addEventListener("click", () => {
+	        avatarPopup.style.display = "none";
+	    });
+	}
 	    
 	if (localStorage.getItem("dark-mode") === "enabled") {
 	    document.body.classList.add("dark-mode");
