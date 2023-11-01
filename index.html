@@ -592,12 +592,13 @@
 	}
 	    
 	function hideAvatarPopup() {
-	    // Get the element or container that displays the avatar pop-up, and hide it
-	    const avatarPopupElement = document.getElementById("avatar-popup"); // Replace "avatar-popup" with the actual ID or class of your pop-up element
+	    const avatarPopupElement = document.getElementById("avatar-popup"); // Replace with the actual ID of your pop-up element
+	
 	    if (avatarPopupElement) {
 	        avatarPopupElement.style.display = "none";
 	    }
 	}
+
 
 	    
 	if (localStorage.getItem("dark-mode") === "enabled") {
@@ -622,6 +623,11 @@
             })
             .catch(error => console.error(error));
 
+	avatarImage.addEventListener("mouseout", () => {
+	    clearTimeout(avatarPopupTimer);
+	    hideAvatarPopup();
+	});
+		    
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('sortable-header')) {
                 onHeaderClick(event);
