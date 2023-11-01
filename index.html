@@ -124,7 +124,7 @@
         }
 
         .sortable-header {
-            cursor: pointer;
+            cursor: cursor;
         }
 
         .pr-single {
@@ -506,14 +506,14 @@
 	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
 	}
 
-        function onHeaderClick(event) {
+	/* function onHeaderClick(event) { 
             const clickedColumn = event.target.getAttribute('data-sort-column');
 
             if (clickedColumn) {
                 currentSortColumn = clickedColumn;
                 showTable(provinceDropdown.value, cubeTypeDropdown.value);
             }
-        }
+        } */
 
 	function toggleDarkMode() {
 	    const body = document.body;
