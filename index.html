@@ -277,7 +277,9 @@
 	    padding: 10px;
 	    border-radius: 10px;
 	    text-align: center;
-	    transition: all 0.3s;
+	    animation: fadeInAnimation ease 1s;
+	    animation-iteration-count: 1;
+	    animation-fill-mode: forwards;
 	}
 	
 	.avatar-popup img {
@@ -584,6 +586,23 @@
 	    // Append the image to the pop-up
 	    avatarPopup.appendChild(avatarImage);
 	
+	    // Calculate the position based on the cursor's position
+	    const popupX = event.clientX;
+	    const popupY = event.clientY;
+	
+	    // Set the position of the pop-up
+	    avatarPopup.style.left = popupX + "px";
+	    avatarPopup.style.top = popupY + "px";
+	
+	    // Append the pop-up to the body
+	    document.body.appendChild(avatarPopup);
+	
+	    // Display the pop-up
+	    avatarPopup.style.display = "block";
+	
+	    // Set the current open avatar popup
+	    currentAvatarPopup = avatarPopup;
+	
 	    // Make the popup draggable
 	    let isDragging = false;
 	    let offsetX, offsetY;
@@ -599,7 +618,7 @@
 	            const newX = e.clientX - offsetX;
 	            const newY = e.clientY - offsetY;
 	            avatarPopup.style.left = newX + "px";
-	            avatarPopup.style.top = newY + "px";
+	            avatarPopup.style top = newY + "px";
 	        }
 	    });
 	
@@ -607,19 +626,11 @@
 	        isDragging = false;
 	    });
 	
-	    // Append the pop-up to the body
-	    document.body.appendChild(avatarPopup);
-	
-	    // Display the pop-up
-	    avatarPopup.style.display = "block";
-	
-	    // Set the current open avatar popup
-	    currentAvatarPopup = avatarPopup;
-	
 	    // Add event listeners to prevent the popup from closing
 	    avatarPopup.addEventListener("mouseover", (event) => {
 	        event.stopPropagation();
 	    });
+	
 	    // Add an event listener to close the pop-up when clicking outside of it
 	    avatarPopup.addEventListener("click", hideAvatarPopup);
 	
