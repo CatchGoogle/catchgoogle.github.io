@@ -569,44 +569,53 @@
 	}
 
 	function showAvatarPopup(imageUrl, name) {
-        // Close the existing avatar popup
-        hideAvatarPopup();
+    // Close the existing avatar popup
+    hideAvatarPopup();
 
-        // Create the avatar pop-up element
-        const avatarPopup = document.createElement("div");
-        avatarPopup.className = "avatar-popup";
+    // Create the avatar pop-up element
+    const avatarPopup = document.createElement("div");
+    avatarPopup.className = "avatar-popup";
 
-        // Create the image element inside the pop-up
-        const avatarImage = document.createElement("img");
-        avatarImage.src = imageUrl;
-        avatarImage.alt = name;
+    // Create the image element inside the pop-up
+    const avatarImage = document.createElement("img");
+    avatarImage.src = imageUrl;
+    avatarImage.alt = name;
 
-        // Append the image to the pop-up
-        avatarPopup.appendChild(avatarImage);
+    // Append the image to the pop-up
+    avatarPopup.appendChild(avatarImage);
 
-        // Append the pop-up to the body
-        document.body.appendChild(avatarPopup);
+    // Append the pop-up to the body
+    document.body.appendChild(avatarPopup);
 
-        // Display the pop-up
-        avatarPopup.style.display = "block";
+    // Display the pop-up
+    avatarPopup.style.display = "block";
 
-        // Set the current open avatar popup
-        currentAvatarPopup = avatarPopup;
+    // Set the current open avatar popup
+    currentAvatarPopup = avatarPopup;
 
-        // Add an event listener to close the pop-up when clicking outside of it
-        avatarPopup.addEventListener("click", (event) => {
-            event.stopPropagation(); // Prevent the click from closing the popup
-        });
+    // Add an event listener to close the pop-up when clicking outside of it
+    avatarPopup.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent the click from closing the popup
+    });
 
-        document.addEventListener("click", hideAvatarPopup);
-    }
+    // Add event listeners for mouse movement within the popup
+    avatarPopup.addEventListener("mousemove", (event) => {
+        event.stopPropagation(); // Prevent the event from reaching the document
+    });
 
-    function hideAvatarPopup() {
-        if (currentAvatarPopup) {
-            // Remove the avatar popup
-            currentAvatarPopup.style.display = "none";
-            currentAvatarPopup.remove();
-            currentAvatarPopup = null;
+    // Add event listener to open the link when clicking on the avatar
+    avatarImage.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent the click from closing the popup
+        window.open(imageUrl, "_blank");
+    });
+}
+
+function hideAvatarPopup() {
+    if (currentAvatarPopup) {
+        // Remove the avatar popup
+        currentAvatarPopup.style.display = "none";
+        currentAvatarPopup.remove();
+        currentAvatarPopup = null;
 
             // Remove the event listener to close the pop-up when clicking outside
             document.removeEventListener("click", hideAvatarPopup);
