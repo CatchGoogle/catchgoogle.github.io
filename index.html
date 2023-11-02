@@ -519,9 +519,9 @@
         const avatarImage = tr.querySelector("img");
 
         if (row.photo !== "https://www.worldcubeassociation.org/assets/missing_avatar_thumb-d77f478a307a91a9d4a083ad197012a391d5410f6dd26cb0b0e3118a5de71438.png") {
-            avatarImage.addEventListener("mouseover", () => {
+            avatarImage.addEventListener("mouseover", (event) => {
                 avatarPopupTimer = setTimeout(() => {
-                    showAvatarPopup(row.photo, row.name);
+                    showAvatarPopup(row.photo, row.name, event);
                 }, 750); // 750ms (0.75 seconds) delay
             });
 
@@ -537,6 +537,7 @@
 
     return table;
 }
+
 	    
         function showTable(province, cubeType) {
 	    hideAvatarPopup();
