@@ -568,92 +568,118 @@
 	    }
 	}
 
-	function showAvatarPopup(imageUrl, name) {
-    // Close the existing avatar popup
-    hideAvatarPopup();
-
-    // Create the avatar pop-up element
-    const avatarPopup = document.createElement("div");
-    avatarPopup.className = "avatar-popup";
-
-    // Create the image element inside the pop-up
-    const avatarImage = document.createElement("img");
-    avatarImage.src = imageUrl;
-    avatarImage.alt = name;
-
-    // Append the image to the pop-up
-    avatarPopup.appendChild(avatarImage);
-
-    // Append the pop-up to the body
-    document.body.appendChild(avatarPopup);
-
-    // Display the pop-up
-    avatarPopup.style.display = "block";
-
-    // Set the current open avatar popup
-    currentAvatarPopup = avatarPopup;
-
-    // Add an event listener to close the pop-up when clicking outside of it
-    avatarPopup.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent the click from closing the popup
-    });
-
-    // Add event listeners for mouse movement within the popup
-    avatarPopup.addEventListener("mousemove", (event) => {
-        event.stopPropagation(); // Prevent the event from reaching the document
-    });
-
-    // Add event listener to open the link when clicking on the avatar
-    avatarImage.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent the click from closing the popup
-        window.open(imageUrl, "_blank");
-    });
-}
-
-function hideAvatarPopup() {
-    if (currentAvatarPopup) {
-        // Remove the avatar popup
-        currentAvatarPopup.style.display = "none";
-        currentAvatarPopup.remove();
-        currentAvatarPopup = null;
-
-            // Remove the event listener to close the pop-up when clicking outside
-            document.removeEventListener("click", hideAvatarPopup);
-        }
-    }
-
-	if (localStorage.getItem("dark-mode") === "enabled") {
-	    document.body.classList.add("dark-mode");
-	}
-		    
-        provinceDropdown.addEventListener("change", (event) => {
-            const selectedProvince = event.target.value;
-            showTable(selectedProvince, cubeTypeDropdown.value);
-        });
-
-        cubeTypeDropdown.addEventListener("change", (event) => {
-            const selectedCubeType = event.target.value;
-            showTable(provinceDropdown.value, selectedCubeType);
-        });
-
-        fetch(`final_sorted_RESULTS.html`)
-            .then(response => response.text())
-            .then(tableHTML => {
-                parsedData = parseTable(tableHTML);
-                showTable(provinceDropdown.value, cubeTypeDropdown.value);
-            })
-            .catch(error => console.error(error));
-
-	avatarImage.addEventListener("mouseout", () => {
-	    clearTimeout(avatarPopupTimer);
+	function showAvatarPopup(imageUrl, name, event) {
+	    // Close the existing avatar popup
 	    hideAvatarPopup();
-	});
-		    
-        document.addEventListener('click', (event) => {
-            if (event.target.classList.contains('sortable-header')) {
-                onHeaderClick(event);
-            }
-        });
+	
+	    // Create the avatar pop-up element
+	    const avatarPopup = document.createElement("div");
+	    avatarPopup.className = "avatar-popup";
+	
+	    // Create the image element inside the pop-up
+	    const avatarImage = document.createElement("img");
+	    avatarImage.src = imageUrl;
+	    avatarImage.alt = name;
+	
+	    // Append the image to the pop-up
+	    avatarPopup.appendChild(avatarImage);
+	
+	    // Calculate the popup position based on the cursor event
+	    const popupX = event.clientX;
+	    const popupY = event.clientY;
+	
+	    // Set the position of the popup
+	    avatarPopup.style.left = popupX + "px";
+	    avatarPopup.style.top = popupY + "px";
+	
+	    // Make the popup draggable
+	    let isDragging = false;
+	    let offsetX, offsetY;
+	
+	    avatarPopup.addEventListener("mousedown", (e) => {
+	        isDragging = true;
+	        offsetX = e.clientX - avatarPopup.getBoundingClientRect().left;
+	        offsetY = e.clientY - avatarPopup.getBoundingClientRect().top;
+	    });
+	
+	    document.addEventListener("mousemove", (e) => {
+	        if (isDragging) {
+	            const newX = e.clientX - offsetX;
+	            const newY = e.clientY - offsetY;
+	            avatarPopup.style.left = newX + "px";
+	            avatarPopup.style.top = newY + "px";
+	        }
+	    });
+	
+	    document.addEventListener("mouseup", () => {
+	        isDragging = false;
+	    });
+	
+	    // Append the pop-up to the body
+	    document.body.appendChild(avatarPopup);
+	
+	    // Display the pop-up
+	    avatarPopup.style.display = "block";
+	
+	    // Set the current open avatar popup
+	    currentAvatarPopup = avatarPopup;
+	
+	    // Add an event listener to close the pop-up when clicking outside of it
+	    avatarPopup.addEventListener("click", (event) => {
+	        event.stopPropagation(); // Prevent the click from closing the popup
+	    });
+	
+	    // Add event listener to open the link when clicking on the avatar
+	    avatarImage.addEventListener("click", (event) => {
+	        event.stopPropagation(); // Prevent the click from closing the popup
+	        window.open(imageUrl, "_blank");
+	    });
+	}
+
+	function hideAvatarPopup() {
+	    if (currentAvatarPopup) {
+	        // Remove the avatar popup
+	        currentAvatarPopup.style.display = "none";
+	        currentAvatarPopup.remove();
+	        currentAvatarPopup = null;
+	
+	            // Remove the event listener to close the pop-up when clicking outside
+	            document.removeEventListener("click", hideAvatarPopup);
+	        }
+	    }
+	
+		if (localStorage.getItem("dark-mode") === "enabled") {
+		    document.body.classList.add("dark-mode");
+		}
+			    
+	        provinceDropdown.addEventListener("change", (event) => {
+	            const selectedProvince = event.target.value;
+	            showTable(selectedProvince, cubeTypeDropdown.value);
+	        });
+	
+	        cubeTypeDropdown.addEventListener("change", (event) => {
+	            const selectedCubeType = event.target.value;
+	            showTable(provinceDropdown.value, selectedCubeType);
+	        });
+	
+	        fetch(`final_sorted_RESULTS.html`)
+	            .then(response => response.text())
+	            .then(tableHTML => {
+	                parsedData = parseTable(tableHTML);
+	                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+	            })
+	            .catch(error => console.error(error));
+	
+		avatarImage.addEventListener("mouseout", () => {
+		    clearTimeout(avatarPopupTimer);
+		    hideAvatarPopup();
+		});
+			    
+	        document.addEventListener('click', (event) => {
+	            if (event.target.classList.contains('sortable-header')) {
+	                onHeaderClick(event);
+	            }
+	        });
     </script>
 </body>
 </html>
