@@ -620,11 +620,6 @@
 	    avatarPopup.addEventListener("mouseover", (event) => {
 	        event.stopPropagation();
 	    });
-	
-	    avatarImage.addEventListener("mouseover", (event) => {
-	        event.stopPropagation();
-	    });
-	
 	    // Add an event listener to close the pop-up when clicking outside of it
 	    avatarPopup.addEventListener("click", hideAvatarPopup);
 	
@@ -668,10 +663,10 @@
 	            })
 	            .catch(error => console.error(error));
 	
-		avatarImage.addEventListener("mouseout", () => {
-		    clearTimeout(avatarPopupTimer);
-		    hideAvatarPopup();
-		});
+		// avatarImage.addEventListener("mouseout", () => {
+		//     clearTimeout(avatarPopupTimer);
+		//     hideAvatarPopup();
+		// });
 			    
 	        document.addEventListener('click', (event) => {
 	            if (event.target.classList.contains('sortable-header')) {
