@@ -269,7 +269,7 @@
 	}
 	
 	.avatar-popup img {
-	    max-width: 40%;
+	    max-width: 90%;
 	    max-height: 40%;
 	    transition: all 0.3s;
 	}
