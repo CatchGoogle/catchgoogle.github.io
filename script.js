@@ -1,6 +1,7 @@
 const tablesContainer = document.getElementById("tables-container");
         const provinceDropdown = document.getElementById("province-dropdown");
         const cubeTypeDropdown = document.getElementById("wcaevent-dropdown");
+		const avgSingleDropdown = document.getElementById("averageOrSingle");
         let parsedData = [];
         let currentSortColumn = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
 	let currentAvatarPopup = null;
@@ -115,8 +116,82 @@ const tablesContainer = document.getElementById("tables-container");
             }
             return parseFloat(timeValue);
         }
+        function createTableSingle(rows, cubeType) {
+			
+	    const table = document.createElement("table");
+	    table.border = "1";
+	    table.className = "dataframe table table-bordered table-hover";
+	    table.innerHTML = `
+	        <thead>
+	            <tr>
+	                <th>Rank</th>
+	                <th>Name</th>
+		 	<th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
+	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+	            </tr>
+	        </thead>
+	        <tbody></tbody>
+	    `;
+	
+	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
 
-        function createTable(rows, cubeType) {
+	    // Sorting logic
+	    rows.sort((a, b) => {
+	        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
+	        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
+        
+        return aSingle - bSingle;
+
+        const aAvg = parseTimeToNumber(a[currentSortColumn]);
+        const bAvg = parseTimeToNumber(b[currentSortColumn]);
+
+    });
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement("tr");
+        const prAvg = row[currentSortColumn] !== 'NaN' ? row[currentSortColumn] : '';
+        const prSingle = (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) !== 'NaN' ? (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) : '';
+		
+		
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td class="name-cell">
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
+                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${row.name}
+                </a>
+            </td>
+            <td>${prSingle}</td>
+            <td>${prAvg}</td>
+        `;
+
+        // Add a mouseover event to show the avatar pop-up with a delay
+        let avatarPopupTimer;
+        const avatarImage = tr.querySelector("img");
+
+        if (row.photo !== "https://www.worldcubeassociation.org/assets/missing_avatar_thumb-d77f478a307a91a9d4a083ad197012a391d5410f6dd26cb0b0e3118a5de71438.png") {
+            avatarImage.addEventListener("mouseover", (event) => {
+                avatarPopupTimer = setTimeout(() => {
+                    showAvatarPopup(row.photo, row.name, event);
+                }, 750); // 750ms (0.75 seconds) delay
+            });
+
+            // Add a mouseout event to hide the pop-up when the cursor leaves the image
+            avatarImage.addEventListener("mouseout", () => {
+                clearTimeout(avatarPopupTimer);
+                hideAvatarPopup();
+            });
+        }
+
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    return table;
+}
+
+
+        function createTableAvg(rows, cubeType) {
 			
 	    const table = document.createElement("table");
 	    table.border = "1";
@@ -204,12 +279,17 @@ const tablesContainer = document.getElementById("tables-container");
 }
 
 	    
-        function showTable(province, cubeType) {
+        function showTable(province, cubeType, avgSingle) {
 	    hideAvatarPopup();
 	    tablesContainer.innerHTML = "";
 	    currentSortColumn = `avg${cubeType}`;
 	    const filteredRows = parsedData.filter(row => row.province === province);
-	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+		if (avgSingle == "avg") {
+			tablesContainer.appendChild(createTableAvg(filteredRows, cubeType));
+		}
+	    else {
+			tablesContainer.appendChild(createTableSingle(filteredRows, cubeType));
+		}
 	}
 
 	/* function onHeaderClick(event) { 
@@ -321,14 +401,21 @@ const tablesContainer = document.getElementById("tables-container");
 			    
 	        provinceDropdown.addEventListener("change", (event) => {
 	            const selectedProvince = event.target.value;
-	            showTable(selectedProvince, cubeTypeDropdown.value);
+	            showTable(selectedProvince, cubeTypeDropdown.value, avgSingleDropdown.value);
 	        });
 	
 	        cubeTypeDropdown.addEventListener("change", (event) => {
 	            const selectedCubeType = event.target.value;
-	            showTable(provinceDropdown.value, selectedCubeType);
+	            showTable(provinceDropdown.value, selectedCubeType, avgSingleDropdown.value);
 	        });
-	
+		
+			avgSingleDropdown.addEventListener("change", (event) => {
+				const selectedSort = event.target.value;
+				showTable(provinceDropdown.value, cubeTypeDropdown.value, selectedSort);
+			});
+											   
+											   
+											   
 	        fetch(`final_sorted_RESULTS.html`)
 	            .then(response => response.text())
 	            .then(tableHTML => {
