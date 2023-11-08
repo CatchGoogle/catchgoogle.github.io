@@ -292,7 +292,7 @@
 	}
 
 	function showAvatarPopup(imageUrl, name, event) {
-	    // Close the existing avatar popup
+	    // Close the existing avatar popup if needed
 	    hideAvatarPopup();
 	
 	    // Create the avatar pop-up element
@@ -347,20 +347,13 @@
 	        isDragging = false;
 	    });
 	
-	    // Add event listeners to prevent the popup from closing
-	    avatarPopup.addEventListener("mouseover", (event) => {
-	        event.stopPropagation();
-	    });
-	
-	    // Add an event listener to close the pop-up when clicking outside of it
-	    avatarPopup.addEventListener("click", hideAvatarPopup);
-	
-	    // Add event listener to open the link when clicking on the avatar
+	    // Add an event listener to open the link when clicking on the avatar
 	    avatarImage.addEventListener("click", (event) => {
 	        event.stopPropagation(); // Prevent the click from closing the popup
 	        window.open(imageUrl, "_blank");
 	    });
 	}
+
 	
 	function hideAvatarPopup() {
 	    if (currentAvatarPopup) {
