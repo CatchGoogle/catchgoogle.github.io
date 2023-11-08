@@ -261,8 +261,8 @@
 	    top: 50%;
 	    left: 50%;
 	    transform: translate(0%, -50%);
- 	    max-width: 40%;
-	    max-height: 40%;
+ 	    max-width: 30%;
+	    max-height: 30%;
 	    z-index: 9999;
 	    background-color: rgba(0, 0, 0, 0.5);
 	    padding: 15px;
