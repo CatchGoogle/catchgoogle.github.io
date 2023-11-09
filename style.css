@@ -260,7 +260,7 @@
 	    position: fixed;
 	    top: 50%;
 	    left: 50%;
-	    transform: translate(0%, -50%);
+	    transform: translate(10%, -50%);
  	    max-width: 40%;
 	    max-height: 40%;
 	    z-index: 9999;
