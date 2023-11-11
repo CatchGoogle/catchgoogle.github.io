@@ -69,7 +69,8 @@
 	    animation-fill-mode: forwards;
 	    margin-left: auto;
 	    margin-right: auto;
-	    padding-block: 20px; /* vertical padding */
+	    padding-top: 20px;
+	    padding-bottom: 20px;
         }
 
 	.dataframe td.name-cell {
