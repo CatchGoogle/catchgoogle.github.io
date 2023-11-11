@@ -265,6 +265,8 @@
 	    top: 50%;
 	    left: 50%;
 	    transform: translate(10%, -50%);
+	    width: auto;
+	    height: auto;
  	    max-width: 55vw;
 	    max-height: 55vh;
 	    z-index: 9999;
