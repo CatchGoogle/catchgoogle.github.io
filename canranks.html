@@ -359,6 +359,11 @@
         isDragging = false;
     });
 
+    // Add styles to ensure image fits within the popup
+    avatarImage.style.maxWidth = "100%";
+    avatarImage.style.maxHeight = "100%";
+    avatarImage.style.objectFit = "contain";
+		
     // Add an event listener to open the link when clicking on the avatar
     avatarImage.addEventListener("click", (event) => {
         event.stopPropagation(); // Prevent the click from closing the popup
