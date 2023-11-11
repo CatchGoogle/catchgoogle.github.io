@@ -60,7 +60,7 @@
 	}
 
         .dataframe {
-	    width: 80%;
+	    width: 60%;
 	    border-collapse: collapse;
 	    text-align: center;
 	    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a box shadow for the border effect */
@@ -69,6 +69,7 @@
 	    animation-fill-mode: forwards;
 	    margin-left: auto;
 	    margin-right: auto;
+	    padding-block: 20px; /* vertical padding */
         }
 
 	.dataframe td.name-cell {
