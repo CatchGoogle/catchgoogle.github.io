@@ -60,7 +60,7 @@
     <div class="table-container" id="tables-container"></div>
 
     <div class="header">
-    <p>"${exportDate}"</p>
+    <p-update> </p-update>
     </div>
 		
     <script>
@@ -413,7 +413,11 @@
 			    
 	                parsedData = parseTable(tableHTML);
 	                showTable(provinceDropdown.value, cubeTypeDropdown.value);
-	            })
+	            	const lastUpdatedParagraph = document.querySelector('.header p-update'); // Adjust the selector as needed
+		        if (lastUpdatedParagraph) {
+		            lastUpdatedParagraph.innerHTML = `Last updated on ${exportDate}`;
+		        }
+		    })
 	            .catch(error => console.error(error));
 	
 		// avatarImage.addEventListener("mouseout", () => {
