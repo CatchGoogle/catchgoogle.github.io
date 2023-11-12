@@ -286,9 +286,10 @@
 	}
 
 	.compact-table {
-	    font-size: 0.8em; 
+	  width: 100%;
+	  border-collapse: collapse;
 	}
 
-	.compact-table td {
-	    padding: 5px; 
+	.compact-table, .compact-table th, .compact-table td {
+	  border: 1px solid black;
 	}
