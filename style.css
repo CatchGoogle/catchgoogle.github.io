@@ -34,7 +34,7 @@
             padding: 10px;
 	    transition: background-color 2s, color 2s;
         }
-
+	
         .dropdown {
             width: 300px;
             font-size: 30px;
@@ -285,3 +285,10 @@
 	    opacity: 0.8
 	}
 
+	.compact-table {
+	    font-size: 0.8em; 
+	}
+
+	.compact-table td {
+	    padding: 5px; 
+	}
