@@ -184,11 +184,12 @@
        function createTable(rows, cubeType) {
     const table = document.createElement("table");
     table.border = "1";
-    if(compactMode) {
-	    table.className = "compact-table";
-	  } else {
-	    table.className = "dataframe table table-bordered table-hover";
-	  }
+    if (compactMode) {
+        table.className = "compact-table";
+    } else {
+        table.className = "dataframe table table-bordered table-hover";
+    }
+	       
     table.innerHTML = `
         <thead>
             <tr>
@@ -237,10 +238,8 @@
         tr.innerHTML = `
             <td>${i + 1}</td>
             <td class="name-cell">
-                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                    ${compactMode ? '' : `<img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">`}
-                    ${row.name}
-                </a>
+                ${compactMode ? '' : `<a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank"><img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px"></a>`}
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a>
             </td>
             <td>${prSingle}</td>
             <td>${prAvg}</td>
@@ -278,7 +277,7 @@
 	    const filteredRows = parsedData.filter(row => row.province === province);
 	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
 	}
-
+	    
 	/* function onHeaderClick(event) { 
             const clickedColumn = event.target.getAttribute('data-sort-column');
 
