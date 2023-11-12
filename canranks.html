@@ -415,7 +415,7 @@
 	                showTable(provinceDropdown.value, cubeTypeDropdown.value);
 	            	const lastUpdatedParagraph = document.querySelector('.header p-update'); // Adjust the selector as needed
 		        if (lastUpdatedParagraph) {
-		            lastUpdatedParagraph.innerHTML = `${exportDate}`;
+		            lastUpdatedParagraph.innerHTML = `Last updated on ${exportDate}`;
 		        }
 		    })
 	            .catch(error => console.error(error));
