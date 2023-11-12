@@ -19,6 +19,7 @@
         <p>Please go to <a href="https://forms.gle/irjy2yMLvZPfoPj16" target="_blank">this form</a> to submit a province affiliation for yourself or another cuber</p>
         <p class="psmall">This website is independently run and is in NO way endorsed or otherwise affiliated with the World Cube Association</p>
     	<button class="button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+	<button class="button" onclick="toggleCompactMode()">Toggle Compact Mode</button>
     </div>
 
     <div class="dropdown-container">
@@ -183,7 +184,7 @@
         function createTable(rows, cubeType) {
 	    const table = document.createElement("table");
 	    table.border = "1";
-	    table.className = "dataframe table table-bordered table-hover";
+	    table.className = compactMode ? "compact-table" : "dataframe table table-bordered table-hover";
 	    table.innerHTML = `
 	        <thead>
 	            <tr>
@@ -370,7 +371,7 @@
         window.open(imageUrl, "_blank");
     });
 }
-
+	
 	function hideAvatarPopup() {
 	    if (currentAvatarPopup) {
 	        currentAvatarPopup.style.display = "none";
@@ -414,6 +415,14 @@
 	                onHeaderClick(event);
 	            }
 	        });
+
+	let compactMode = false;
+
+	function toggleCompactMode() {
+	    compactMode = !compactMode;
+	    showTable(provinceDropdown.value, cubeTypeDropdown.value);
+	}
+	
     </script>
 </body>
 </html>
