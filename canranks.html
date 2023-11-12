@@ -60,7 +60,7 @@
     <div class="table-container" id="tables-container"></div>
 
     <div class="header">
-    <p>Last updated November 9, 2023</p>
+    <p>${exportDate}</p>
     </div>
 		
     <script>
@@ -70,6 +70,8 @@
         let parsedData = [];
         let currentSortColumn = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
 	let currentAvatarPopup = null;
+	let exportDate = "";
+	    
 
 	function decodeSingleMBLD(value) {
 	  const difference = 99 - parseInt(value.substring(0, 2));
@@ -403,6 +405,12 @@
 	        fetch(`final_sorted_RESULTS.html`)
 	            .then(response => response.text())
 	            .then(tableHTML => {
+
+			const lastUpdatedMatch = tableHTML.match(/<p>Last updated on (.+)<\/p>/);
+			        if (lastUpdatedMatch) {
+			            exportDate = lastUpdatedMatch[1];
+			        }
+			    
 	                parsedData = parseTable(tableHTML);
 	                showTable(provinceDropdown.value, cubeTypeDropdown.value);
 	            })
