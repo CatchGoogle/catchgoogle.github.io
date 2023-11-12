@@ -184,7 +184,11 @@
        function createTable(rows, cubeType) {
     const table = document.createElement("table");
     table.border = "1";
-    table.className = compactMode ? "compact-table" : "dataframe table table-bordered table-hover";
+    if(compactMode) {
+	    table.className = "compact-table";
+	  } else {
+	    table.className = "dataframe table table-bordered table-hover";
+	  }
     table.innerHTML = `
         <thead>
             <tr>
