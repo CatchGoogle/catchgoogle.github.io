@@ -286,10 +286,24 @@
 	}
 
 	.compact-table {
-	  width: 100%;
-	  border-collapse: collapse;
+	    width: 100%;
+	    border-collapse: collapse;
 	}
-
-	.compact-table, .compact-table th, .compact-table td {
-	  border: 1px solid black;
+	
+	.compact-table th,
+	.compact-table td {
+	    padding: 8px;
+	    text-align: left;
+	}
+	
+	.compact-table th {
+	    background-color: #f2f2f2;
+	}
+	
+	.compact-table tr:nth-child(even) {
+	    background-color: #f9f9f9;
+	}
+	
+	.compact-table tr:hover {
+	    background-color: #ddd;
 	}
