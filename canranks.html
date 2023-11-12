@@ -182,28 +182,29 @@
         }
 
        function createTable(rows, cubeType) {
-	    const table = document.createElement("table");
-	    table.border = "1";
-	    table.className = compactMode ? "compact-table" : "dataframe table table-bordered table-hover";
-	    table.innerHTML = `
-	        <thead>
-	            <tr>
-	                <th>Rank</th>
-	                <th>Name</th>
-		 	<th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
-	                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
-	            </tr>
-	        </thead>
-	        <tbody></tbody>
-	    `;
-	
-	    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
+    const table = document.createElement("table");
+    table.border = "1";
+    table.className = compactMode ? "compact-table" : "dataframe table table-bordered table-hover";
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th class="sortable-header" data-sort-column="single${cubeType}">PR Single</th>
+                <th class="sortable-header" data-sort-column="${currentSortColumn}">PR Avg</th>
+                ${compactMode ? '' : '<th>Photo</th>'}
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
 
-	    // Sorting logic
-	    rows.sort((a, b) => {
-	        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
-	        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
-        
+    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
+
+    // Sorting logic
+    rows.sort((a, b) => {
+        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
+        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
+
         // For 'bld' events, sort by single.
         if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
             return aSingle - bSingle;
@@ -234,12 +235,13 @@
             <td>${i + 1}</td>
             <td class="name-cell">
                 <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">
-                    <img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">
+                    ${compactMode ? '' : `<img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px">`}
                     ${row.name}
                 </a>
             </td>
             <td>${prSingle}</td>
             <td>${prAvg}</td>
+            ${compactMode ? '' : `<td>${row.photo}</td>`}
         `;
 
         // Add a mouseover event to show the avatar pop-up with a delay
