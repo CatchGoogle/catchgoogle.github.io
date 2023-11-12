@@ -296,45 +296,54 @@
 	}
 
 	function showAvatarPopup(imageUrl, name, event) {
-    // Close the existing avatar popup if needed
-    hideAvatarPopup();
-
-    // Create the avatar pop-up element
-    const avatarPopup = document.createElement("div");
-    avatarPopup.className = "avatar-popup";
-
-    // Create the image element inside the pop-up
-    const avatarImage = document.createElement("img");
-    avatarImage.src = imageUrl;
-    avatarImage.alt = name;
-
-    // Append the image to the pop-up
-    avatarPopup.appendChild(avatarImage);
-
-    // Append the pop-up to the body
-    document.body.appendChild(avatarPopup);
-
-    // Calculate the position based on the cursor's position and the popup dimensions
-    const popupWidth = avatarPopup.offsetWidth;
-    const popupHeight = avatarPopup.offsetHeight;
-
-    const popupX = event.clientX + popupWidth < window.innerWidth
-        ? event.clientX
-        : window.innerWidth - popupWidth;
-
-    const popupY = event.clientY + popupHeight < window.innerHeight
-        ? event.clientY
-        : window.innerHeight - popupHeight;
-
-    // Set the position of the pop-up
-    avatarPopup.style.left = popupX + "px";
-    avatarPopup.style.top = popupY + "px";
-
-    // Display the pop-up
-    avatarPopup.style.display = "block";
-
-    // Set the current open avatar popup
-    currentAvatarPopup = avatarPopup;
+	    // Close the existing avatar popup if needed
+	    hideAvatarPopup();
+	
+	    // Create the avatar pop-up element
+	    const avatarPopup = document.createElement("div");
+	    avatarPopup.className = "avatar-popup";
+	
+	    // Create the image element inside the pop-up
+	    const avatarImage = document.createElement("img");
+	    avatarImage.src = imageUrl;
+	    avatarImage.alt = name;
+	
+	    // Wait for the image to load before calculating dimensions
+	    avatarImage.onload = () => {
+	        const imageWidth = avatarImage.width;
+	        const imageHeight = avatarImage.height;
+	
+	        // Create the avatar pop-up element
+	        const avatarPopup = document.createElement("div");
+	        avatarPopup.className = "avatar-popup";
+	
+	        // Append the image to the pop-up
+	        avatarPopup.appendChild(avatarImage);
+	
+	        // Append the pop-up to the body
+	        document.body.appendChild(avatarPopup);
+	
+	        // Calculate the position based on the cursor's position and the popup dimensions
+	        const popupWidth = avatarPopup.offsetWidth;
+	        const popupHeight = avatarPopup.offsetHeight;
+	
+	        const popupX = event.clientX + popupWidth < window.innerWidth
+	            ? event.clientX
+	            : window.innerWidth - popupWidth;
+	
+	        const popupY = event.clientY + popupHeight < window.innerHeight
+	            ? event.clientY
+	            : window.innerHeight - popupHeight;
+	
+	        // Set the position of the pop-up
+	        avatarPopup.style.left = popupX + "px";
+	        avatarPopup.style.top = popupY + "px";
+	
+	        // Display the pop-up
+	        avatarPopup.style.display = "block";
+	
+	        // Set the current open avatar popup
+	        currentAvatarPopup = avatarPopup;
 
     // Make the popup draggable
     let isDragging = false;
