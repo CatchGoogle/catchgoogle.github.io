@@ -128,6 +128,75 @@
             tableContainer.appendChild(table);
         }
 
+        function formatAndDisplayData(data) {
+    const formattedData = `
+        Format Version: ${data.formatVersion}
+        Competition ID: ${data.id}
+        Competition Name: ${data.name}
+        Start Date: ${data.schedule.startDate}
+        Number of Days: ${data.schedule.numberOfDays}
+        Venue: ${data.schedule.venues[0].name}
+        Latitude: ${data.schedule.venues[0].latitudeMicrodegrees}
+        Longitude: ${data.schedule.venues[0].longitudeMicrodegrees}
+        
+        --- Persons ---
+        ${data.persons.map(person => `
+            Name: ${person.name}
+            WCA ID: ${person.wcaId}
+            Country: ${person.countryIso2}
+            Gender: ${person.gender}
+            
+            Personal Bests:
+            ${person.personalBests.map(pBest => `
+                Event ID: ${pBest.eventId}
+                Best: ${pBest.best}
+                World Ranking: ${pBest.worldRanking}
+                Continental Ranking: ${pBest.continentalRanking}
+                National Ranking: ${pBest.nationalRanking}
+                Type: ${pBest.type}
+            `).join('\n')}
+            
+            -----------------
+        `).join('\n')}
+        
+        --- Events ---
+        ${data.events.map(event => `
+            Event ID: ${event.id}
+            Rounds: ${event.rounds.map(round => `
+                Round ID: ${round.id}
+                Format: ${round.format}
+                Time Limit: ${round.timeLimit}
+                Cutoff: ${round.cutoff}
+                Advancement Condition: ${round.advancementCondition}
+                Results: ${round.results.map(result => `
+                    Person ID: ${result.personId}
+                    Ranking: ${result.ranking}
+                    Best: ${result.best}
+                    Average: ${result.average}
+                `).join('\n')}
+            `).join('\n')}
+        `).join('\n')}
+        
+        --- Schedule ---
+        ${data.schedule.venues[0].rooms[0].activities.map(activity => `
+            Activity ID: ${activity.id}
+            Name: ${activity.name}
+            Activity Code: ${activity.activityCode}
+            Start Time: ${activity.startTime}
+            End Time: ${activity.endTime}
+        `).join('\n')}
+    `;
+
+    // Display the formatted data
+    document.getElementById('resultContainer').textContent = formattedData;
+}
+
+// Assuming you have the API data stored in a variable named 'apiData'
+const apiData = /* ... (paste the provided API data here) */;
+
+// Call the function with the API data
+formatAndDisplayData(apiData);
+
     </script>
 </body>
 </html>
