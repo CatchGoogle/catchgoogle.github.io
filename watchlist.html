@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Data Sorting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <label for="textInput">Enter Competition ID:</label>
+        <input type="text" id="textInput" placeholder="Type competition ID...">
+        <button onclick="getData()">Get Data</button>
+        <div id="tableContainer"></div>
+    </div>
+
+    <script>
+        function getData() {
+            // Get user input
+            const userInput = document.getElementById('textInput').value;
+
+            // Make an API call to World Cube Association API
+            fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the API response and display it in a table
+                    displayDataInTable(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    // Handle errors gracefully
+                });
+        }
+
+        function displayDataInTable(data) {
+            // Create a table dynamically
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = ''; // Clear previous table
+
+            const table = document.createElement('table');
+            table.classList.add('data-table');
+
+            // Assuming 'data' is an array of objects with similar structure
+            if (data.length > 0) {
+                // Create table header
+                const headerRow = document.createElement('tr');
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+
+                // Create table rows
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    Object.values(item).forEach(value => {
+                        const td = document.createElement('td');
+                        td.textContent = value;
+                        row.appendChild(td);
+                    });
+                    table.appendChild(row);
+                });
+            } else {
+                // Display a message if there is no data
+                const messageRow = document.createElement('tr');
+                const messageCell = document.createElement('td');
+                messageCell.textContent = 'No data available.';
+                messageCell.colSpan = Object.keys(data[0]).length;
+                messageRow.appendChild(messageCell);
+                table.appendChild(messageRow);
+            }
+
+            tableContainer.appendChild(table);
+        }
+    </script>
+</body>
+</html>
