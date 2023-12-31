@@ -70,23 +70,18 @@
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.text(); // Read the response as text
+            return response.json(); // Read the response as JSON
         })
-        .then(dataString => {
-            // Parse the string into a JavaScript object
-            const data = JSON.parse(dataString);
-
+        .then(data => {
             // Log the entire API response (for debugging purposes)
             console.log('API Response:', data);
 
-            // Display the entire API response as a string below the input
-            const resultContainer = document.getElementById('resultContainer');
-            resultContainer.textContent = JSON.stringify(data, null, 2);
-
+            // Call the function to format and display data
+            formatAndDisplayData(data);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            // Handle errors gracefully
+            // Handle errors gracefully, e.g., display an error message to the user
         });
 }
         
