@@ -56,22 +56,48 @@
     </div>
 
     <script>
-        function getData() {
-            // Get user input
-            const userInput = document.getElementById('textInput').value;
 
-            // Make an API call to World Cube Association API
-            fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
-                .then(response => response.json())
-                .then(data => {
-                    // Process the API response and display it in a table
-                    displayDataInTable(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    // Handle errors gracefully
+        
+        function getData() {
+    // Get user input
+    const userInput = document.getElementById('textInput').value;
+
+    // Make an API call to World Cube Association API
+    fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text(); // Read the response as text
+        })
+        .then(dataString => {
+            // Parse the string into a JavaScript object
+            const data = JSON.parse(dataString);
+
+            // Log the entire API response (for debugging purposes)
+            console.log('API Response:', data);
+
+            // Extract and display relevant information
+            if (data && Array.isArray(data.persons) && data.persons.length > 0) {
+                // Display individual assignments
+                data.persons.forEach(person => {
+                    if (person.assignments && Array.isArray(person.assignments) && person.assignments.length > 0) {
+                        displayTable(document.getElementById('tableContainer'), person.assignments, `Assignments for ${person.name}`);
+                    }
                 });
-        }
+            } else {
+                console.warn('No individual assignments found in the API response.');
+            }
+
+            // You can add similar checks for other parts of the API response here
+
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // Handle errors gracefully
+        });
+}
+
 
         function displayDataInTable(data) {
             // Create a table dynamically
