@@ -55,6 +55,8 @@
         <div id="tableContainer"></div>
     </div>
 
+    <pre id="resultContainer"></pre>
+    
     <script>
 
         
@@ -77,19 +79,9 @@
             // Log the entire API response (for debugging purposes)
             console.log('API Response:', data);
 
-            // Extract and display relevant information
-            if (data && Array.isArray(data.persons) && data.persons.length > 0) {
-                // Display individual assignments
-                data.persons.forEach(person => {
-                    if (person.assignments && Array.isArray(person.assignments) && person.assignments.length > 0) {
-                        displayTable(document.getElementById('tableContainer'), person.assignments, `Assignments for ${person.name}`);
-                    }
-                });
-            } else {
-                console.warn('No individual assignments found in the API response.');
-            }
-
-            // You can add similar checks for other parts of the API response here
+            // Display the entire API response as a string below the input
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.textContent = JSON.stringify(data, null, 2);
 
         })
         .catch(error => {
@@ -97,7 +89,7 @@
             // Handle errors gracefully
         });
 }
-
+        
 
         function displayDataInTable(data) {
             // Create a table dynamically
