@@ -91,43 +91,6 @@
 }
         
 
-        function displayDataInTable(data) {
-            // Create a table dynamically
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = ''; // Clear previous table
-        
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                // Display a message if there is no data or if data is not in the expected format
-                tableContainer.innerHTML = '<p>No valid data available.</p>';
-                return;
-            }
-        
-            const table = document.createElement('table');
-            table.classList.add('data-table');
-        
-            // Create table header
-            const headerRow = document.createElement('tr');
-            Object.keys(data[0]).forEach(key => {
-                const th = document.createElement('th');
-                th.textContent = key;
-                headerRow.appendChild(th);
-            });
-            table.appendChild(headerRow);
-        
-            // Create table rows
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                Object.values(item).forEach(value => {
-                    const td = document.createElement('td');
-                    td.textContent = value;
-                    row.appendChild(td);
-                });
-                table.appendChild(row);
-            });
-        
-            tableContainer.appendChild(table);
-        }
-
         function formatAndDisplayData(data) {
     const formattedData = `
         Format Version: ${data.formatVersion}
