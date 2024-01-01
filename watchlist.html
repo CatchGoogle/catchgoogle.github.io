@@ -87,31 +87,36 @@
         
 
         function formatAndDisplayData(data) {
+    if (!data) {
+        console.error('Error: Data is undefined.');
+        return;
+    }
+
     const formattedData = `
-        Format Version: ${data.formatVersion}
-        Competition ID: ${data.id}
-        Competition Name: ${data.name}
-        Start Date: ${data.schedule.startDate}
-        Number of Days: ${data.schedule.numberOfDays}
-        Venue: ${data.schedule.venues[0].name}
-        Latitude: ${data.schedule.venues[0].latitudeMicrodegrees}
-        Longitude: ${data.schedule.venues[0].longitudeMicrodegrees}
+        Format Version: ${data.formatVersion || 'N/A'}
+        Competition ID: ${data.id || 'N/A'}
+        Competition Name: ${data.name || 'N/A'}
+        Start Date: ${data.schedule.startDate || 'N/A'}
+        Number of Days: ${data.schedule.numberOfDays || 'N/A'}
+        Venue: ${data.schedule.venues[0]?.name || 'N/A'}
+        Latitude: ${data.schedule.venues[0]?.latitudeMicrodegrees || 'N/A'}
+        Longitude: ${data.schedule.venues[0]?.longitudeMicrodegrees || 'N/A'}
         
         --- Persons ---
         ${data.persons.map(person => `
-            Name: ${person.name}
-            WCA ID: ${person.wcaId}
-            Country: ${person.countryIso2}
-            Gender: ${person.gender}
+            Name: ${person.name || 'N/A'}
+            WCA ID: ${person.wcaId || 'N/A'}
+            Country: ${person.countryIso2 || 'N/A'}
+            Gender: ${person.gender || 'N/A'}
             
             Personal Bests:
             ${person.personalBests.map(pBest => `
-                Event ID: ${pBest.eventId}
-                Best: ${pBest.best}
-                World Ranking: ${pBest.worldRanking}
-                Continental Ranking: ${pBest.continentalRanking}
-                National Ranking: ${pBest.nationalRanking}
-                Type: ${pBest.type}
+                Event ID: ${pBest.eventId || 'N/A'}
+                Best: ${pBest.best || 'N/A'}
+                World Ranking: ${pBest.worldRanking || 'N/A'}
+                Continental Ranking: ${pBest.continentalRanking || 'N/A'}
+                National Ranking: ${pBest.nationalRanking || 'N/A'}
+                Type: ${pBest.type || 'N/A'}
             `).join('\n')}
             
             -----------------
@@ -119,31 +124,31 @@
         
         --- Events ---
         ${data.events.map(event => `
-            Event ID: ${event.id}
+            Event ID: ${event.id || 'N/A'}
             Rounds: ${event.rounds.map(round => `
-                Round ID: ${round.id}
-                Format: ${round.format}
-                Time Limit: ${round.timeLimit}
-                Cutoff: ${round.cutoff}
-                Advancement Condition: ${round.advancementCondition}
+                Round ID: ${round.id || 'N/A'}
+                Format: ${round.format || 'N/A'}
+                Time Limit: ${round.timeLimit || 'N/A'}
+                Cutoff: ${round.cutoff || 'N/A'}
+                Advancement Condition: ${round.advancementCondition || 'N/A'}
                 Results: ${round.results.map(result => `
-                    Person ID: ${result.personId}
-                    Ranking: ${result.ranking}
-                    Best: ${result.best}
-                    Average: ${result.average}
+                    Person ID: ${result.personId || 'N/A'}
+                    Ranking: ${result.ranking || 'N/A'}
+                    Best: ${result.best || 'N/A'}
+                    Average: ${result.average || 'N/A'}
                 `).join('\n')}
                 
-                ${round.extensions && round.extensions[0].data.groups ? `
+                ${round.extensions && round.extensions[0]?.data.groups ? `
                     --- Groups ---
                     ${round.extensions[0].data.groups.map(group => `
-                        Group ID: ${group.id}
-                        Name: ${group.name}
+                        Group ID: ${group.id || 'N/A'}
+                        Name: ${group.name || 'N/A'}
                         Activities: ${group.activityIds.map(activityId => `
-                            Activity ID: ${activityId}
-                            Name: ${round.activities.find(activity => activity.id === activityId).name}
-                            Activity Code: ${round.activities.find(activity => activity.id === activityId).activityCode}
-                            Start Time: ${round.activities.find(activity => activity.id === activityId).startTime}
-                            End Time: ${round.activities.find(activity => activity.id === activityId).endTime}
+                            Activity ID: ${activityId || 'N/A'}
+                            Name: ${round.activities.find(activity => activity.id === activityId)?.name || 'N/A'}
+                            Activity Code: ${round.activities.find(activity => activity.id === activityId)?.activityCode || 'N/A'}
+                            Start Time: ${round.activities.find(activity => activity.id === activityId)?.startTime || 'N/A'}
+                            End Time: ${round.activities.find(activity => activity.id === activityId)?.endTime || 'N/A'}
                         `).join('\n')}
                     `).join('\n')}
                 ` : ''}
@@ -151,14 +156,18 @@
         `).join('\n')}
         
         --- Schedule ---
-        ${data.schedule.venues[0].rooms[0].activities.map(activity => `
-            Activity ID: ${activity.id}
-            Name: ${activity.name}
-            Activity Code: ${activity.activityCode}
-            Start Time: ${activity.startTime}
-            End Time: ${activity.endTime}
+        ${data.schedule.venues[0]?.rooms[0]?.activities.map(activity => `
+            Activity ID: ${activity.id || 'N/A'}
+            Name: ${activity.name || 'N/A'}
+            Activity Code: ${activity.activityCode || 'N/A'}
+            Start Time: ${activity.startTime || 'N/A'}
+            End Time: ${activity.endTime || 'N/A'}
         `).join('\n')}
     `;
+
+    // Display the formatted data
+    document.getElementById('resultContainer').textContent = formattedData;
+}
 
     // Display the formatted data
     document.getElementById('resultContainer').textContent = formattedData;
