@@ -132,6 +132,21 @@
                     Best: ${result.best}
                     Average: ${result.average}
                 `).join('\n')}
+                
+                ${round.groups ? `
+                    --- Groups ---
+                    ${round.groups.map(group => `
+                        Group ID: ${group.id}
+                        Name: ${group.name}
+                        Activities: ${group.activities.map(activity => `
+                            Activity ID: ${activity.id}
+                            Name: ${activity.name}
+                            Activity Code: ${activity.activityCode}
+                            Start Time: ${activity.startTime}
+                            End Time: ${activity.endTime}
+                        `).join('\n')}
+                    `).join('\n')}
+                ` : ''}
             `).join('\n')}
         `).join('\n')}
         
