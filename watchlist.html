@@ -109,7 +109,14 @@
                 Longitude: ${data.schedule.venues[0]?.longitudeMicrodegrees || 'N/A'}
                 
                 --- Persons ---
-                ${data.persons.map(person => `
+                    ${data.persons.map(person => 
+                        rankings[person.wcaId] = person.personalBests.map(pBest => ({
+                            eventId: pBest.eventId,
+                            worldRanking: pBest.worldRanking,
+                            continentalRanking: pBest.continentalRanking,
+                            nationalRanking: pBest.nationalRanking,
+                        }));
+                    return `
                     Name: ${person.name || 'N/A'}
                     WCA ID: ${person.wcaId || 'N/A'}
                     Country: ${person.countryIso2 || 'N/A'}
@@ -171,8 +178,10 @@
                 `).join('\n')}
             `;
         
-            // Display the formatted data
+            // display the formatted data
             document.getElementById('resultContainer').textContent = formattedData;
+            // save rankings for future use
+            console.log('Saved Rankings:', rankings);
         }
 
         function autofillCompetitionID() {
