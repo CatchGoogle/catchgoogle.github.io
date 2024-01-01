@@ -133,17 +133,17 @@
                     Average: ${result.average}
                 `).join('\n')}
                 
-                ${round.groups ? `
+                ${round.extensions && round.extensions[0].data.groups ? `
                     --- Groups ---
-                    ${round.groups.map(group => `
+                    ${round.extensions[0].data.groups.map(group => `
                         Group ID: ${group.id}
                         Name: ${group.name}
-                        Activities: ${group.activities.map(activity => `
-                            Activity ID: ${activity.id}
-                            Name: ${activity.name}
-                            Activity Code: ${activity.activityCode}
-                            Start Time: ${activity.startTime}
-                            End Time: ${activity.endTime}
+                        Activities: ${group.activityIds.map(activityId => `
+                            Activity ID: ${activityId}
+                            Name: ${round.activities.find(activity => activity.id === activityId).name}
+                            Activity Code: ${round.activities.find(activity => activity.id === activityId).activityCode}
+                            Start Time: ${round.activities.find(activity => activity.id === activityId).startTime}
+                            End Time: ${round.activities.find(activity => activity.id === activityId).endTime}
                         `).join('\n')}
                     `).join('\n')}
                 ` : ''}
@@ -163,6 +163,7 @@
     // Display the formatted data
     document.getElementById('resultContainer').textContent = formattedData;
 }
+
 
     </script>
 </body>
