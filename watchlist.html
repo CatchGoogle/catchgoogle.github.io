@@ -115,21 +115,13 @@
                             worldRanking: pBest.worldRanking,
                             continentalRanking: pBest.continentalRanking,
                             nationalRanking: pBest.nationalRanking,
+                            typeRanking: pBest.type,
                         }));
                     return `
                     Name: ${person.name || 'N/A'}
                     WCA ID: ${person.wcaId || 'N/A'}
                     Country: ${person.countryIso2 || 'N/A'}
                     Gender: ${person.gender || 'N/A'}
-                    
-                    Personal Bests:
-                    ${person.personalBests.map(pBest => `
-                        Event ID: ${pBest.eventId || 'N/A'}
-                        Best: ${pBest.best || 'N/A'}
-                        World Ranking: ${pBest.worldRanking || 'N/A'}
-                        Continental Ranking: ${pBest.continentalRanking || 'N/A'}
-                        National Ranking: ${pBest.nationalRanking || 'N/A'}
-                        Type: ${pBest.type || 'N/A'}
                     `).join('\n')}
                     
                     -----------------
