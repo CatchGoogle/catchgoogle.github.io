@@ -110,6 +110,7 @@
         ${data.persons.map(person => {
             // Save rankings to the 'rankings' object
             rankings[person.wcaId] = person.personalBests.map(pBest => ({
+                name: person.name,
                 eventId: pBest.eventId,
                 worldRanking: pBest.worldRanking,
                 continentalRanking: pBest.continentalRanking,
@@ -161,7 +162,12 @@
 
     // Save rankings for future use
     console.log('Saved Rankings:', rankings);
-}
+            
+    const eventButtonsContainer = document.getElementById('eventButtonsContainer');
+            eventButtonsContainer.innerHTML = data.events.map(event => `
+                <button class="event-button" onclick="displayEventResults('${event.id}')">${event.id}</button>
+            `).join('');
+        }    
         function autofillCompetitionID() {
                     // Autofill the textbox with "cloverdaleopen2022"
                     document.getElementById('textInput').value = 'cloverdaleopen2022';
