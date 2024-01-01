@@ -57,6 +57,7 @@
         <label for="textInput">Enter Competition ID:</label>
         <input type="text" id="textInput" placeholder="Type competition ID...">
         <button onclick="getData()">Get Data</button>
+        <button onclick="autofillCompetitionID()">Autofill Competition ID</button>
         <div id="tableContainer"></div>
     </div>
 
@@ -92,89 +93,92 @@
         
 
         function formatAndDisplayData(data) {
-    if (!data) {
-        console.error('Error: Data is undefined.');
-        return;
-    }
-
-    const formattedData = `
-        Format Version: ${data.formatVersion || 'N/A'}
-        Competition ID: ${data.id || 'N/A'}
-        Competition Name: ${data.name || 'N/A'}
-        Start Date: ${data.schedule.startDate || 'N/A'}
-        Number of Days: ${data.schedule.numberOfDays || 'N/A'}
-        Venue: ${data.schedule.venues[0]?.name || 'N/A'}
-        Latitude: ${data.schedule.venues[0]?.latitudeMicrodegrees || 'N/A'}
-        Longitude: ${data.schedule.venues[0]?.longitudeMicrodegrees || 'N/A'}
+            if (!data) {
+                console.error('Error: Data is undefined.');
+                return;
+            }
         
-        --- Persons ---
-        ${data.persons.map(person => `
-            Name: ${person.name || 'N/A'}
-            WCA ID: ${person.wcaId || 'N/A'}
-            Country: ${person.countryIso2 || 'N/A'}
-            Gender: ${person.gender || 'N/A'}
-            
-            Personal Bests:
-            ${person.personalBests.map(pBest => `
-                Event ID: ${pBest.eventId || 'N/A'}
-                Best: ${pBest.best || 'N/A'}
-                World Ranking: ${pBest.worldRanking || 'N/A'}
-                Continental Ranking: ${pBest.continentalRanking || 'N/A'}
-                National Ranking: ${pBest.nationalRanking || 'N/A'}
-                Type: ${pBest.type || 'N/A'}
-            `).join('\n')}
-            
-            -----------------
-        `).join('\n')}
-        
-        --- Events ---
-        ${data.events.map(event => `
-            Event ID: ${event.id || 'N/A'}
-            Rounds: ${event.rounds.map(round => `
-                Round ID: ${round.id || 'N/A'}
-                Format: ${round.format || 'N/A'}
-                Time Limit: ${round.timeLimit || 'N/A'}
-                Cutoff: ${round.cutoff || 'N/A'}
-                Advancement Condition: ${round.advancementCondition || 'N/A'}
-                Results: ${round.results.map(result => `
-                    Person ID: ${result.personId || 'N/A'}
-                    Ranking: ${result.ranking || 'N/A'}
-                    Best: ${result.best || 'N/A'}
-                    Average: ${result.average || 'N/A'}
+            const formattedData = `
+                Format Version: ${data.formatVersion || 'N/A'}
+                Competition ID: ${data.id || 'N/A'}
+                Competition Name: ${data.name || 'N/A'}
+                Start Date: ${data.schedule.startDate || 'N/A'}
+                Number of Days: ${data.schedule.numberOfDays || 'N/A'}
+                Venue: ${data.schedule.venues[0]?.name || 'N/A'}
+                Latitude: ${data.schedule.venues[0]?.latitudeMicrodegrees || 'N/A'}
+                Longitude: ${data.schedule.venues[0]?.longitudeMicrodegrees || 'N/A'}
+                
+                --- Persons ---
+                ${data.persons.map(person => `
+                    Name: ${person.name || 'N/A'}
+                    WCA ID: ${person.wcaId || 'N/A'}
+                    Country: ${person.countryIso2 || 'N/A'}
+                    Gender: ${person.gender || 'N/A'}
+                    
+                    Personal Bests:
+                    ${person.personalBests.map(pBest => `
+                        Event ID: ${pBest.eventId || 'N/A'}
+                        Best: ${pBest.best || 'N/A'}
+                        World Ranking: ${pBest.worldRanking || 'N/A'}
+                        Continental Ranking: ${pBest.continentalRanking || 'N/A'}
+                        National Ranking: ${pBest.nationalRanking || 'N/A'}
+                        Type: ${pBest.type || 'N/A'}
+                    `).join('\n')}
+                    
+                    -----------------
                 `).join('\n')}
                 
-                ${round.extensions && round.extensions[0]?.data.groups ? `
-                    --- Groups ---
-                    ${round.extensions[0].data.groups.map(group => `
-                        Group ID: ${group.id || 'N/A'}
-                        Name: ${group.name || 'N/A'}
-                        Activities: ${group.activityIds.map(activityId => `
-                            Activity ID: ${activityId || 'N/A'}
-                            Name: ${round.activities.find(activity => activity.id === activityId)?.name || 'N/A'}
-                            Activity Code: ${round.activities.find(activity => activity.id === activityId)?.activityCode || 'N/A'}
-                            Start Time: ${round.activities.find(activity => activity.id === activityId)?.startTime || 'N/A'}
-                            End Time: ${round.activities.find(activity => activity.id === activityId)?.endTime || 'N/A'}
+                --- Events ---
+                ${data.events.map(event => `
+                    Event ID: ${event.id || 'N/A'}
+                    Rounds: ${event.rounds.map(round => `
+                        Round ID: ${round.id || 'N/A'}
+                        Format: ${round.format || 'N/A'}
+                        Time Limit: ${round.timeLimit || 'N/A'}
+                        Cutoff: ${round.cutoff || 'N/A'}
+                        Advancement Condition: ${round.advancementCondition || 'N/A'}
+                        Results: ${round.results.map(result => `
+                            Person ID: ${result.personId || 'N/A'}
+                            Ranking: ${result.ranking || 'N/A'}
+                            Best: ${result.best || 'N/A'}
+                            Average: ${result.average || 'N/A'}
                         `).join('\n')}
+                        
+                        ${round.extensions && round.extensions[0]?.data.groups ? `
+                            --- Groups ---
+                            ${round.extensions[0].data.groups.map(group => `
+                                Group ID: ${group.id || 'N/A'}
+                                Name: ${group.name || 'N/A'}
+                                Activities: ${group.activityIds.map(activityId => `
+                                    Activity ID: ${activityId || 'N/A'}
+                                    Name: ${round.activities.find(activity => activity.id === activityId)?.name || 'N/A'}
+                                    Activity Code: ${round.activities.find(activity => activity.id === activityId)?.activityCode || 'N/A'}
+                                    Start Time: ${round.activities.find(activity => activity.id === activityId)?.startTime || 'N/A'}
+                                    End Time: ${round.activities.find(activity => activity.id === activityId)?.endTime || 'N/A'}
+                                `).join('\n')}
+                            `).join('\n')}
+                        ` : ''}
                     `).join('\n')}
-                ` : ''}
-            `).join('\n')}
-        `).join('\n')}
+                `).join('\n')}
+                
+                --- Schedule ---
+                ${data.schedule.venues[0]?.rooms[0]?.activities.map(activity => `
+                    Activity ID: ${activity.id || 'N/A'}
+                    Name: ${activity.name || 'N/A'}
+                    Activity Code: ${activity.activityCode || 'N/A'}
+                    Start Time: ${activity.startTime || 'N/A'}
+                    End Time: ${activity.endTime || 'N/A'}
+                `).join('\n')}
+            `;
         
-        --- Schedule ---
-        ${data.schedule.venues[0]?.rooms[0]?.activities.map(activity => `
-            Activity ID: ${activity.id || 'N/A'}
-            Name: ${activity.name || 'N/A'}
-            Activity Code: ${activity.activityCode || 'N/A'}
-            Start Time: ${activity.startTime || 'N/A'}
-            End Time: ${activity.endTime || 'N/A'}
-        `).join('\n')}
-    `;
+            // Display the formatted data
+            document.getElementById('resultContainer').textContent = formattedData;
+        }
 
-    // Display the formatted data
-    document.getElementById('resultContainer').textContent = formattedData;
-}
-
-
+        function autofillCompetitionID() {
+                    // Autofill the textbox with "cloverdaleopen2022"
+                    document.getElementById('textInput').value = 'cloverdaleopen2022';
+                }
     </script>
 </body>
 </html>
