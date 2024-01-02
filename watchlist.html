@@ -260,21 +260,22 @@
         }
         
         function displayResultsForCompetitor() {
-        const selectedWcaId = document.getElementById('competitorSelect').value;
+    const selectedWcaId = document.getElementById('competitorSelect').value;
 
-        if (selectedWcaId === 'main') {
-            // Display the dynamic list of checkboxes
-            displayCompetitorCheckboxes(data);
-        } else {
-            const competitorRankings = rankings[selectedWcaId];
-            const formattedCompetitorData = `
-                --- Competitor Rankings ---
-                ${competitorRankings.map(ranking => `
-                    Event ID: ${ranking.eventId}
-                    World Ranking: ${ranking.worldRanking}
-                    National Ranking: ${ranking.nationalRanking}
-                `).join('\n')}
-            `;
+    if (selectedWcaId === 'main') {
+        // Display the dynamic list of checkboxes
+        document.getElementById('resultContainer').textContent = ''; // Clear the result container
+        displayCompetitorCheckboxes(data);
+    } else {
+        const competitorRankings = rankings[selectedWcaId];
+        const formattedCompetitorData = `
+            --- Competitor Rankings ---
+            ${competitorRankings.map(ranking => `
+                Event ID: ${ranking.eventId}
+                World Ranking: ${ranking.worldRanking}
+                National Ranking: ${ranking.nationalRanking}
+            `).join('\n')}
+        `;
 
         // Display the formatted competitor data
         document.getElementById('resultContainer').textContent = formattedCompetitorData;
