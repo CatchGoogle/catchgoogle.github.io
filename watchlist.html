@@ -99,7 +99,6 @@
         
         const rankings = {};
         let data;
-        const groupsInfo = {};
         
         function getData() {
             // Get user input
@@ -194,7 +193,7 @@
                     // Check if the activity has child activities
                     if (activity.childActivities && activity.childActivities.length > 0) {
                         // Handle group information
-                        groupsInfo = activity.childActivities.map(group => `
+                        const groupsInfo = activity.childActivities.map(group => `
                             Group ID: ${group.id}
                             Group Name: ${group.name}
                             Group Activity Code: ${group.activityCode}
