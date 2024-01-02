@@ -341,49 +341,66 @@
         }
 
         function createWatchlist() {
-    const checkboxes = document.getElementsByName('competitorCheckbox');
-    const selectedCheckboxes = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
-
-    // For simplicity, let's just update the content dynamically here
-    const watchlistContainer = document.getElementById('watchlistContainer');
-    const watchlistTable = document.getElementById('watchlistTable');
-
-    // Clear existing content
-    watchlistTable.innerHTML = '';
-
-    // Create table header
-    const headerRow = watchlistTable.insertRow(0);
-
-    // Iterate over events and add headers for each event
-    data.events.forEach(event => {
-        event.rounds.forEach(round => {
-            const headerCell = headerRow.insertCell(-1);
-            headerCell.textContent = `${event.id} - ${round.id}`;
-        });
-    });
-
-    // Populate the table with data
-    selectedCheckboxes.forEach(competitorId => {
-        const person = data.persons.find(person => person.wcaId === competitorId);
-        if (person) {
-            const row = watchlistTable.insertRow(-1);
-
-            // Iterate over events and populate cells with names if helping out
+            const checkboxes = document.getElementsByName('competitorCheckbox');
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+        
+            // For simplicity, let's just update the content dynamically here
+            const watchlistContainer = document.getElementById('watchlistContainer');
+            const watchlistTable = document.getElementById('watchlistTable');
+        
+            // Clear existing content
+            watchlistTable.innerHTML = '';
+        
+            // Create table header
+            const headerRow = watchlistTable.insertRow(0);
+        
+            // Add headers for the first and second columns
+            const timelineHeader = headerRow.insertCell(0);
+            timelineHeader.textContent = 'Timeline';
+        
+            // Iterate over events and add headers for each event
             data.events.forEach(event => {
                 event.rounds.forEach(round => {
-                    const cell = row.insertCell(-1);
-                    const helpingOut = person.assignments.some(assignment => assignment.activityId === round.id);
-                    cell.textContent = helpingOut ? person.name : '';
+                    const headerCell = headerRow.insertCell(-1);
+                    headerCell.textContent = `${event.id} - ${round.id}`;
                 });
             });
+        
+            // Add header for the third column
+            const competitorHeader = headerRow.insertCell(-1);
+            competitorHeader.textContent = 'Competitor';
+        
+            // Populate the table with data
+            selectedCheckboxes.forEach(competitorId => {
+                const person = data.persons.find(person => person.wcaId === competitorId);
+                if (person) {
+                    const row = watchlistTable.insertRow(-1);
+        
+                    // Add timeline information in the first column
+                    const timelineCell = row.insertCell(0);
+                    timelineCell.textContent = person.assignments.map(assignment => assignment.activityId).join(', ');
+        
+                    // Iterate over events and populate cells with names if helping out
+                    data.events.forEach(event => {
+                        event.rounds.forEach(round => {
+                            const cell = row.insertCell(-1);
+                            const helpingOut = person.assignments.some(assignment => assignment.activityId === round.id);
+                            cell.textContent = helpingOut ? person.name : '';
+                        });
+                    });
+        
+                    // Add competitor name in the third column
+                    const competitorCell = row.insertCell(-1);
+                    competitorCell.textContent = person.name;
+                }
+            });
+        
+            // Show the watchlist container
+            watchlistContainer.style.display = 'block';
         }
-    });
 
-    // Show the watchlist container
-    watchlistContainer.style.display = 'block';
-}
 
         
     </script>
