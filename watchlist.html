@@ -79,7 +79,8 @@
     <script>
         // Initialize an object to store rankings
         
-
+        const rankings = {};
+        
         function getData() {
             // Get user input
             const userInput = document.getElementById('textInput').value;
@@ -113,7 +114,6 @@
         }
 
         function formatAndDisplayData(data) {
-            const rankings = {};
             const formattedData = `
                 Format Version: ${data.formatVersion}
                 Competition ID: ${data.id}
