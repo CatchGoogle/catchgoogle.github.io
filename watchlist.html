@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCA Watchlist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -98,6 +99,7 @@
         <table id="watchlistTable">
             <!-- Table content will be dynamically added here -->
         </table>
+        <button id="exportPdfBtn" onclick="exportToPdf()">Export to PDF</button>
     </div>
 
     <script>
@@ -338,7 +340,11 @@
     });
 
     // Attach event listener to handle checkbox changes
-    checkboxContainer.addEventListener('change', handleCheckboxChange);
+    checkboxContainer.addEventListener('change', function(event) {
+    if (event.target.name === 'competitorCheckbox') {
+        handleCheckboxChange();
+    }
+});
 
     // Show the "Create Watchlist" button
     const createWatchlistBtn = document.getElementById('createWatchlistBtn');
@@ -346,6 +352,7 @@
 }
 
     function handleCheckboxChange() {
+            console.log('Checkbox changed');
             const checkboxes = document.getElementsByName('competitorCheckbox');
             const selectedCheckboxes = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
@@ -596,6 +603,18 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
             });
             return localTime;
         }
+		function exportToPdf() {
+    const watchlistTable = document.getElementById('watchlistTable');
+
+    // Create a new jsPDF instance
+    const pdf = new jsPDF();
+
+    // Add content to the PDF using the HTML content of the table
+    pdf.autoTable({ html: '#watchlistTable' });
+
+    // Save the PDF with a specific filename
+    pdf.save('watchlist.pdf');
+}
 
 </script>
 
