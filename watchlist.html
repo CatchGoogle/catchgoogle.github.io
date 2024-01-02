@@ -272,7 +272,6 @@
                     ${person.assignments.map(assignment => `
                         Activity ID: ${assignment.activityId}
                         Assignment Code: ${assignment.assignmentCode}
-                        Start Time: ${getScheduleInfo(data, assignment.activityId, assignment.assignmentCode)}
                     `).join('\n')}
                 `;
         
