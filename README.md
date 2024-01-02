@@ -8,7 +8,8 @@ Current projects:
 <br>
 https://catchgoogle.github.io/canranks
 <br>
-To do: Fully automate results updating by converting existing python script to js. Hopefully this is possible since I have no intention on continuing to update this site manually.
+To do: Fully automate results updating by converting existing python script to js. <br>Hopefully this is possible since I have no intention on continuing to update this site manually.
+<br>
 <img width="300" alt="image" src="https://github.com/CatchGoogle/catchgoogle.github.io/assets/133523893/5a22c2fa-326a-4151-8bc3-ad1262300e76">
 
 <br>
@@ -19,6 +20,7 @@ To do: Fully automate results updating by converting existing python script to j
 https://catchgoogle.github.io/watchlist
 <br>
 Compiles a schedule of "people to watch" at WCA competitions. Enter the comp ID and select competitors to view their schedule(s).
+<br>
 <img width="300" alt="image" src="https://github.com/CatchGoogle/catchgoogle.github.io/assets/133523893/fd7f5b8f-0f86-4a8e-80de-f5aac83ceae6">
 
 
