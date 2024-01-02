@@ -87,6 +87,12 @@
         <button id="createWatchlistBtn" style="display: none;" onclick="createWatchlist()">Create Watchlist</button>
     </div>
 
+    <!-- New section to display names and assignments -->
+    <div id="selectedCompetitorsContainer" style="display: none;">
+        <h3>Selected Competitors:</h3>
+        <div id="selectedCompetitorsInfo"></div>
+    </div>
+    
     <div id="watchlistContainer" style="display: none;">
         <h2>Watchlist</h2>
         <table id="watchlistTable">
@@ -95,168 +101,82 @@
     </div>
 
     <script>
-        // Initialize an object to store rankings
-        
-        const rankings = {};
-        let data;
-        
-        function getData() {
-            // Get user input
-            const userInput = document.getElementById('textInput').value;
+    // Initialize an object to store rankings
+    const rankings = {};
+    let data;
 
-            // Make an API call to World Cube Association API
-            fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.text(); // Read the response as text
-                })
-                .then(dataString => {
-                    // Parse the string into a JavaScript object
-                    data = JSON.parse(dataString);
+    function getData() {
+        // Get user input
+        const userInput = document.getElementById('textInput').value;
 
-                    // Log the entire API response (for debugging purposes)
-                    console.log('API Response:', data);
+        // Make an API call to World Cube Association API
+        fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Change to response.json() to parse JSON directly
+            })
+            .then(dataObject => {
+                // Log the entire API response (for debugging purposes)
+                console.log('API Response:', dataObject);
 
-                    // Display the entire API response as a string below the input
-                    const resultContainer = document.getElementById('resultContainer');
-                    resultContainer.textContent = JSON.stringify(data, null, 2);
+                // Display the entire API response as a string below the input
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.textContent = JSON.stringify(dataObject, null, 2);
 
-                    // Call the function to format and display data
-                    formatAndDisplayData(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    // Handle errors gracefully
-                });
-        }
-
-        function formatAndDisplayData(data) {
-            const formattedData = `
-                Format Version: ${data.formatVersion}
-                Competition ID: ${data.id}
-                Competition Name: ${data.name}
-                Start Date: ${data.schedule.startDate}
-                Number of Days: ${data.schedule.numberOfDays}
-                Venue: ${data.schedule.venues[0].name}
-                Latitude: ${data.schedule.venues[0].latitudeMicrodegrees}
-                Longitude: ${data.schedule.venues[0].longitudeMicrodegrees}
-                
-                --- Persons ---
-                ${data.persons.map(person => {
-                    // Save rankings to the 'rankings' object
-                    rankings[person.wcaId] = person.personalBests.map(pBest => ({
-                        //name: person.name,
-                        eventId: pBest.eventId,
-                        worldRanking: pBest.worldRanking,
-                        //continentalRanking: pBest.continentalRanking,
-                        nationalRanking: pBest.nationalRanking,
-                    }));
-
-                    // Display other details excluding rankings
-                    return `
-                        Name: ${person.name}
-                        WCA ID: ${person.wcaId}
-                        Country: ${person.countryIso2}
-                        Gender: ${person.gender}
-                        Assignments: ${person.assignments.map(assignment => `
-                            Activity ID: ${assignment.activityId}
-                            Assignment Code: ${assignment.assignmentCode}
-                        `).join('\n')}
-                        
-                        // Exclude Personal Bests section from display
-                        -----------------
-                    `;
-                }).join('\n')}
-                
-                --- Events ---
-                ${data.events.map(event => `
-                    Event ID: ${event.id}
-                    Rounds: ${event.rounds.map(round => `
-                        Round ID: ${round.id}
-                        Format: ${round.format}
-                        Time Limit: ${round.timeLimit}
-                        Cutoff: ${round.cutoff}
-                        Advancement Condition: ${round.advancementCondition}
-                        Results: ${round.results.map(result => `
-                            Person ID: ${result.personId}
-                            Ranking: ${result.ranking}
-                            Best: ${result.best}
-                            Average: ${result.average}
-                        `).join('\n')}
-                    `).join('\n')}
-                `).join('\n')}
-        
-                --- Schedule ---
-                ${data.schedule.venues[0].rooms[0].activities.map(activity => {
-                    // Check if the activity has child activities
-                    if (activity.childActivities && activity.childActivities.length > 0) {
-                        // Handle group information
-                        const groupsInfo = activity.childActivities.map(group => `
-                            Group ID: ${group.id}
-                            Group Name: ${group.name}
-                            Group Activity Code: ${group.activityCode}
-                            Group Start Time: ${group.startTime}
-                            Group End Time: ${group.endTime}
-                        `).join('\n');
-        
-                        return `
-                            Activity ID: ${activity.id}
-                            Name: ${activity.name}
-                            Activity Code: ${activity.activityCode}
-                            Start Time: ${activity.startTime}
-                            End Time: ${activity.endTime}
-                            ${groupsInfo}
-                        `;
-                    } else {
-                        // Handle regular activity without groups
-                        return `
-                            Activity ID: ${activity.id}
-                            Name: ${activity.name}
-                            Activity Code: ${activity.activityCode}
-                            Start Time: ${activity.startTime}
-                            End Time: ${activity.endTime}
-                        `;
-                    }
-                }).join('\n')}
-            `;
-
-            // Display the formatted data
-            document.getElementById('resultContainer').textContent = formattedData;
-
-            const eventsContainer = document.getElementById('eventsContainer');
-            eventsContainer.innerHTML = ''; // Clear existing event buttons
-
-            // Display event buttons dynamically
-            data.events.forEach(event => {
-                const button = document.createElement('button');
-                button.textContent = `View Results - ${event.id}`;
-                button.addEventListener('click', () => displayResultsForEvent(event, data));
-                eventsContainer.appendChild(button);
+                // Call the function to format and display data
+                formatAndDisplayData(dataObject);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                // Handle errors gracefully
             });
+    }
 
-            // Populate the competitor dropdown dynamically
-            const competitorSelect = document.getElementById('competitorSelect');
-                competitorSelect.innerHTML = '<option value="main">Select Competitor</option>';
-                data.persons.forEach(person => {
-                    const option = document.createElement('option');
-                    option.value = person.wcaId;
-                    option.textContent = person.name;
-                    competitorSelect.appendChild(option);
-                });
-            }
+    function formatAndDisplayData(dataObject) {
+        // Store the data globally for later use
+        data = dataObject;
 
-        function getScheduleInfo(data, activityId, activityCode) {
-            const activity = data.schedule.venues[0].rooms[0].activities.find(act => act.id === activityId);
-            if (activity) {
-                return `Start Time: ${activity.startTime}, End Time: ${activity.endTime}`;
-            }
-            return 'Schedule Info Not Found';
-        }
-        
-        function displayResultsForEvent(event, data) {
-            const formattedEventData = `
+        // Initialize an array to store group information
+        const groups = [];
+
+        // Display other details excluding rankings
+        const formattedData = `
+            Format Version: ${dataObject.formatVersion}
+            Competition ID: ${dataObject.id}
+            Competition Name: ${dataObject.name}
+            Start Date: ${dataObject.schedule.startDate}
+            Number of Days: ${dataObject.schedule.numberOfDays}
+            Venue: ${dataObject.schedule.venues[0].name}
+            Latitude: ${dataObject.schedule.venues[0].latitudeMicrodegrees}
+            Longitude: ${dataObject.schedule.venues[0].longitudeMicrodegrees}
+            
+            --- Persons ---
+            ${dataObject.persons.map(person => {
+                // Save rankings to the 'rankings' object
+                rankings[person.wcaId] = person.personalBests.map(pBest => ({
+                    eventId: pBest.eventId,
+                    worldRanking: pBest.worldRanking,
+                    nationalRanking: pBest.nationalRanking,
+                }));
+
+                // Display other details excluding rankings
+                return `
+                    Name: ${person.name}
+                    WCA ID: ${person.wcaId}
+                    Country: ${person.countryIso2}
+                    Gender: ${person.gender}
+                    Assignments: ${person.assignments.map(assignment => `
+                        Activity ID: ${assignment.activityId}
+                        Assignment Code: ${assignment.assignmentCode}
+                    `).join('\n')}
+                    -----------------
+                `;
+            }).join('\n')}
+            
+            --- Events ---
+            ${dataObject.events.map(event => `
                 Event ID: ${event.id}
                 Rounds: ${event.rounds.map(round => `
                     Round ID: ${round.id}
@@ -271,165 +191,414 @@
                         Average: ${result.average}
                     `).join('\n')}
                 `).join('\n')}
-            `;
+            `).join('\n')}
+    
+            --- Schedule ---
+            ${dataObject.schedule.venues[0].rooms[0].activities.map(activity => {
+                // Check if the activity has child activities
+                if (activity.childActivities && activity.childActivities.length > 0) {
+                    // Handle group information
+                    activity.childActivities.forEach(group => {
+                        groups.push({
+                            groupId: group.id,
+                            groupName: group.name,
+                            activityCode: group.activityCode,
+                            startTime: group.startTime,
+                        });
+                    });
+    
+                    return `
+                        Activity ID: ${activity.id}
+                        Name: ${activity.name}
+                        Activity Code: ${activity.activityCode}
+                        Start Time: ${activity.startTime}
+                        End Time: ${activity.endTime}
+                    `;
+                } else {
+                    // Handle regular activity without groups
+                    return `
+                        Activity ID: ${activity.id}
+                        Name: ${activity.name}
+                        Activity Code: ${activity.activityCode}
+                        Start Time: ${activity.startTime}
+                        End Time: ${activity.endTime}
+                    `;
+                }
+            }).join('\n')}
+        `;
 
-            // Display the formatted event data
-            document.getElementById('resultContainer').textContent = formattedEventData;
-        }
-        
-        function autofillCompetitionId() {
-            const selectElement = document.getElementById('competitionSelect');
-            const inputElement = document.getElementById('textInput');
-            inputElement.value = selectElement.value;
-        }
-        
-        function displayResultsForCompetitor() {
-    const selectedWcaId = document.getElementById('competitorSelect').value;
+        // Store the groups array in the data object
+        data.groups = groups;
 
-    if (selectedWcaId === 'main') {
-        // Display the dynamic list of checkboxes
-        document.getElementById('resultContainer').textContent = ''; // Clear the result container
-        displayCompetitorCheckboxes(data);
-    } else {
-        const competitorRankings = rankings[selectedWcaId];
-        const formattedCompetitorData = `
-            --- Competitor Rankings ---
-            ${competitorRankings.map(ranking => `
-                Event ID: ${ranking.eventId}
-                World Ranking: ${ranking.worldRanking}
-                National Ranking: ${ranking.nationalRanking}
+        // Display the formatted data
+        document.getElementById('resultContainer').textContent = formattedData;
+
+        const eventsContainer = document.getElementById('eventsContainer');
+        eventsContainer.innerHTML = ''; // Clear existing event buttons
+
+        // Display event buttons dynamically
+        dataObject.events.forEach(event => {
+            const button = document.createElement('button');
+            button.textContent = `View Results - ${event.id}`;
+            button.addEventListener('click', () => displayResultsForEvent(event, dataObject));
+            eventsContainer.appendChild(button);
+        });
+
+        // Populate the competitor dropdown dynamically
+        const competitorSelect = document.getElementById('competitorSelect');
+        competitorSelect.innerHTML = '<option value="main">Select Competitor</option>';
+        dataObject.persons.forEach(person => {
+            const option = document.createElement('option');
+            option.value = person.wcaId;
+            option.textContent = person.name;
+            competitorSelect.appendChild(option);
+        });
+    }
+
+    function displayResultsForEvent(event, dataObject) {
+        const formattedEventData = `
+            Event ID: ${event.id}
+            Rounds: ${event.rounds.map(round => `
+                Round ID: ${round.id}
+                Format: ${round.format}
+                Time Limit: ${round.timeLimit}
+                Cutoff: ${round.cutoff}
+                Advancement Condition: ${round.advancementCondition}
+                Results: ${round.results.map(result => `
+                    Person ID: ${result.personId}
+                    Ranking: ${result.ranking}
+                    Best: ${result.best}
+                    Average: ${result.average}
+                `).join('\n')}
             `).join('\n')}
         `;
 
-        // Display the formatted competitor data
-        document.getElementById('resultContainer').textContent = formattedCompetitorData;
-
-        // Call the function to display assignments with the 'data' object
-        displayAssignmentsForCompetitor(selectedWcaId, data);
+        // Display the formatted event data
+        document.getElementById('resultContainer').textContent = formattedEventData;
     }
-}
-        
-        function displayCompetitorCheckboxes(data) {
-            const checkboxContainer = document.getElementById('checkboxContainer');
-            checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
 
-            data.persons.forEach(person => {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'competitorCheckbox';
-                checkbox.value = person.wcaId;
-                checkbox.id = person.wcaId;
+    function autofillCompetitionId() {
+        const selectElement = document.getElementById('competitionSelect');
+        const inputElement = document.getElementById('textInput');
+        inputElement.value = selectElement.value;
+    }
 
-                const label = document.createElement('label');
-                label.htmlFor = person.wcaId;
-                label.appendChild(document.createTextNode(person.name));
+    function displayResultsForCompetitor() {
+        const selectedWcaId = document.getElementById('competitorSelect').value;
 
-                checkboxContainer.appendChild(checkbox);
-                checkboxContainer.appendChild(label);
-                checkboxContainer.appendChild(document.createElement('br'));
-            });
+        if (selectedWcaId === 'main') {
+            // Display the dynamic list of checkboxes
+            document.getElementById('resultContainer').textContent = ''; // Clear the result container
+            displayCompetitorCheckboxes(data);
+        } else {
+            const competitorRankings = rankings[selectedWcaId];
+            const formattedCompetitorData = `
+                --- Competitor Rankings ---
+                ${competitorRankings.map(ranking => `
+                    Event ID: ${ranking.eventId}
+                    World Ranking: ${ranking.worldRanking}
+                    National Ranking: ${ranking.nationalRanking}
+                `).join('\n')}
+            `;
 
-            // Attach event listener to handle checkbox changes
-            checkboxContainer.addEventListener('change', handleCheckboxChange);
+            // Display the formatted competitor data
+            document.getElementById('resultContainer').textContent = formattedCompetitorData;
 
-            // Show the "Create Watchlist" button
-            const createWatchlistBtn = document.getElementById('createWatchlistBtn');
-            createWatchlistBtn.style.display = 'block';
+            // Call the function to display assignments with the 'data' object
+            displayAssignmentsForCompetitor(selectedWcaId, data);
         }
+    }
 
-        function handleCheckboxChange() {
+    function displayCompetitorCheckboxes(dataObject) {
+    const checkboxContainer = document.getElementById('checkboxContainer');
+    checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
+
+    // Sort persons array alphabetically by name
+    const sortedPersons = dataObject.persons
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    sortedPersons.forEach(person => {
+        // Exclude "Speedcubing Canada" from the checkbox list
+        if (person.name !== 'Speedcubing Canada') {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'competitorCheckbox';
+            checkbox.value = person.wcaId;
+            checkbox.id = person.wcaId;
+
+            const label = document.createElement('label');
+            label.htmlFor = person.wcaId;
+            label.appendChild(document.createTextNode(person.name));
+
+            checkboxContainer.appendChild(checkbox);
+            checkboxContainer.appendChild(label);
+            checkboxContainer.appendChild(document.createElement('br'));
+        }
+    });
+
+    // Attach event listener to handle checkbox changes
+    checkboxContainer.addEventListener('change', handleCheckboxChange);
+
+    // Show the "Create Watchlist" button
+    const createWatchlistBtn = document.getElementById('createWatchlistBtn');
+    createWatchlistBtn.style.display = 'block';
+}
+
+    function handleCheckboxChange() {
             const checkboxes = document.getElementsByName('competitorCheckbox');
             const selectedCheckboxes = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => checkbox.value);
-    
-            console.log('Selected Checkboxes:', selectedCheckboxes);
+
+            // Update the "Compete" column in the watchlist table
+            updateCompeteColumn(selectedCheckboxes);
+
+            // Display names and assignments for selected competitors
+            displaySelectedCompetitorsInfo(selectedCheckboxes);
         }
-    
-            
-        function displayAssignmentsForCompetitor(selectedWcaId, data) {
-            const person = data.persons.find(person => person.wcaId === selectedWcaId);
         
-            if (person) {
-                const formattedAssignments = `
-                    --- Competitor Assignments ---
-                    ${person.assignments.map(assignment => `
+    function displaySelectedCompetitorsInfo(selectedWcaIds) {
+            const selectedCompetitorsInfo = document.getElementById('selectedCompetitorsInfo');
+            selectedCompetitorsInfo.innerHTML = '';
+
+            selectedWcaIds.forEach(wcaId => {
+                const person = data.persons.find(person => person.wcaId === wcaId);
+                if (person) {
+                    const assignmentsInfo = person.assignments.map(assignment => `
                         Activity ID: ${assignment.activityId}
                         Assignment Code: ${assignment.assignmentCode}
-                    `).join('\n')}
-                `;
-        
-                // Display the formatted assignments
-                document.getElementById('resultContainer').textContent += formattedAssignments;
-            }
+                    `).join('<br>');
+
+                    const competitorInfo = `
+                        <strong>${person.name}</strong><br>
+                        WCA ID: ${person.wcaId}<br>
+                        Country: ${person.countryIso2}<br>
+                        Gender: ${person.gender}<br>
+                        Assignments:<br>${assignmentsInfo}<br>
+                        -----------------<br>
+                    `;
+
+                    selectedCompetitorsInfo.innerHTML += competitorInfo;
+                }
+            });
+
+            // Show the selected competitors container
+            const selectedCompetitorsContainer = document.getElementById('selectedCompetitorsContainer');
+            selectedCompetitorsContainer.style.display = 'block';
         }
 
-        function createWatchlist() {
-            const watchlistContainer = document.getElementById('watchlistContainer');
-            const watchlistTable = document.getElementById('watchlistTable');
         
-            // Clear existing content
-            watchlistTable.innerHTML = '';
-        
-            // Create table header
-            const headerRow = watchlistTable.insertRow(0);
-        
-            // Add headers for the first four columns
-            const groupIDHeader = headerRow.insertCell(0);
-            groupIDHeader.textContent = 'Group ID';
-        
-            const groupNameHeader = headerRow.insertCell(1);
-            groupNameHeader.textContent = 'Group Name';
-        
-            const activityCodeHeader = headerRow.insertCell(2);
-            activityCodeHeader.textContent = 'Activity Code';
-        
-            const startTimeHeader = headerRow.insertCell(3);
-            startTimeHeader.textContent = 'Start Time';
-        
-            // Add header for the last column
-            const competitorHeader = headerRow.insertCell(-1);
-            competitorHeader.textContent = 'Competitor';
-        
-            // Populate the table with data
-data.persons.forEach(person => {
-    const groupAssignment = person.assignments.find(assignment => assignment.childActivities && assignment.childActivities.length > 0);
+    function displayAssignmentsForCompetitor(selectedWcaId, dataObject) {
+        const person = dataObject.persons.find(person => person.wcaId === selectedWcaId);
 
-    if (groupAssignment) {
-        // Find the activity with matching ID in the schedule
-        const groupActivity = data.schedule.venues[0].rooms[0].activities
-            .find(activity => activity.id === groupAssignment.activityId);
+        if (person) {
+            const formattedAssignments = `
+                --- Competitor Assignments ---
+                ${person.assignments.map(assignment => `
+                    Activity ID: ${assignment.activityId}
+                    Assignment Code: ${assignment.assignmentCode}
+                `).join('\n')}
+            `;
 
-        if (groupActivity && groupActivity.childActivities && groupActivity.childActivities.length > 0) {
-            const groupInfo = groupActivity.childActivities[0];
-
-            // Create a new row for each group
-            const row = watchlistTable.insertRow(-1);
-
-            // Add group information in the first four columns
-            const groupIDCell = row.insertCell(0);
-            groupIDCell.textContent = groupInfo.id;
-
-            const groupNameCell = row.insertCell(1);
-            groupNameCell.textContent = groupInfo.name;
-
-            const activityCodeCell = row.insertCell(2);
-            activityCodeCell.textContent = groupInfo.activityCode;
-
-            const startTimeCell = row.insertCell(3);
-            startTimeCell.textContent = groupInfo.startTime;
-
-            // Add competitor name in the last column
-            const competitorCell = row.insertCell(-1);
-            competitorCell.textContent = person.name;
+            // Display the formatted assignments
+            document.getElementById('resultContainer').textContent += formattedAssignments;
         }
     }
-});
+
+    function updateCompeteColumn(selectedWcaIds) {
+    const watchlistTable = document.getElementById('watchlistTable');
+
+    // Iterate through the rows in the watchlist table
+    for (let i = 1; i < watchlistTable.rows.length; i++) {
+        const row = watchlistTable.rows[i];
+        const groupID = row.cells[1].textContent;
+
+        // Get all assignments for the group
+        const groupAssignments = [];
+
+        selectedWcaIds.forEach(wcaId => {
+            const person = data.persons.find(person => person.wcaId === wcaId);
+            if (person) {
+                const assignmentsForGroup = person.assignments.filter(assignment =>
+                    assignment.activityId === groupID
+                );
+                groupAssignments.push(...assignmentsForGroup);
+            }
+        });
+
+        // Check if there are assignments with the "competitor" code
+        const competitorAssignments = groupAssignments.filter(assignment =>
+            assignment.assignmentCode === 'competitor'
+        );
+
+        if (competitorAssignments.length > 0) {
+            // Update the "Compete" cell with the names of selected competitors
+            const competeCell = row.cells[3];
+
+            // Get the names of selected competitors
+            const names = selectedWcaIds
+                .map(wcaId => data.persons.find(person => person.wcaId === wcaId))
+                .filter(competitor => competitor)
+                .map(competitor => competitor.name);
+
+            competeCell.textContent = names.join(', ');
+        }
+    }
+}
+
+        
+    function createWatchlist() {
+            const watchlistContainer = document.getElementById('watchlistContainer');
+            const watchlistTable = document.getElementById('watchlistTable');
+
+            // Clear existing content
+            watchlistTable.innerHTML = '';
+
+            // Iterate through venues
+            data.schedule.venues.forEach(venue => {
+                // Create a watchlist for each venue
+                createWatchlistForVenue(watchlistTable, venue);
+            });
 
             // Show the watchlist container
             watchlistContainer.style.display = 'block';
         }
-    </script>
+
+    function getFirstLastName(fullName) {
+        const nameParts = fullName.split(' ');
+        return `${nameParts[0]} ${nameParts[nameParts.length - 1].charAt(0)}.`;
+    }
+
+        
+    function getSelectedCompetitorsForGroup(groupId) {
+    const selectedCompetitors = [];
+    const checkboxes = document.getElementsByName('competitorCheckbox');
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            const wcaId = checkbox.value;
+            const person = data.persons.find(person => person.wcaId === wcaId);
+            if (person) {
+                const assignmentsForGroup = person.assignments.filter(assignment =>
+                    assignment.activityId === groupId && assignment.assignmentCode === 'competitor'
+                );
+                if (assignmentsForGroup.length > 0) {
+                    selectedCompetitors.push(person.name);
+                }
+            }
+        }
+    });
+
+    return selectedCompetitors;
+}
+
+function getSelectedJudgesForGroup(groupId) {
+    return getSelectedPersonsForGroupAndAssignment(groupId, 'staff-judge');
+}
+
+function getSelectedScramblersForGroup(groupId) {
+    return getSelectedPersonsForGroupAndAssignment(groupId, 'staff-scrambler');
+}
+
+function getSelectedRunnersForGroup(groupId) {
+    return getSelectedPersonsForGroupAndAssignment(groupId, 'staff-runner');
+}
+
+function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
+    const selectedPersons = [];
+    const checkboxes = document.getElementsByName('competitorCheckbox');
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            const wcaId = checkbox.value;
+            const person = data.persons.find(person => person.wcaId === wcaId);
+            if (person) {
+                const assignmentsForGroup = person.assignments.filter(assignment =>
+                    assignment.activityId === groupId && assignment.assignmentCode === assignmentCode
+                );
+                if (assignmentsForGroup.length > 0) {
+                    selectedPersons.push(person.name);
+                }
+            }
+        }
+    });
+
+    return selectedPersons;
+}
+
+        function createWatchlistForVenue(watchlistTable, venue) {
+            // Initialize an array to store sorted groups
+            const sortedGroups = [];
+        
+            // Iterate through activities in the venue
+            venue.rooms.forEach(room => {
+                room.activities.forEach(activity => {
+                    // Check if the activity has child activities
+                    if (activity.childActivities && activity.childActivities.length > 0) {
+                        activity.childActivities.forEach(group => {
+                            // Push group information into the array
+                            sortedGroups.push({
+                                startTime: new Date(group.startTime),
+                                name: group.name,
+                                id: group.id,
+                            });
+                        });
+                    }
+                });
+            });
+        
+            // Sort the groups based on start time
+            sortedGroups.sort((a, b) => a.startTime - b.startTime);
+        
+            // Iterate through sorted groups and populate the table
+            sortedGroups.forEach(group => {
+                // Populate the table with data
+                const row = watchlistTable.insertRow(-1);
+        
+                // Add group information in the first two columns
+                const startTimeCell = row.insertCell(0);
+                startTimeCell.textContent = convertUtcToLocalTime(group.startTime);
+        
+                const groupNameCell = row.insertCell(1);
+                groupNameCell.textContent = group.name;
+        
+                // Add "Compete" column
+                const competeCell = row.insertCell(2);
+                const selectedCompetitors = getSelectedCompetitorsForGroup(group.id);
+                competeCell.innerHTML = selectedCompetitors.map(name => getFirstLastName(name)).join(', ');
+        
+                // Add "Judge" column
+                const judgeCell = row.insertCell(3);
+                const selectedJudges = getSelectedJudgesForGroup(group.id);
+                judgeCell.innerHTML = selectedJudges.map(name => getFirstLastName(name)).join(', ');
+        
+                // Add "Scramble" column
+                const scrambleCell = row.insertCell(4);
+                const selectedScramblers = getSelectedScramblersForGroup(group.id);
+                scrambleCell.innerHTML = selectedScramblers.map(name => getFirstLastName(name)).join(', ');
+        
+                // Add "Run" column
+                const runCell = row.insertCell(5);
+                const selectedRunners = getSelectedRunnersForGroup(group.id);
+                runCell.innerHTML = selectedRunners.map(name => getFirstLastName(name)).join(', ');
+            });
+        }
+
+        function convertUtcToLocalTime(utcTimeString) {
+            const utcTime = new Date(utcTimeString);
+            const localTime = utcTime.toLocaleString('en-US', {
+                timeZone: 'America/Los_Angeles',
+                weekday: 'short',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+            });
+            return localTime;
+        }
+
+</script>
+
 </body>
 
 </html>
