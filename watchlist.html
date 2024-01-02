@@ -80,6 +80,7 @@
         // Initialize an object to store rankings
         
         const rankings = {};
+        let data;
         
         function getData() {
             // Get user input
@@ -95,7 +96,7 @@
                 })
                 .then(dataString => {
                     // Parse the string into a JavaScript object
-                    const data = JSON.parse(dataString);
+                    data = JSON.parse(dataString);
 
                     // Log the entire API response (for debugging purposes)
                     console.log('API Response:', data);
