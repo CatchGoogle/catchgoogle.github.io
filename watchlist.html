@@ -219,7 +219,13 @@
             // Display the formatted event data
             document.getElementById('resultContainer').textContent = formattedEventData;
         }
-
+        
+        function autofillCompetitionId() {
+            const selectElement = document.getElementById('competitionSelect');
+            const inputElement = document.getElementById('textInput');
+            inputElement.value = selectElement.value;
+        }
+        
         function displayResultsForCompetitor() {
             const selectedWcaId = document.getElementById('competitorSelect').value;
 
