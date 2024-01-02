@@ -241,32 +241,30 @@
         }
         
         function displayResultsForCompetitor() {
-            const selectedWcaId = document.getElementById('competitorSelect').value;
+    const selectedWcaId = document.getElementById('competitorSelect').value;
 
-            if (selectedWcaId) {
-                const competitorRankings = rankings[selectedWcaId];
-                const formattedCompetitorData = `
-                    --- Competitor Rankings ---
-                    ${competitorRankings.map(ranking => `
-                        Event ID: ${ranking.eventId}
-                        World Ranking: ${ranking.worldRanking}
-                        National Ranking: ${ranking.nationalRanking}
-                    `).join('\n')}
-                `;
+    if (selectedWcaId) {
+        const competitorRankings = rankings[selectedWcaId];
+        const formattedCompetitorData = `
+            --- Competitor Rankings ---
+            ${competitorRankings.map(ranking => `
+                Event ID: ${ranking.eventId}
+                World Ranking: ${ranking.worldRanking}
+                National Ranking: ${ranking.nationalRanking}
+            `).join('\n')}
+        `;
 
-                // Display the formatted competitor data
-                document.getElementById('resultContainer').textContent = formattedCompetitorData;
+        // Display the formatted competitor data
+        document.getElementById('resultContainer').textContent = formattedCompetitorData;
 
-                // Call the function to display assignments
-                displayAssignmentsForCompetitor(selectedWcaId);
-            }
-        }
-
-        function displayAssignmentsForCompetitor(selectedWcaId) {
-            const data = JSON.parse(document.getElementById('resultContainer').textContent);
-
+        // Call the function to display assignments with the 'data' object
+        displayAssignmentsForCompetitor(selectedWcaId, data);
+    }
+}
+        
+        function displayAssignmentsForCompetitor(selectedWcaId, data) {
             const person = data.persons.find(person => person.wcaId === selectedWcaId);
-
+        
             if (person) {
                 const formattedAssignments = `
                     --- Competitor Assignments ---
@@ -276,7 +274,7 @@
                         Start Time: ${getScheduleInfo(data, assignment.activityId, assignment.assignmentCode)}
                     `).join('\n')}
                 `;
-
+        
                 // Display the formatted assignments
                 document.getElementById('resultContainer').textContent += formattedAssignments;
             }
