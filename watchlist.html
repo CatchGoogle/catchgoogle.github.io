@@ -67,11 +67,11 @@
         <select id="competitorSelect" onchange="displayResultsForCompetitor()">
             <!-- this will be autopopulated by the page -->
         </select>
+        <div id="eventsContainer"></div>
     </div>
 
     <div class="container">
         <div id="tableContainer"></div>
-        <div id="eventsContainer"></div>
         <div id="resultContainer"></div>
     </div>
 
@@ -154,13 +154,16 @@
                         Time Limit: ${round.timeLimit}
                         Cutoff: ${round.cutoff}
                         Advancement Condition: ${round.advancementCondition}
-                        Results: ${round.results.map(result => `
+                        Results: ${round.results.map(result => {
+                            const resultsName = data.persons.find(person => person.id === results.personId);
+                            return `
                             Name: ${person.name}
                             Person ID: ${result.personId}
                             Ranking: ${result.ranking}
                             Best: ${result.best}
                             Average: ${result.average}
-                        `).join('\n')}
+                            '; }
+                        ).join('\n')}
                     `).join('\n')}
                 `).join('\n')}
                 
