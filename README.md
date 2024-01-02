@@ -8,6 +8,7 @@ Current projects:
 <br>
 https://catchgoogle.github.io/canranks
 <br>
+To do: Fully automate results updating by converting existing python script to js. Hopefully this is possible since I have no intention on continuing to update this site manually.
 <img width="300" alt="image" src="https://github.com/CatchGoogle/catchgoogle.github.io/assets/133523893/5a22c2fa-326a-4151-8bc3-ad1262300e76">
 
 <br>
