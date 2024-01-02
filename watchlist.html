@@ -198,14 +198,14 @@
 
             // Populate the competitor dropdown dynamically
             const competitorSelect = document.getElementById('competitorSelect');
-            competitorSelect.innerHTML = '<option value="" disabled selected>Select Competitor</option>';
-            data.persons.forEach(person => {
-                const option = document.createElement('option');
-                option.value = person.wcaId;
-                option.textContent = person.name;
-                competitorSelect.appendChild(option);
-            });
-        }
+                competitorSelect.innerHTML = '<option value="main">Select Competitor</option>';
+                data.persons.forEach(person => {
+                    const option = document.createElement('option');
+                    option.value = person.wcaId;
+                    option.textContent = person.name;
+                    competitorSelect.appendChild(option);
+                });
+            }
 
         function getScheduleInfo(data, activityId, activityCode) {
             const activity = data.schedule.venues[0].rooms[0].activities.find(act => act.id === activityId);
@@ -244,18 +244,21 @@
         }
         
         function displayResultsForCompetitor() {
-    const selectedWcaId = document.getElementById('competitorSelect').value;
+        const selectedWcaId = document.getElementById('competitorSelect').value;
 
-    if (selectedWcaId) {
-        const competitorRankings = rankings[selectedWcaId];
-        const formattedCompetitorData = `
-            --- Competitor Rankings ---
-            ${competitorRankings.map(ranking => `
-                Event ID: ${ranking.eventId}
-                World Ranking: ${ranking.worldRanking}
-                National Ranking: ${ranking.nationalRanking}
-            `).join('\n')}
-        `;
+        if (selectedWcaId === 'main') {
+            // Display the dynamic list of checkboxes
+            displayCompetitorCheckboxes(data);
+        } else {
+            const competitorRankings = rankings[selectedWcaId];
+            const formattedCompetitorData = `
+                --- Competitor Rankings ---
+                ${competitorRankings.map(ranking => `
+                    Event ID: ${ranking.eventId}
+                    World Ranking: ${ranking.worldRanking}
+                    National Ranking: ${ranking.nationalRanking}
+                `).join('\n')}
+            `;
 
         // Display the formatted competitor data
         document.getElementById('resultContainer').textContent = formattedCompetitorData;
@@ -265,6 +268,40 @@
     }
 }
         
+        function displayCompetitorCheckboxes(data) {
+            const checkboxContainer = document.getElementById('resultContainer');
+            checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
+    
+            data.persons.forEach(person => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'competitorCheckbox';
+                checkbox.value = person.wcaId;
+                checkbox.id = person.wcaId;
+    
+                const label = document.createElement('label');
+                label.htmlFor = person.wcaId;
+                label.appendChild(document.createTextNode(person.name));
+    
+                checkboxContainer.appendChild(checkbox);
+                checkboxContainer.appendChild(label);
+                checkboxContainer.appendChild(document.createElement('br'));
+            });
+    
+            // Attach event listener to handle checkbox changes
+            checkboxContainer.addEventListener('change', handleCheckboxChange);
+        }
+
+        function handleCheckboxChange() {
+            const checkboxes = document.getElementsByName('competitorCheckbox');
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+    
+            console.log('Selected Checkboxes:', selectedCheckboxes);
+        }
+    
+            
         function displayAssignmentsForCompetitor(selectedWcaId, data) {
             const person = data.persons.find(person => person.wcaId === selectedWcaId);
         
