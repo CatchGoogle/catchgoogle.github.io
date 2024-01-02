@@ -157,15 +157,15 @@
                         Cutoff: ${round.cutoff}
                         Advancement Condition: ${round.advancementCondition}
                         Results: ${round.results.map(result => {
-                            const resultsName = data.persons.find(person => person.id === results.personId);
-                            return `
-                        Name: ${associatedPerson ? associatedPerson.name : 'Unknown'}
-                        Person ID: ${result.personId}
-                        Ranking: ${result.ranking}
-                        Best: ${result.best}
-                        Average: ${result.average}
-                    `;
-                }).join('\n')}
+                        const associatedPerson = data.persons.find(person => person.id === result.personId);
+                        return `
+                            Name: ${associatedPerson ? associatedPerson.name : 'Unknown'}
+                            Person ID: ${result.personId}
+                            Ranking: ${result.ranking}
+                            Best: ${result.best}
+                            Average: ${result.average}
+                        `;
+                    }).join('\n')}
             `).join('\n')}
         `).join('\n')}
         
