@@ -126,10 +126,10 @@
                 ${data.persons.map(person => {
                     // Save rankings to the 'rankings' object
                     rankings[person.wcaId] = person.personalBests.map(pBest => ({
-                        name: person.name,
+                        //name: person.name,
                         eventId: pBest.eventId,
                         worldRanking: pBest.worldRanking,
-                        continentalRanking: pBest.continentalRanking,
+                        //continentalRanking: pBest.continentalRanking,
                         nationalRanking: pBest.nationalRanking,
                     }));
 
@@ -155,6 +155,7 @@
                         Cutoff: ${round.cutoff}
                         Advancement Condition: ${round.advancementCondition}
                         Results: ${round.results.map(result => `
+                            Name: ${person.name}
                             Person ID: ${result.personId}
                             Ranking: ${result.ranking}
                             Best: ${result.best}
