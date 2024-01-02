@@ -178,6 +178,13 @@
             });
         }
 
+        
+        function autofillCompetitionID() {
+                    // Autofill the textbox with "cloverdaleopen2022"
+                    document.getElementById('textInput').value = 'cloverdaleopen2022';
+                }
+
+        
         function displayResultsForEvent(event, data) {
             const formattedEventData = `
         Event ID: ${event.id}
