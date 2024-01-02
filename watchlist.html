@@ -82,8 +82,16 @@
     </div>
 
     <div class="container">
-        <div id="tableContainer"></div>
         <div id="resultContainer"></div>
+        <div id="checkboxContainer"></div>
+        <button id="createWatchlistBtn" style="display: none;" onclick="createWatchlist()">Create Watchlist</button>
+    </div>
+
+    <div id="watchlistContainer" style="display: none;">
+        <h2>Watchlist</h2>
+        <table id="watchlistTable">
+            <!-- Table content will be dynamically added here -->
+        </table>
     </div>
 
     <script>
@@ -277,27 +285,31 @@
 }
         
         function displayCompetitorCheckboxes(data) {
-            const checkboxContainer = document.getElementById('resultContainer');
+            const checkboxContainer = document.getElementById('checkboxContainer');
             checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
-    
+
             data.persons.forEach(person => {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.name = 'competitorCheckbox';
                 checkbox.value = person.wcaId;
                 checkbox.id = person.wcaId;
-    
+
                 const label = document.createElement('label');
                 label.htmlFor = person.wcaId;
                 label.appendChild(document.createTextNode(person.name));
-    
+
                 checkboxContainer.appendChild(checkbox);
                 checkboxContainer.appendChild(label);
                 checkboxContainer.appendChild(document.createElement('br'));
             });
-    
+
             // Attach event listener to handle checkbox changes
             checkboxContainer.addEventListener('change', handleCheckboxChange);
+
+            // Show the "Create Watchlist" button
+            const createWatchlistBtn = document.getElementById('createWatchlistBtn');
+            createWatchlistBtn.style.display = 'block';
         }
 
         function handleCheckboxChange() {
@@ -326,6 +338,50 @@
                 document.getElementById('resultContainer').textContent += formattedAssignments;
             }
         }
+
+        function createWatchlist() {
+            const checkboxes = document.getElementsByName('competitorCheckbox');
+            const selectedCheckboxes = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            // For simplicity, let's just update the content dynamically here
+            const watchlistContainer = document.getElementById('watchlistContainer');
+            const watchlistTable = document.getElementById('watchlistTable');
+
+            // Clear existing content
+            watchlistTable.innerHTML = '';
+
+            // Create table header
+            const headerRow = watchlistTable.insertRow(0);
+            const headerCell1 = headerRow.insertCell(0);
+            headerCell1.textContent = 'Competitor';
+            const headerCell2 = headerRow.insertCell(1);
+            headerCell2.textContent = 'Activity ID';
+            const headerCell3 = headerRow.insertCell(2);
+            headerCell3.textContent = 'Assignment Code';
+
+            // Populate the table with data
+            selectedCheckboxes.forEach(competitorId => {
+                const person = data.persons.find(person => person.wcaId === competitorId);
+                if (person) {
+                    person.assignments.forEach(assignment => {
+                        const row = watchlistTable.insertRow(-1);
+                        const cell1 = row.insertCell(0);
+                        cell1.textContent = person.name;
+                        const cell2 = row.insertCell(1);
+                        cell2.textContent = assignment.activityId;
+                        const cell3 = row.insertCell(2);
+                        cell3.textContent = assignment.assignmentCode;
+                    });
+                }
+            });
+
+            // Show the watchlist container
+            watchlistContainer.style.display = 'block';
+        }
+
+        
     </script>
 </body>
 
