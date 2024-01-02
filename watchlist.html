@@ -55,7 +55,10 @@
         <label for="textInput">Enter Competition ID:</label>
         <input type="text" id="textInput" placeholder="Type competition ID...">
         <button onclick="getData()">Get Data</button>
-        <button onclick="autofillCompetitionID()">Autofill Competition ID</button>
+        <select id="competitionSelect">
+            <option value="cloverdaleopen2022">Cloverdale Open 2022</option>
+            <option value="cubingaroundmetrotown2023">Cubing Around Metrotown 2023</option>
+        </select>
         <div id="tableContainer"></div>
     </div>
     
@@ -179,10 +182,11 @@
         }
 
         
-        function autofillCompetitionID() {
-                    // Autofill the textbox with "cloverdaleopen2022"
-                    document.getElementById('textInput').value = 'cloverdaleopen2022';
-                }
+        function autofillCompetitionId() {
+            const selectElement = document.getElementById('competitionSelect');
+            const inputElement = document.getElementById('textInput');
+            inputElement.value = selectElement.value;
+        }
 
         
         function displayResultsForEvent(event, data) {
