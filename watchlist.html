@@ -341,46 +341,49 @@
         }
 
         function createWatchlist() {
-            const checkboxes = document.getElementsByName('competitorCheckbox');
-            const selectedCheckboxes = Array.from(checkboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
+    const checkboxes = document.getElementsByName('competitorCheckbox');
+    const selectedCheckboxes = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
 
-            // For simplicity, let's just update the content dynamically here
-            const watchlistContainer = document.getElementById('watchlistContainer');
-            const watchlistTable = document.getElementById('watchlistTable');
+    // For simplicity, let's just update the content dynamically here
+    const watchlistContainer = document.getElementById('watchlistContainer');
+    const watchlistTable = document.getElementById('watchlistTable');
 
-            // Clear existing content
-            watchlistTable.innerHTML = '';
+    // Clear existing content
+    watchlistTable.innerHTML = '';
 
-            // Create table header
-            const headerRow = watchlistTable.insertRow(0);
-            const headerCell1 = headerRow.insertCell(0);
-            headerCell1.textContent = 'Competitor';
-            const headerCell2 = headerRow.insertCell(1);
-            headerCell2.textContent = 'Activity ID';
-            const headerCell3 = headerRow.insertCell(2);
-            headerCell3.textContent = 'Assignment Code';
+    // Create table header
+    const headerRow = watchlistTable.insertRow(0);
 
-            // Populate the table with data
-            selectedCheckboxes.forEach(competitorId => {
-                const person = data.persons.find(person => person.wcaId === competitorId);
-                if (person) {
-                    person.assignments.forEach(assignment => {
-                        const row = watchlistTable.insertRow(-1);
-                        const cell1 = row.insertCell(0);
-                        cell1.textContent = person.name;
-                        const cell2 = row.insertCell(1);
-                        cell2.textContent = assignment.activityId;
-                        const cell3 = row.insertCell(2);
-                        cell3.textContent = assignment.assignmentCode;
-                    });
-                }
+    // Iterate over events and add headers for each event
+    data.events.forEach(event => {
+        event.rounds.forEach(round => {
+            const headerCell = headerRow.insertCell(-1);
+            headerCell.textContent = `${event.id} - ${round.id}`;
+        });
+    });
+
+    // Populate the table with data
+    selectedCheckboxes.forEach(competitorId => {
+        const person = data.persons.find(person => person.wcaId === competitorId);
+        if (person) {
+            const row = watchlistTable.insertRow(-1);
+
+            // Iterate over events and populate cells with names if helping out
+            data.events.forEach(event => {
+                event.rounds.forEach(round => {
+                    const cell = row.insertCell(-1);
+                    const helpingOut = person.assignments.some(assignment => assignment.activityId === round.id);
+                    cell.textContent = helpingOut ? person.name : '';
+                });
             });
-
-            // Show the watchlist container
-            watchlistContainer.style.display = 'block';
         }
+    });
+
+    // Show the watchlist container
+    watchlistContainer.style.display = 'block';
+}
 
         
     </script>
