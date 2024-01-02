@@ -20,7 +20,8 @@
         .ui {
             text-align: center;
             width: 50vh;
-        
+        }
+
         .container {
             text-align: center;
         }
@@ -59,22 +60,25 @@
         <label for="textInput">Enter Competition ID:</label>
         <input type="text" id="textInput" placeholder="Type competition ID...">
         <button onclick="getData()">Get Data</button>
-        <select id="competitionSelect">
+        <select id="competitionSelect" onchange="autofillCompetitionId()">
             <option value="cloverdaleopen2022">Cloverdale Open 2022</option>
             <option value="cubingaroundmetrotown2023">Cubing Around Metrotown 2023</option>
         </select>
-         <select id="competitorSelect" onchange="displayResultsForCompetitor()">
+        <select id="competitorSelect" onchange="displayResultsForCompetitor()">
             <!-- this will be autopopulated by the page -->
         </select>
-        </div>
+    </div>
 
-        <div class="container">
+    <div class="container">
         <div id="tableContainer"></div>
         <div id="eventsContainer"></div>
         <div id="resultContainer"></div>
     </div>
 
     <script>
+        // Initialize an object to store rankings
+        const rankings = {};
+
         function getData() {
             // Get user input
             const userInput = document.getElementById('textInput').value;
@@ -108,77 +112,72 @@
         }
 
         function formatAndDisplayData(data) {
-    // Initialize an object to store rankings
-    const rankings = {};
-
-    const formattedData = `
-        Format Version: ${data.formatVersion}
-        Competition ID: ${data.id}
-        Competition Name: ${data.name}
-        Start Date: ${data.schedule.startDate}
-        Number of Days: ${data.schedule.numberOfDays}
-        Venue: ${data.schedule.venues[0].name}
-        Latitude: ${data.schedule.venues[0].latitudeMicrodegrees}
-        Longitude: ${data.schedule.venues[0].longitudeMicrodegrees}
-        
-        --- Persons ---
-        ${data.persons.map(person => {
-            // Save rankings to the 'rankings' object
-            rankings[person.wcaId] = person.personalBests.map(pBest => ({
-                name: person.name,
-                eventId: pBest.eventId,
-                worldRanking: pBest.worldRanking,
-                continentalRanking: pBest.continentalRanking,
-                nationalRanking: pBest.nationalRanking,
-            }));
-
-            // Display other details excluding rankings
-            return `
-                Name: ${person.name}
-                WCA ID: ${person.wcaId}
-                Country: ${person.countryIso2}
-                Gender: ${person.gender}
+            const formattedData = `
+                Format Version: ${data.formatVersion}
+                Competition ID: ${data.id}
+                Competition Name: ${data.name}
+                Start Date: ${data.schedule.startDate}
+                Number of Days: ${data.schedule.numberOfDays}
+                Venue: ${data.schedule.venues[0].name}
+                Latitude: ${data.schedule.venues[0].latitudeMicrodegrees}
+                Longitude: ${data.schedule.venues[0].longitudeMicrodegrees}
                 
-                // Exclude Personal Bests section from display
-                -----------------
-            `;
-        }).join('\n')}
-        
-        --- Events ---
-        ${data.events.map(event => `
-            Event ID: ${event.id}
-            Rounds: ${event.rounds.map(round => `
-                Round ID: ${round.id}
-                Format: ${round.format}
-                Time Limit: ${round.timeLimit}
-                Cutoff: ${round.cutoff}
-                Advancement Condition: ${round.advancementCondition}
-                Results: ${round.results.map(result => `
-                    Person ID: ${result.personId}
-                    Ranking: ${result.ranking}
-                    Best: ${result.best}
-                    Average: ${result.average}
+                --- Persons ---
+                ${data.persons.map(person => {
+                    // Save rankings to the 'rankings' object
+                    rankings[person.wcaId] = person.personalBests.map(pBest => ({
+                        name: person.name,
+                        eventId: pBest.eventId,
+                        worldRanking: pBest.worldRanking,
+                        continentalRanking: pBest.continentalRanking,
+                        nationalRanking: pBest.nationalRanking,
+                    }));
+
+                    // Display other details excluding rankings
+                    return `
+                        Name: ${person.name}
+                        WCA ID: ${person.wcaId}
+                        Country: ${person.countryIso2}
+                        Gender: ${person.gender}
+                        
+                        // Exclude Personal Bests section from display
+                        -----------------
+                    `;
+                }).join('\n')}
+                
+                --- Events ---
+                ${data.events.map(event => `
+                    Event ID: ${event.id}
+                    Rounds: ${event.rounds.map(round => `
+                        Round ID: ${round.id}
+                        Format: ${round.format}
+                        Time Limit: ${round.timeLimit}
+                        Cutoff: ${round.cutoff}
+                        Advancement Condition: ${round.advancementCondition}
+                        Results: ${round.results.map(result => `
+                            Person ID: ${result.personId}
+                            Ranking: ${result.ranking}
+                            Best: ${result.best}
+                            Average: ${result.average}
+                        `).join('\n')}
+                    `).join('\n')}
                 `).join('\n')}
-            `).join('\n')}
-        `).join('\n')}
-        
-        --- Schedule ---
-        ${data.schedule.venues[0].rooms[0].activities.map(activity => `
-            Activity ID: ${activity.id}
-            Name: ${activity.name}
-            Activity Code: ${activity.activityCode}
-            Start Time: ${activity.startTime}
-            End Time: ${activity.endTime}
-        `).join('\n')}
-    `;
+                
+                --- Schedule ---
+                ${data.schedule.venues[0].rooms[0].activities.map(activity => `
+                    Activity ID: ${activity.id}
+                    Name: ${activity.name}
+                    Activity Code: ${activity.activityCode}
+                    Start Time: ${activity.startTime}
+                    End Time: ${activity.endTime}
+                `).join('\n')}
+            `;
 
             // Display the formatted data
             document.getElementById('resultContainer').textContent = formattedData;
-            // Save rankings for future use
-            console.log('Saved Rankings:', rankings);
-            
-                const eventsContainer = document.getElementById('eventsContainer');
-                eventsContainer.innerHTML = ''; // Clear existing event buttons
+
+            const eventsContainer = document.getElementById('eventsContainer');
+            eventsContainer.innerHTML = ''; // Clear existing event buttons
 
             // Display event buttons dynamically
             data.events.forEach(event => {
@@ -187,42 +186,35 @@
                 button.addEventListener('click', () => displayResultsForEvent(event, data));
                 eventsContainer.appendChild(button);
             });
-                const competitorSelect = document.getElementById('competitorSelect');
-                    competitorSelect.innerHTML = '<option value="" disabled selected>Select Competitor</option>';
-                    data.persons.forEach(person => {
-                        const option = document.createElement('option');
-                        option.value = person.wcaId;
-                        option.textContent = person.name;
-                        competitorSelect.appendChild(option);
-                    });
-                }
 
-        
-        
-        function autofillCompetitionId() {
-            const selectElement = document.getElementById('competitionSelect');
-            const inputElement = document.getElementById('textInput');
-            inputElement.value = selectElement.value;
+            // Populate the competitor dropdown dynamically
+            const competitorSelect = document.getElementById('competitorSelect');
+            competitorSelect.innerHTML = '<option value="" disabled selected>Select Competitor</option>';
+            data.persons.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.wcaId;
+                option.textContent = person.name;
+                competitorSelect.appendChild(option);
+            });
         }
 
-        
         function displayResultsForEvent(event, data) {
             const formattedEventData = `
-        Event ID: ${event.id}
-        Rounds: ${event.rounds.map(round => `
-            Round ID: ${round.id}
-            Format: ${round.format}
-            Time Limit: ${round.timeLimit}
-            Cutoff: ${round.cutoff}
-            Advancement Condition: ${round.advancementCondition}
-            Results: ${round.results.map(result => `
-                Person ID: ${result.personId}
-                Ranking: ${result.ranking}
-                Best: ${result.best}
-                Average: ${result.average}
-            `).join('\n')}
-        `).join('\n')}
-    `;
+                Event ID: ${event.id}
+                Rounds: ${event.rounds.map(round => `
+                    Round ID: ${round.id}
+                    Format: ${round.format}
+                    Time Limit: ${round.timeLimit}
+                    Cutoff: ${round.cutoff}
+                    Advancement Condition: ${round.advancementCondition}
+                    Results: ${round.results.map(result => `
+                        Person ID: ${result.personId}
+                        Ranking: ${result.ranking}
+                        Best: ${result.best}
+                        Average: ${result.average}
+                    `).join('\n')}
+                `).join('\n')}
+            `;
 
             // Display the formatted event data
             document.getElementById('resultContainer').textContent = formattedEventData;
@@ -234,15 +226,15 @@
             if (selectedWcaId) {
                 const competitorRankings = rankings[selectedWcaId];
                 const formattedCompetitorData = `
-            --- Competitor Rankings ---
-            ${competitorRankings.map(ranking => `
-                Name: ${ranking.name}
-                Event ID: ${ranking.eventId}
-                World Ranking: ${ranking.worldRanking}
-                Continental Ranking: ${ranking.continentalRanking}
-                National Ranking: ${ranking.nationalRanking}
-            `).join('\n')}
-        `;
+                    --- Competitor Rankings ---
+                    ${competitorRankings.map(ranking => `
+                        Name: ${ranking.name}
+                        Event ID: ${ranking.eventId}
+                        World Ranking: ${ranking.worldRanking}
+                        Continental Ranking: ${ranking.continentalRanking}
+                        National Ranking: ${ranking.nationalRanking}
+                    `).join('\n')}
+                `;
 
                 // Display the formatted competitor data
                 document.getElementById('resultContainer').textContent = formattedCompetitorData;
