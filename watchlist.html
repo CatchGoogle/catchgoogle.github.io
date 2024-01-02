@@ -59,9 +59,12 @@
             <option value="cloverdaleopen2022">Cloverdale Open 2022</option>
             <option value="cubingaroundmetrotown2023">Cubing Around Metrotown 2023</option>
         </select>
-        <div id="tableContainer"></div>
-    </div>
+         <select id="competitorSelect" onchange="displayResultsForCompetitor()">
+            <!-- this will be autopopulated by the page -->
+        </select>
+        
     
+        <div id="tableContainer"></div>
         <div id="eventsContainer"></div>
         <div id="resultContainer"></div>
     </div>
@@ -169,8 +172,8 @@
             // Save rankings for future use
             console.log('Saved Rankings:', rankings);
             
-            const eventsContainer = document.getElementById('eventsContainer');
-            eventsContainer.innerHTML = ''; // Clear existing event buttons
+                const eventsContainer = document.getElementById('eventsContainer');
+                eventsContainer.innerHTML = ''; // Clear existing event buttons
 
             // Display event buttons dynamically
             data.events.forEach(event => {
@@ -179,8 +182,17 @@
                 button.addEventListener('click', () => displayResultsForEvent(event, data));
                 eventsContainer.appendChild(button);
             });
-        }
+                const competitorSelect = document.getElementById('competitorSelect');
+                    competitorSelect.innerHTML = '<option value="" disabled selected>Select Competitor</option>';
+                    data.persons.forEach(person => {
+                        const option = document.createElement('option');
+                        option.value = person.wcaId;
+                        option.textContent = person.name;
+                        competitorSelect.appendChild(option);
+                    });
+                }
 
+        
         
         function autofillCompetitionId() {
             const selectElement = document.getElementById('competitionSelect');
@@ -209,6 +221,27 @@
 
             // Display the formatted event data
             document.getElementById('resultContainer').textContent = formattedEventData;
+        }
+
+        function displayResultsForCompetitor() {
+            const selectedWcaId = document.getElementById('competitorSelect').value;
+
+            if (selectedWcaId) {
+                const competitorRankings = rankings[selectedWcaId];
+                const formattedCompetitorData = `
+            --- Competitor Rankings ---
+            ${competitorRankings.map(ranking => `
+                Name: ${ranking.name}
+                Event ID: ${ranking.eventId}
+                World Ranking: ${ranking.worldRanking}
+                Continental Ranking: ${ranking.continentalRanking}
+                National Ranking: ${ranking.nationalRanking}
+            `).join('\n')}
+        `;
+
+                // Display the formatted competitor data
+                document.getElementById('resultContainer').textContent = formattedCompetitorData;
+            }
         }
     </script>
 </body>
