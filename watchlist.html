@@ -367,63 +367,67 @@
         function createWatchlist() {
             const watchlistContainer = document.getElementById('watchlistContainer');
             const watchlistTable = document.getElementById('watchlistTable');
-
+        
             // Clear existing content
             watchlistTable.innerHTML = '';
-
+        
             // Create table header
             const headerRow = watchlistTable.insertRow(0);
-
+        
             // Add headers for the first four columns
             const groupIDHeader = headerRow.insertCell(0);
             groupIDHeader.textContent = 'Group ID';
-
+        
             const groupNameHeader = headerRow.insertCell(1);
             groupNameHeader.textContent = 'Group Name';
-
+        
             const activityCodeHeader = headerRow.insertCell(2);
             activityCodeHeader.textContent = 'Activity Code';
-
+        
             const startTimeHeader = headerRow.insertCell(3);
             startTimeHeader.textContent = 'Start Time';
-
+        
             // Add header for the last column
             const competitorHeader = headerRow.insertCell(-1);
             competitorHeader.textContent = 'Competitor';
-
+        
             // Populate the table with data
             data.persons.forEach(person => {
                 const groupAssignment = person.assignments.find(assignment => assignment.childActivities && assignment.childActivities.length > 0);
-
+        
                 if (groupAssignment) {
+                    console.log('Group Assignment:', groupAssignment);
+        
                     // Extract group information from the schedule
                     const groupInfo = data.schedule.venues[0].rooms[0].activities
+                        .filter(activity => activity.childActivities && activity.childActivities.length > 0)
                         .flatMap(activity => activity.childActivities)
                         .find(group => group.id === groupAssignment.activityId);
-                
+        
+                    console.log('Group Info:', groupInfo);
+        
                     if (groupInfo) {
                         // Create a new row for each group
                         const row = watchlistTable.insertRow(-1);
-                
+        
                         // Add group information in the first four columns
                         const groupIDCell = row.insertCell(0);
                         groupIDCell.textContent = groupInfo.id;
-                
+        
                         const groupNameCell = row.insertCell(1);
                         groupNameCell.textContent = groupInfo.name;
-                
+        
                         const activityCodeCell = row.insertCell(2);
                         activityCodeCell.textContent = groupInfo.activityCode;
-                
+        
                         const startTimeCell = row.insertCell(3);
                         startTimeCell.textContent = groupInfo.startTime;
-                
+        
                         // Add competitor name in the last column
                         const competitorCell = row.insertCell(-1);
                         competitorCell.textContent = person.name;
                     }
                 }
-
             });
 
             // Show the watchlist container
