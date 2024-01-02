@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCA Watchlist</title>
+	<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,7 +67,6 @@
 
 <body>
     <div class="ui">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <label for="textInput">Enter Competition ID:</label>
         <input type="text" id="textInput" placeholder="Type competition ID...">
         <button onclick="getData()">Get Data</button>
@@ -258,26 +259,33 @@
     }
 
     function displayResultsForEvent(event, dataObject) {
-        const formattedEventData = `
-            Event ID: ${event.id}
-            Rounds: ${event.rounds.map(round => `
-                Round ID: ${round.id}
-                Format: ${round.format}
-                Time Limit: ${round.timeLimit}
-                Cutoff: ${round.cutoff}
-                Advancement Condition: ${round.advancementCondition}
-                Results: ${round.results.map(result => `
-                    Person ID: ${result.personId}
-                    Ranking: ${result.ranking}
-                    Best: ${result.best}
-                    Average: ${result.average}
-                `).join('\n')}
+    const formattedEventData = `
+        Event ID: ${event.id}
+        Rounds: ${event.rounds.map(round => `
+            Round ID: ${round.id}
+            Format: ${round.format}
+            Time Limit: ${round.timeLimit}
+            Cutoff: ${round.cutoff}
+            Advancement Condition: ${round.advancementCondition}
+            Results: ${round.results.map(result => `
+                Person ID: ${result.personId}
+                Ranking: ${result.ranking}
+                Best: ${result.best}
+                Average: ${result.average}
             `).join('\n')}
-        `;
+        `).join('\n')}
+    `;
 
-        // Display the formatted event data
-        document.getElementById('resultContainer').textContent = formattedEventData;
-    }
+    // Extract round information (e.g., "Round 2, 1") from the event data
+    const roundInfo = event.rounds.map(round => `Round ${round.id}, ${round.number}`).join(', ');
+
+    // Display the formatted event data along with round information
+    document.getElementById('resultContainer').innerHTML = `
+        <h3>Event Information</h3>
+        ${formattedEventData}
+        <p>Round Information: ${roundInfo}</p>
+    `;
+}
 
     function autofillCompetitionId() {
         const selectElement = document.getElementById('competitionSelect');
@@ -340,30 +348,38 @@
     });
 
     // Attach event listener to handle checkbox changes
-    checkboxContainer.addEventListener('change', function(event) {
+checkboxContainer.addEventListener('change', function (event) {
     if (event.target.name === 'competitorCheckbox') {
-        handleCheckboxChange();
+        handleCheckboxChange(event); // Pass the event object
     }
 });
 
     // Show the "Create Watchlist" button
     const createWatchlistBtn = document.getElementById('createWatchlistBtn');
     createWatchlistBtn.style.display = 'block';
+
+    console.log('Checkboxes displayed:', sortedPersons.map(person => person.name));
 }
 
-    function handleCheckboxChange() {
-            console.log('Checkbox changed');
-            const checkboxes = document.getElementsByName('competitorCheckbox');
-            const selectedCheckboxes = Array.from(checkboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
+    function handleCheckboxChange(event) {
+    const checkboxes = document.getElementsByName('competitorCheckbox');
+    const selectedCheckboxes = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
 
-            // Update the "Compete" column in the watchlist table
-            updateCompeteColumn(selectedCheckboxes);
+    // Log information about the clicked checkbox and its status
+    console.log('Clicked checkbox:', {
+        id: event.target.id,
+        value: event.target.value,
+        checked: event.target.checked,
+    });
 
-            // Display names and assignments for selected competitors
-            displaySelectedCompetitorsInfo(selectedCheckboxes);
-        }
+    // Update the "Compete" column in the watchlist table
+    updateCompeteColumn(selectedCheckboxes);
+
+    // Display names and assignments for selected competitors
+    displaySelectedCompetitorsInfo(selectedCheckboxes);
+}
         
     function displaySelectedCompetitorsInfo(selectedWcaIds) {
             const selectedCompetitorsInfo = document.getElementById('selectedCompetitorsInfo');
@@ -382,9 +398,10 @@
                         WCA ID: ${person.wcaId}<br>
                         Country: ${person.countryIso2}<br>
                         Gender: ${person.gender}<br>
-                        Assignments:<br>${assignmentsInfo}<br>
+                        
                         -----------------<br>
                     `;
+			// Assignments:<br>${assignmentsInfo}<br>
 
                     selectedCompetitorsInfo.innerHTML += competitorInfo;
                 }
@@ -456,21 +473,21 @@
 
         
     function createWatchlist() {
-            const watchlistContainer = document.getElementById('watchlistContainer');
-            const watchlistTable = document.getElementById('watchlistTable');
+    const watchlistContainer = document.getElementById('watchlistContainer');
+    const watchlistTable = document.getElementById('watchlistTable');
 
-            // Clear existing content
-            watchlistTable.innerHTML = '';
+    // Clear existing content
+    watchlistTable.innerHTML = '';
 
-            // Iterate through venues
-            data.schedule.venues.forEach(venue => {
-                // Create a watchlist for each venue
-                createWatchlistForVenue(watchlistTable, venue);
-            });
+    // Iterate through venues
+    data.schedule.venues.forEach(venue => {
+        // Create a watchlist for each venue
+        createWatchlistForVenue(watchlistTable, venue);
+    });
 
-            // Show the watchlist container
-            watchlistContainer.style.display = 'block';
-        }
+    // Show the watchlist container
+    watchlistContainer.style.display = 'block';
+}
 
     function getFirstLastName(fullName) {
         const nameParts = fullName.split(' ');
@@ -535,62 +552,79 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
 }
 
         function createWatchlistForVenue(watchlistTable, venue) {
-            // Initialize an array to store sorted groups
-            const sortedGroups = [];
-        
-            // Iterate through activities in the venue
-            venue.rooms.forEach(room => {
-                room.activities.forEach(activity => {
-                    // Check if the activity has child activities
-                    if (activity.childActivities && activity.childActivities.length > 0) {
-                        activity.childActivities.forEach(group => {
-                            // Push group information into the array
-                            sortedGroups.push({
-                                startTime: new Date(group.startTime),
-                                name: group.name,
-                                id: group.id,
-                            });
-                        });
-                    }
+    // Initialize an array to store sorted groups
+    const headerRow = watchlistTable.insertRow(0);
+    const headers = ["Time", "Event", "Compete", "Judge", "Scramble", "Run"];
+
+    headers.forEach(headerText => {
+        const headerCell = headerRow.insertCell();
+        headerCell.textContent = headerText;
+    });
+
+    // Initialize an array to store sorted groups
+    const sortedGroups = [];
+
+    // Iterate through activities in the venue
+    venue.rooms.forEach(room => {
+        room.activities.forEach(activity => {
+            // Check if the activity has child activities
+            if (activity.childActivities && activity.childActivities.length > 0) {
+                activity.childActivities.forEach(group => {
+                    // Extract round and group numbers from the activity code
+                    const [event, round, groupNumber] = group.activityCode.split('-').map(item => item.trim());
+
+                    // Push group information into the array
+                    sortedGroups.push({
+                        startTime: new Date(group.startTime),
+                        event,
+                        round,
+                        groupNumber,
+                        id: group.id,
+                    });
                 });
-            });
-        
-            // Sort the groups based on start time
-            sortedGroups.sort((a, b) => a.startTime - b.startTime);
-        
-            // Iterate through sorted groups and populate the table
-            sortedGroups.forEach(group => {
-                // Populate the table with data
-                const row = watchlistTable.insertRow(-1);
-        
-                // Add group information in the first two columns
-                const startTimeCell = row.insertCell(0);
-                startTimeCell.textContent = convertUtcToLocalTime(group.startTime);
-        
-                const groupNameCell = row.insertCell(1);
-                groupNameCell.textContent = group.name;
-        
-                // Add "Compete" column
-                const competeCell = row.insertCell(2);
-                const selectedCompetitors = getSelectedCompetitorsForGroup(group.id);
-                competeCell.innerHTML = selectedCompetitors.map(name => getFirstLastName(name)).join(', ');
-        
-                // Add "Judge" column
-                const judgeCell = row.insertCell(3);
-                const selectedJudges = getSelectedJudgesForGroup(group.id);
-                judgeCell.innerHTML = selectedJudges.map(name => getFirstLastName(name)).join(', ');
-        
-                // Add "Scramble" column
-                const scrambleCell = row.insertCell(4);
-                const selectedScramblers = getSelectedScramblersForGroup(group.id);
-                scrambleCell.innerHTML = selectedScramblers.map(name => getFirstLastName(name)).join(', ');
-        
-                // Add "Run" column
-                const runCell = row.insertCell(5);
-                const selectedRunners = getSelectedRunnersForGroup(group.id);
-                runCell.innerHTML = selectedRunners.map(name => getFirstLastName(name)).join(', ');
-            });
-        }
+            }
+        });
+    });
+
+    // Sort the groups based on start time
+    sortedGroups.sort((a, b) => a.startTime - b.startTime);
+
+    // Iterate through sorted groups and populate the table
+    sortedGroups.forEach(group => {
+        // Populate the table with data
+        const row = watchlistTable.insertRow(-1);
+
+        // Add group information in the first two columns
+        const startTimeCell = row.insertCell(0);
+        startTimeCell.textContent = convertUtcToLocalTime(group.startTime);
+
+        // Display the event, round, and group numbers
+        const groupNameCell = row.insertCell(1);
+        groupNameCell.textContent = `${getEventName(group.event)} | ${group.round[1]}, ${group.groupNumber[1]}`;
+
+        // Add "Compete" column
+        const competeCell = row.insertCell(2);
+        const selectedCompetitors = getSelectedCompetitorsForGroup(group.id);
+        competeCell.innerHTML = selectedCompetitors.map(name => getFirstLastName(name)).join(', ');
+
+        // Add "Judge" column
+        const judgeCell = row.insertCell(3);
+        const selectedJudges = getSelectedJudgesForGroup(group.id);
+        judgeCell.innerHTML = selectedJudges.map(name => getFirstLastName(name)).join(', ');
+
+        // Add "Scramble" column
+        const scrambleCell = row.insertCell(4);
+        const selectedScramblers = getSelectedScramblersForGroup(group.id);
+        scrambleCell.innerHTML = selectedScramblers.map(name => getFirstLastName(name)).join(', ');
+
+        // Add "Run" column
+        const runCell = row.insertCell(5);
+        const selectedRunners = getSelectedRunnersForGroup(group.id);
+        runCell.innerHTML = selectedRunners.map(name => getFirstLastName(name)).join(', ');
+    });
+}
+
+
 
         function convertUtcToLocalTime(utcTimeString) {
             const utcTime = new Date(utcTimeString);
@@ -603,18 +637,61 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
             });
             return localTime;
         }
+        
 		function exportToPdf() {
     const watchlistTable = document.getElementById('watchlistTable');
 
-    // Create a new jsPDF instance
-    const pdf = new jsPDF();
+    // Convert the table to an HTML string
+    const tableHtml = watchlistTable.outerHTML;
 
-    // Add content to the PDF using the HTML content of the table
-    pdf.autoTable({ html: '#watchlistTable' });
+    // Open a new window with the table content
+    const newWindow = window.open('', '_blank');
+    newWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Watchlist</title>
+        </head>
+        <body>
+            ${tableHtml}
+        </body>
+        </html>
+    `);
 
-    // Save the PDF with a specific filename
-    pdf.save('watchlist.pdf');
+    // Wait for the content to be fully loaded
+    newWindow.onload = () => {
+        // Trigger the print dialog
+        newWindow.print();
+    };
 }
+
+function getEventName(eventId) {
+    const eventMap = {
+        '222': '2x2',
+        '333': '3x3',
+        '444': '4x4',
+	'555': '5x5',
+	'666': '6x6',
+	'777': '7x7',
+	'333bf': '3BLD',
+	'333fm': 'FMC',
+	'333oh': '3x3 OH',
+	'clock': 'Clock',
+	'minx': 'Mega',
+	'pyram': 'Pyra',
+	'skewb': 'Skewb',
+	'sq1': 'Squan',
+	'444bf': '4BLD',
+	'555bf': '5BLD',
+	'333mbf': 'MBLD',
+        // Add more event IDs and names as needed
+    };
+
+    return eventMap[eventId] || 'Unknown Event';
+}
+
 
 </script>
 
