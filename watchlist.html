@@ -248,10 +248,8 @@
                 const formattedCompetitorData = `
                     --- Competitor Rankings ---
                     ${competitorRankings.map(ranking => `
-                        Name: ${ranking.name}
                         Event ID: ${ranking.eventId}
                         World Ranking: ${ranking.worldRanking}
-                        Continental Ranking: ${ranking.continentalRanking}
                         National Ranking: ${ranking.nationalRanking}
                     `).join('\n')}
                 `;
