@@ -209,13 +209,17 @@
     
 
     document.addEventListener('DOMContentLoaded', () => {
-    console.log('Page content is loaded.');
-    loadFriends();
-    populateFriendDropdown();
-    checkFriends();
-    displayFriendsList();
-});
-	    
+	    console.log('Page content is loaded.');
+	    initializeFriendsList();  // This will trigger the displayFriendsList() call
+	    populateFriendDropdown();
+	    checkFriends();
+	});
+	
+	function initializeFriendsList() {
+	    loadFriends();  // Load friends from local storage
+	    displayFriendsList();  // Display friends list immediately after loading
+	}
+		    
   	function loadFriends() {
 	    try {
 	        const storedFriends = localStorage.getItem('friendsList');
@@ -263,6 +267,7 @@
 
         // Function to check checkboxes for friends
         function checkFriends() {
+	    displayFriendsList();
             friendsList.forEach(friend => {
                 const checkbox = document.getElementById(friend);
                 if (checkbox) {
