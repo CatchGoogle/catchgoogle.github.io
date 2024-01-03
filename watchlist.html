@@ -210,10 +210,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
 	    console.log('Page content is loaded.');
-	    initializeFriendsList();  // This will trigger the displayFriendsList() call
+	    loadFriends();  // Load friends from local storage
 	    populateFriendDropdown();
 	    checkFriends();
-	    handleCheckboxChange(event)
 	});
 	
 	function initializeFriendsList() {
@@ -226,11 +225,14 @@
 	        const storedFriends = localStorage.getItem('friendsList');
 	        friendsList = storedFriends ? JSON.parse(storedFriends) : [];
 	        console.log('Friends list loaded successfully:', friendsList);
-		displayFriendsList();
+	        
+	        // Call displayFriendsList() directly after loading friends
+	        displayFriendsList();
 	    } catch (error) {
 	        console.error('Error loading friends list:', error);
 	    }
 	}
+
 
         // Function to save friends to local storage
 	function saveFriends(callback) {
