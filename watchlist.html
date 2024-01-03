@@ -153,17 +153,17 @@
     window.html2canvas = html2canvas;
     
 
-    window.addEventListener('load', () => {
-        loadFriends();
-        populateFriendDropdown();
-        checkFriends();
-        displayFriendsList();
-    });
+    document.addEventListener('DOMContentLoaded', () => {
+    loadFriends();
+    populateFriendDropdown();
+    checkFriends();
+    displayFriendsList();
+});
 	    
     function loadFriends() {
-            const storedFriends = localStorage.getItem('friendsList');
-            friendsList = storedFriends ? JSON.parse(storedFriends) : [];
-        }
+	    const storedFriends = localStorage.getItem('friendsList');
+	    friendsList = storedFriends ? JSON.parse(storedFriends) : [];
+	}
 
         // Function to save friends to local storage
         function saveFriends() {
@@ -279,31 +279,36 @@ function saveFriends(callback) {
 }
 	    
     function displayFriendsList() {
-        const friendsContainer = document.getElementById('friendsContainer');
-        friendsContainer.innerHTML = '';
+    const friendsContainer = document.getElementById('friendsContainer');
+    friendsContainer.innerHTML = '';
 
-        // Display friends list dynamically
-        friendsList.forEach(friend => {
-            const friendContainer = document.createElement('div');
+    // Display friends list dynamically
+    friendsList.forEach(friend => {
+        const friendContainer = document.createElement('div');
 
-            // Create a paragraph for the friend's name
-            const paragraph = document.createElement('p');
-            paragraph.textContent = friend.name;
+        // Create a paragraph for the friend's name
+        const paragraph = document.createElement('p');
+        paragraph.textContent = friend.name;
 
-            // Create a button to remove the friend
-	const removeButton = document.createElement('button');
-	removeButton.textContent = 'Remove';
-	removeButton.onclick = (event) => removeFriendOnClick(friend.wcaId, event);
+        // Create a button to remove the friend
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = (event) => removeFriendOnClick(friend.wcaId, event);
 
-            // Append the paragraph and button to the friend container
-            friendContainer.appendChild(paragraph);
-            friendContainer.appendChild(removeButton);
+        // Append the paragraph and button to the friend container
+        friendContainer.appendChild(paragraph);
+        friendContainer.appendChild(removeButton);
 
-            // Append the friend container to the friends container
-            friendsContainer.appendChild(friendContainer);
-        });
-    }
+        // Append the friend container to the friends container
+        friendsContainer.appendChild(friendContainer);
+    });
 
+    // Save friends after displaying the updated list
+    saveFriends();
+}
+
+// Call loadFriends when the page content is loaded
+document.addEventListener('DOMContentLoaded', loadFriends);
 	    
     function getData() {
         // Get user input
