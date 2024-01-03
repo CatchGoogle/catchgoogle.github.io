@@ -216,13 +216,23 @@
 });
 	    
   	function loadFriends() {
-	    const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)friendsList\s*=\s*([^;]*).*$)|^.*$/, '$1');
-	    friendsList = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
+	    try {
+	        const storedFriends = localStorage.getItem('friendsList');
+	        friendsList = storedFriends ? JSON.parse(storedFriends) : [];
+	        console.log('Friends list loaded successfully.');
+	    } catch (error) {
+	        console.error('Error loading friends list:', error);
+	    }
 	}
 
         // Function to save friends to local storage
-        function saveFriends() {
-	    document.cookie = `friendsList=${encodeURIComponent(JSON.stringify(friendsList))}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
+	function saveFriends() {
+	    try {
+	        localStorage.setItem('friendsList', JSON.stringify(friendsList));
+	        console.log('Friends list saved successfully.');
+	    } catch (error) {
+	        console.error('Error saving friends list:', error);
+	    }
 	}
 
 	function isPersonInFriendsList(wcaId) {
