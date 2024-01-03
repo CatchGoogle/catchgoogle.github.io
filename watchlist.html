@@ -214,9 +214,12 @@
 
 	
 	function initializeFriendsList() {
-	    loadFriends();  // Load friends from local storage
-	    displayFriendsList();  // Display friends list immediately after loading
+	    console.log('Initializing friends list...');
+	    loadFriends();
+	    displayFriendsList();
+	    console.log('Initialization complete.');
 	}
+
 		    
   	function loadFriends() {
 	    try {
