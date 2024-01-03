@@ -215,15 +215,20 @@
     displayFriendsList();
 });
 	    
-    function loadFriends() {
-	    const storedFriends = localStorage.getItem('friendsList');
-	    friendsList = storedFriends ? JSON.parse(storedFriends) : [];
+  	function loadFriends() {
+	    const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)friendsList\s*=\s*([^;]*).*$)|^.*$/, '$1');
+	    friendsList = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
 	}
 
         // Function to save friends to local storage
         function saveFriends() {
-            localStorage.setItem('friendsList', JSON.stringify(friendsList));
-        }
+	    const expirationDate = new Date();
+	    expirationDate.setFullYear(expirationDate.getFullYear() + 1); // Set the expiration to one year from now
+	
+	    const serializedFriends = JSON.stringify(friendsList);
+	    document.cookie = `friendsList=${encodeURIComponent(serializedFriends)}; expires=${expirationDate.toUTCString()}; path=/`;
+	}
+
 	function isPersonInFriendsList(wcaId) {
 	        return friendsList.some(friend => friend.wcaId === wcaId);
 	    }
