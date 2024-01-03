@@ -221,6 +221,7 @@
 	        const storedFriends = localStorage.getItem('friendsList');
 	        friendsList = storedFriends ? JSON.parse(storedFriends) : [];
 	        console.log('Friends list loaded successfully:', friendsList);
+		displayFriendsList();
 	    } catch (error) {
 	        console.error('Error loading friends list:', error);
 	    }
