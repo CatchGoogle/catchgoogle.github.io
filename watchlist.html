@@ -217,7 +217,9 @@
 	    
   	function loadFriends() {
 	    const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)friendsList\s*=\s*([^;]*).*$)|^.*$/, '$1');
+	    console.log('Cookie Value:', cookieValue);
 	    friendsList = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
+	    console.log('Loaded Friends List:', friendsList);
 	}
 
         // Function to save friends to local storage
