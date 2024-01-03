@@ -129,6 +129,9 @@
 	    border-radius: 5px;
 	    animation: fadeInOut 2s ease-in-out;
 	}
+	.highlighted-row {
+	    background-color: red;
+	}
 	
 	@keyframes fadeInOut {
 	    0%, 100% {
@@ -172,7 +175,13 @@
     </select>
     <button onclick="addFriend()" style="display: none;">Add Friend</button>
     <button id="autofillFriendsBtn" onclick="autofillFriends(); showAutofillPopup();">Autofill Friends' Boxes</button>
+<label for="userSelect">Select Your Name:</label>
+<select id="userSelect" onchange="highlightUserWatchlist()">
+    <option value="">---Select Your Name---</option>
+    <!-- Dynamically populate options using JavaScript -->
+</select>
 </div>
+	
 	
     <div class="container">
         <div id="resultContainer"></div>
@@ -206,7 +215,56 @@
     let friendsList = localStorage.getItem('friendsList') ? JSON.parse(localStorage.getItem('friendsList')) : [];
     window.jsPDF = window.jspdf.jsPDF
     window.html2canvas = html2canvas;
-		    
+
+
+	function populateUserDropdown() {
+	    const userSelect = document.getElementById('userSelect');
+	
+	    // Clear existing options
+	    userSelect.innerHTML = '<option value="">---Select Your Name---</option>';
+	
+	    // Sort competitors alphabetically by name
+	    const sortedCompetitors = data.persons
+	        .filter(person => person.wcaId) // Only include competitors with WCA IDs
+	        .sort((a, b) => a.name.localeCompare(b.name));
+	
+	    // Populate options based on sorted competitors
+	    sortedCompetitors.forEach(person => {
+	        const option = document.createElement('option');
+	        option.value = person.name.toLowerCase();
+	        option.textContent = person.name;
+	        userSelect.appendChild(option);
+	    });
+	}    
+
+	function highlightUserWatchlist() {
+	    const userSelect = document.getElementById('userSelect');
+	    const userName = userSelect.value;
+	
+	    // Update the list of names for autofill
+	    updateAutofillNames(userName);
+	
+	    const watchlistTable = document.getElementById('watchlistTable');
+	    const rows = watchlistTable.getElementsByTagName('tr');
+	
+	    // Loop through all rows and highlight those with the user's name
+	    for (let i = 0; i < rows.length; i++) {
+	        const cells = rows[i].getElementsByTagName('td');
+	        const competitorName = cells[1].textContent; // Assuming the competitor's name is in the second column
+	
+	        // Check if the competitor's name matches the selected user's name
+	        if (competitorName === userName) {
+	            rows[i].style.backgroundColor = '#ffdddd'; // Light red background color
+	        } else {
+	            rows[i].style.backgroundColor = ''; // Reset background color
+	        }
+	    }
+	}
+		
+	// Call highlightUserWatchlist when the user dropdown selection changes
+	document.getElementById('userSelect').addEventListener('change', highlightUserWatchlist);
+
+	    
   	function loadFriends() {
 	    try {
 	        const storedFriends = localStorage.getItem('friendsList');
@@ -311,36 +369,52 @@
 	}
 	    
 	function addFriend() {
-            const friendSelect = document.getElementById('friendSelect');
-            const selectedWcaId = friendSelect.value;
+    const friendSelect = document.getElementById('friendSelect');
+    const selectedWcaId = friendSelect.value;
 
-            if (selectedWcaId) {
-                const person = data.persons.find(person => person.wcaId === selectedWcaId);
+    if (selectedWcaId) {
+        const person = data.persons.find(person => person.wcaId === selectedWcaId);
 
-                if (person) {
-                    const friendName = person.name.trim();
+        if (person) {
+            const friendName = person.name.trim();
 
-                    // Check if the person is already in the friends list
-                    if (!isPersonInFriendsList(selectedWcaId)) {
-                        // Append the friend to the friends container
-                        const friendsContainer = document.getElementById('friendsContainer');
-                        friendsContainer.innerHTML += `<p>${friendName}</p>`;
+            // Check if the person is already in the friends list
+            if (!isPersonInFriendsList(selectedWcaId)) {
+                // Append the friend to the friends container
+                const friendsContainer = document.getElementById('friendsContainer');
+                friendsContainer.innerHTML += `<p>${friendName}</p>`;
 
-                        // Clear the selected option
-                        friendSelect.value = '';
+                // Clear the selected option
+                friendSelect.value = '';
 
-                        // Save the updated friends list to local storage
-                        friendsList.push({ wcaId: person.wcaId, name: friendName });
-			    saveFriends();
-			    console.log('Friend added:', { wcaId: person.wcaId, name: friendName });
+                // Save the updated friends list to local storage
+                friendsList.push({ wcaId: person.wcaId, name: friendName });
+                saveFriends();
+                console.log('Friend added:', { wcaId: person.wcaId, name: friendName });
 
-                    } else {
-                        alert(`${friendName} is already in the friends list.`);
-                    }
-                }
+                // Update the list of names for autofill
+                updateAutofillNames(friendName);
+
+            } else {
+                alert(`${friendName} is already in the friends list.`);
             }
-		displayFriendsList();
         }
+    }
+    displayFriendsList(); // Display the updated friends list
+}
+	// Function to update the list of names for autofill
+	function updateAutofillNames(name) {
+	    const autofillNames = localStorage.getItem('autofillNames') ? JSON.parse(localStorage.getItem('autofillNames')) : [];
+	    
+	    // Add the name to the list if it's not already there
+	    if (!autofillNames.includes(name)) {
+	        autofillNames.push(name);
+	    }
+	
+	    // Save the updated list to local storage
+	    localStorage.setItem('autofillNames', JSON.stringify(autofillNames));
+	}
+	    
     function removeFriendOnClick(wcaId, event) {
     // Remove the friend from the friends list
     friendsList = friendsList.filter(friend => friend.wcaId !== wcaId);
@@ -420,6 +494,8 @@ document.addEventListener('DOMContentLoaded', loadFriends);
 		displayCompetitorCheckboxes(data);
 
 		populateFriendDropdown();
+
+		populateUserDropdown();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -788,6 +864,8 @@ document.addEventListener('DOMContentLoaded', loadFriends);
     function createWatchlist() {
     const watchlistContainer = document.getElementById('watchlistContainer');
     const watchlistTable = document.getElementById('watchlistTable');
+    const selectedCompetitor = document.getElementById('userSelect').value;
+
 
     // Clear existing content
     watchlistTable.innerHTML = '';
@@ -795,7 +873,7 @@ document.addEventListener('DOMContentLoaded', loadFriends);
     // Iterate through venues
     data.schedule.venues.forEach(venue => {
         // Create a watchlist for each venue
-        createWatchlistForVenue(watchlistTable, venue);
+        createWatchlistForVenue(watchlistTable, venue, selectedCompetitor);
     });
 
     // Show the watchlist container
@@ -864,80 +942,122 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
     return selectedPersons;
 }
 
-        function createWatchlistForVenue(watchlistTable, venue) {
-    // Initialize an array to store sorted groups
-    const headerRow = watchlistTable.insertRow(0);
-    const headers = ["Time", "Event", "Compete", "Judge", "Scramble", "Run"];
+        function createWatchlistForVenue(watchlistTable, venue, selectedCompetitor) {
+	    // Initialize an array to store sorted groups
+	    const headerRow = watchlistTable.insertRow(0);
+	    const headers = ["Time", "Event", "Compete", "Judge", "Scramble", "Run"];
+	
+	    headers.forEach(headerText => {
+	        const headerCell = headerRow.insertCell();
+	        headerCell.textContent = headerText;
+	    });
+	
+	    // Initialize an array to store sorted groups
+	    const sortedGroups = [];
+	
+	    // Iterate through activities in the venue
+	    venue.rooms.forEach(room => {
+	        room.activities.forEach(activity => {
+	            // Check if the activity has child activities
+	            if (activity.childActivities && activity.childActivities.length > 0) {
+	                activity.childActivities.forEach(group => {
+	                    // Extract round and group numbers from the activity code
+	                    const [event, round, groupNumber] = group.activityCode.split('-').map(item => item.trim());
+	
+	                    // Push group information into the array
+	                    sortedGroups.push({
+	                        startTime: new Date(group.startTime),
+	                        event,
+	                        round,
+	                        groupNumber,
+	                        id: group.id,
+	                    });
+	                });
+	            }
+	        });
+	    });
+	
+	    // Sort the groups based on start time
+	    sortedGroups.sort((a, b) => a.startTime - b.startTime);
+	
+	    // Iterate through sorted groups and populate the table
+	    sortedGroups.forEach(group => {
+	        // Populate the table with data
+	        const row = watchlistTable.insertRow(-1);
+	
+	        // Add group information in the first two columns
+	        const startTimeCell = row.insertCell(0);
+	        startTimeCell.textContent = convertUtcToLocalTime(group.startTime);
+	
+	        // Display the event, round, and group numbers
+	        const groupNameCell = row.insertCell(1);
+	        groupNameCell.textContent = `${getEventName(group.event)} | ${group.round[1]}, ${group.groupNumber[1]}`;
+	
+	        // Add "Compete" column
+	        const competeCell = row.insertCell(2);
+	        const selectedCompetitors = getSelectedCompetitorsForGroup(group.id);
+	        competeCell.innerHTML = selectedCompetitors.map(name => getFirstLastName(name)).join(', ');
+	
+	        // Add "Judge" column
+	        const judgeCell = row.insertCell(3);
+	        const selectedJudges = getSelectedJudgesForGroup(group.id);
+	        judgeCell.innerHTML = selectedJudges.map(name => getFirstLastName(name)).join(', ');
+	
+	        // Add "Scramble" column
+	        const scrambleCell = row.insertCell(4);
+	        const selectedScramblers = getSelectedScramblersForGroup(group.id);
+	        scrambleCell.innerHTML = selectedScramblers.map(name => getFirstLastName(name)).join(', ');
+	
+	        // Add "Run" column
+	        const runCell = row.insertCell(5);
+	        const selectedRunners = getSelectedRunnersForGroup(group.id);
+	        runCell.innerHTML = selectedRunners.map(name => getFirstLastName(name)).join(', ');
+	
+	        // Highlight rows containing the selected competitor (case-insensitive)
+	        const isCompetitorSelected = selectedCompetitors.some(
+	            name => name.toLowerCase() === selectedCompetitor.toLowerCase()
+	        );
+	        const isJudgeSelected = selectedJudges.some(
+	            name => name.toLowerCase() === selectedCompetitor.toLowerCase()
+	        );
+	        const isScramblerSelected = selectedScramblers.some(
+	            name => name.toLowerCase() === selectedCompetitor.toLowerCase()
+	        );
+	        const isRunnerSelected = selectedRunners.some(
+	            name => name.toLowerCase() === selectedCompetitor.toLowerCase()
+	        );
+	
+	        if (isCompetitorSelected || isJudgeSelected || isScramblerSelected || isRunnerSelected) {
+	            console.log('Highlighting row for selected competitor:', selectedCompetitor);
+	            // Change the background color to yellow for Judge, Scramble, or Run columns
+	            row.style.backgroundColor = isJudgeSelected || isScramblerSelected || isRunnerSelected
+	                ? '#f9ff8c'
+	                : '#ffc0cb'; // Default to red for Compete column
+	        }
+	    });
+	}
 
-    headers.forEach(headerText => {
-        const headerCell = headerRow.insertCell();
-        headerCell.textContent = headerText;
-    });
-
-    // Initialize an array to store sorted groups
-    const sortedGroups = [];
-
-    // Iterate through activities in the venue
-    venue.rooms.forEach(room => {
-        room.activities.forEach(activity => {
-            // Check if the activity has child activities
-            if (activity.childActivities && activity.childActivities.length > 0) {
-                activity.childActivities.forEach(group => {
-                    // Extract round and group numbers from the activity code
-                    const [event, round, groupNumber] = group.activityCode.split('-').map(item => item.trim());
-
-                    // Push group information into the array
-                    sortedGroups.push({
-                        startTime: new Date(group.startTime),
-                        event,
-                        round,
-                        groupNumber,
-                        id: group.id,
-                    });
-                });
-            }
-        });
-    });
-
-    // Sort the groups based on start time
-    sortedGroups.sort((a, b) => a.startTime - b.startTime);
-
-    // Iterate through sorted groups and populate the table
-    sortedGroups.forEach(group => {
-        // Populate the table with data
-        const row = watchlistTable.insertRow(-1);
-
-        // Add group information in the first two columns
-        const startTimeCell = row.insertCell(0);
-        startTimeCell.textContent = convertUtcToLocalTime(group.startTime);
-
-        // Display the event, round, and group numbers
-        const groupNameCell = row.insertCell(1);
-        groupNameCell.textContent = `${getEventName(group.event)} | ${group.round[1]}, ${group.groupNumber[1]}`;
-
-        // Add "Compete" column
-        const competeCell = row.insertCell(2);
-        const selectedCompetitors = getSelectedCompetitorsForGroup(group.id);
-        competeCell.innerHTML = selectedCompetitors.map(name => getFirstLastName(name)).join(', ');
-
-        // Add "Judge" column
-        const judgeCell = row.insertCell(3);
-        const selectedJudges = getSelectedJudgesForGroup(group.id);
-        judgeCell.innerHTML = selectedJudges.map(name => getFirstLastName(name)).join(', ');
-
-        // Add "Scramble" column
-        const scrambleCell = row.insertCell(4);
-        const selectedScramblers = getSelectedScramblersForGroup(group.id);
-        scrambleCell.innerHTML = selectedScramblers.map(name => getFirstLastName(name)).join(', ');
-
-        // Add "Run" column
-        const runCell = row.insertCell(5);
-        const selectedRunners = getSelectedRunnersForGroup(group.id);
-        runCell.innerHTML = selectedRunners.map(name => getFirstLastName(name)).join(', ');
-    });
-}
-
-
+	function getSelectedCompetitorsForGroup(groupId) {
+	    const selectedCompetitors = [];
+	    const checkboxes = document.getElementsByName('competitorCheckbox');
+	
+	    checkboxes.forEach(checkbox => {
+	        if (checkbox.checked) {
+	            const wcaId = checkbox.value;
+	            const person = data.persons.find(person => person.wcaId === wcaId);
+	            if (person) {
+	                const assignmentsForGroup = person.assignments.filter(assignment =>
+	                    assignment.activityId === groupId && assignment.assignmentCode === 'competitor'
+	                );
+	                if (assignmentsForGroup.length > 0) {
+	                    selectedCompetitors.push(person.name);
+	                }
+	            }
+	        }
+	    });
+	
+	    return selectedCompetitors;
+	}
 
         function convertUtcToLocalTime(utcTimeString) {
             const utcTime = new Date(utcTimeString);
