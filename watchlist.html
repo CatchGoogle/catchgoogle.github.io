@@ -226,12 +226,10 @@
 	}
 
         // Function to save friends to local storage
-	function saveFriends() {
-	    try {
-	        localStorage.setItem('friendsList', JSON.stringify(friendsList));
-	        console.log('Friends list saved successfully.');
-	    } catch (error) {
-	        console.error('Error saving friends list:', error);
+	function saveFriends(callback) {
+	    localStorage.setItem('friendsList', JSON.stringify(friendsList));
+	    if (callback && typeof callback === 'function') {
+	        callback();
 	    }
 	}
 
@@ -359,12 +357,6 @@
     });
 }
 
-function saveFriends(callback) {
-    localStorage.setItem('friendsList', JSON.stringify(friendsList));
-    if (callback && typeof callback === 'function') {
-        callback();
-    }
-}
 	    
     function displayFriendsList() {
     const friendsContainer = document.getElementById('friendsContainer');
