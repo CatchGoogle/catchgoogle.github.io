@@ -71,9 +71,9 @@
 
         th,
         td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            border: 1px solid #ccc;
+            padding: 3px;
+            text-align: center;
         }
 
         th {
@@ -81,8 +81,63 @@
         }
 	    
 	#competitorSelect, #eventsContainer {
-        display: none;
+       	    display: none;
     	}
+
+	#friendsContainer {
+	    text-align: center;
+	    margin-top: 20px;
+	    margin: 20px auto; /* Remove the redundant margin property */
+	    display: flex;
+	    flex-direction: column; /* Stack elements vertically */
+	    align-items: center; /* Center items horizontally */
+	}
+	
+	#friendsContainer p {
+	    display: inline-block; /* Keep paragraphs inline */
+	    margin: 20px auto; /* Remove default margin */
+	}
+	
+	#friendsContainer button {
+	    display: inline-block; /* Make buttons block elements */
+	    margin: 10px;
+	}
+	#addFriendsContainer {
+	    text-align: center;
+	    margin-top: 20px;
+	}
+	
+	#addFriendsContainer label,
+	#addFriendsContainer select,
+	#addFriendsContainer button {
+	    margin: 10px 0;
+	}
+	
+	#addFriendsContainer button {
+	    display: block;
+	    margin: 0 auto; /* Center the button horizontally */
+	}
+	.popup {
+	    display: none;
+	    position: fixed;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    background-color: rgba(0, 0, 0, 0.7);
+	    color: #fff;
+	    padding: 20px;
+	    border-radius: 5px;
+	    animation: fadeInOut 2s ease-in-out;
+	}
+	
+	@keyframes fadeInOut {
+	    0%, 100% {
+	        opacity: 0;
+	    }
+	    25%, 75% {
+	        opacity: 1;
+	    }
+	}
     </style>
 </head>
 
@@ -109,15 +164,15 @@
 
      <div id="friendsContainer"></div>
 
-        <!-- Add Friends button -->
-        <label for="friendSelect">Add Friends:</label>
-<select id="friendSelect" onchange="addFriend();">
-    <!-- Dynamically populate options using JavaScript -->
-</select>
-<button onclick="addFriend()" style="display: none;">Add Friend</button>
-<button id="autofillFriendsBtn" onclick="autofillFriends()">Autofill Friends' Boxes</button>
-
-    </div>
+<!-- Add Friends button -->
+<div id="addFriendsContainer">
+    <label for="friendSelect">Add Friends:</label>
+    <select id="friendSelect" onchange="addFriend();">
+        <!-- Dynamically populate options using JavaScript -->
+    </select>
+    <button onclick="addFriend()" style="display: none;">Add Friend</button>
+    <button id="autofillFriendsBtn" onclick="autofillFriends(); showAutofillPopup();">Autofill Friends' Boxes</button>
+</div>
 	
     <div class="container">
         <div id="resultContainer"></div>
@@ -178,14 +233,17 @@
 	    // Clear existing options
 	    friendSelect.innerHTML = '<option value="">---Select Competitor---</option>';
 	
-	    // Populate options based on data.persons
-	    data.persons.forEach(person => {
-	        if (person.wcaId) { // Only include competitors with WCA IDs
-	            const option = document.createElement('option');
-	            option.value = person.wcaId;
-	            option.textContent = person.name;
-	            friendSelect.appendChild(option);
-	        }
+	    // Sort competitors alphabetically by name
+	    const sortedCompetitors = data.persons
+	        .filter(person => person.wcaId) // Only include competitors with WCA IDs
+	        .sort((a, b) => a.name.localeCompare(b.name));
+	
+	    // Populate options based on sorted competitors
+	    sortedCompetitors.forEach(person => {
+	        const option = document.createElement('option');
+	        option.value = person.wcaId;
+	        option.textContent = person.name;
+	        friendSelect.appendChild(option);
 	    });
 	}
 
@@ -223,7 +281,26 @@
 	handleCheckboxChange(event)
 	displayFriendsList();
 }
-
+	function showPopup(message) {
+	    const popup = document.getElementById('popup');
+	    const popupText = document.getElementById('popupText');
+	
+	    if (popup && popupText) {
+	        popupText.textContent = message;
+	        popup.style.display = 'block';
+	
+	        // Hide the popup after 2 seconds (adjust as needed)
+	        setTimeout(() => {
+	            popup.style.display = 'none';
+	        }, 2000);
+	    }
+	}
+	
+	// Call this function when the autofillFriendsBtn is clicked
+	function showAutofillPopup() {
+	    showPopup('Friends have been selected!');
+	}
+	    
 	function addFriend() {
             const friendSelect = document.getElementById('friendSelect');
             const selectedWcaId = friendSelect.value;
@@ -280,7 +357,7 @@ function saveFriends(callback) {
 	    
     function displayFriendsList() {
     const friendsContainer = document.getElementById('friendsContainer');
-    friendsContainer.innerHTML = '';
+    friendsContainer.innerHTML = '<h3>Friends List:</h3>';
 
     // Display friends list dynamically
     friendsList.forEach(friend => {
