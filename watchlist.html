@@ -203,7 +203,7 @@
     // Initialize an object to store rankings
     const rankings = {};
     let data;
-    let friendsList = [];
+    let friendsList = localStorage.getItem('friendsList') ? JSON.parse(localStorage.getItem('friendsList')) : [];
     window.jsPDF = window.jspdf.jsPDF
     window.html2canvas = html2canvas;
     
