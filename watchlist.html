@@ -209,6 +209,7 @@
     
 
     document.addEventListener('DOMContentLoaded', () => {
+    console.log('Page content is loaded.');
     loadFriends();
     populateFriendDropdown();
     checkFriends();
@@ -219,7 +220,7 @@
 	    try {
 	        const storedFriends = localStorage.getItem('friendsList');
 	        friendsList = storedFriends ? JSON.parse(storedFriends) : [];
-	        console.log('Friends list loaded successfully.');
+	        console.log('Friends list loaded successfully:', friendsList);
 	    } catch (error) {
 	        console.error('Error loading friends list:', error);
 	    }
@@ -331,7 +332,9 @@
 
                         // Save the updated friends list to local storage
                         friendsList.push({ wcaId: person.wcaId, name: friendName });
-                        saveFriends();
+			    saveFriends();
+			    console.log('Friend added:', { wcaId: person.wcaId, name: friendName });
+
                     } else {
                         alert(`${friendName} is already in the friends list.`);
                     }
@@ -345,6 +348,7 @@
 
     // Save the updated friends list to local storage
     saveFriends(() => {
+	    console.log('Friend removed:', wcaId);
         // Callback function to execute after saving is complete
         // Re-populate the friend dropdown
         populateFriendDropdown();
