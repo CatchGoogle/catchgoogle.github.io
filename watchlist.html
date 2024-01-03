@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCA Watchlist</title>
-	<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
     <style>
         body {
@@ -14,7 +15,13 @@
             padding: 0;
             background-color: #f4f4f4;
         }
-
+	    
+	.ui, .container {
+	    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	    padding: 20px;
+    	    margin-top: 20px;
+	}
+		    
         .ui {
             text-align: center;
             max-width: 600px;
@@ -41,16 +48,26 @@
         }
 
         button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+	    background-color: #2ecc71;
+	    color: #fff;
+	    border: none;
+	    padding: 10px 20px;
+	    cursor: pointer;
+	    border-radius: 5px;
+	}
+
+	input {
+	    padding: 10px;
+	    border: 1px solid #ccc;
+	    border-radius: 5px;
+	}
 
         table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
+	    border-collapse: collapse;
+	    width: 100%;
+	    margin-top: 20px;
+	    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
 
         th,
         td {
@@ -62,6 +79,10 @@
         th {
             background-color: #f2f2f2;
         }
+	    
+	#competitorSelect, #eventsContainer {
+        display: none;
+    	}
     </style>
 </head>
 
@@ -70,47 +91,224 @@
         <label for="textInput">Enter Competition ID:</label>
         <input type="text" id="textInput" placeholder="Type competition ID...">
         <button onclick="getData()">Get Data</button>
-        <select id="competitionSelect" onchange="autofillCompetitionId()">
+        <select id="competitionSelect" onchange="autofillCompetitionId(); clearSelectedCompetitors(); getData();">
             <option value="">---Select a Competition---</option>
             <option value="cloverdaleopen2022">Cloverdale Open 2022</option>
+	    <option value="canadianchampionship2023">Canadian Championship 2023</option>
             <option value="cubingaroundmetrotown2023">Cubing Around Metrotown 2023</option>
             <option value="vancouverfallfest2023">Vancouver Fall Fest 2023</option>
             <option value="canadasbestinthewest2024">Canada's Best in the West 2024</option>
+	    <option value="burnabybasics2024">Burnaby Basics 2024</option>
+	    
         </select>
-        <select id="competitorSelect" onchange="displayResultsForCompetitor()">
+        <select id="competitorSelect" onchange="displayResultsForCompetitor(); clearSelectedCompetitors();">
             <!-- this will be autopopulated by the page -->
         </select>
         <div id="eventsContainer"></div>
     </div>
 
+     <div id="friendsContainer"></div>
+
+        <!-- Add Friends button -->
+        <label for="friendSelect">Select Competitor:</label>
+<select id="friendSelect" onchange="addFriend();">
+    <!-- Dynamically populate options using JavaScript -->
+</select>
+<button onclick="addFriend()" style="display: none;">Add Friend</button>
+<button id="autofillFriendsBtn" onclick="autofillFriends()">Autofill Friends</button>
+
+    </div>
+	
     <div class="container">
         <div id="resultContainer"></div>
         <div id="checkboxContainer"></div>
+	    <p style="color: #888; font-size: 12px; margin-top: 5px;">
+  	  Note: Only competitors with WCA IDs are eligible to be watchlisted.
+	</p>
         <button id="createWatchlistBtn" style="display: none;" onclick="createWatchlist()">Create Watchlist</button>
     </div>
 
     <!-- New section to display names and assignments -->
-    <div id="selectedCompetitorsContainer" style="display: none;">
+    <div id="selectedCompetitorsContainer">
         <h3>Selected Competitors:</h3>
         <div id="selectedCompetitorsInfo"></div>
     </div>
     
     <div id="watchlistContainer" style="display: none;">
         <h2>Watchlist</h2>
+	<button id="exportPdfBtn" onclick="exportToPdf()">Export to PDF</button>
         <table id="watchlistTable">
             <!-- Table content will be dynamically added here -->
         </table>
-        <button id="exportPdfBtn" onclick="exportToPdf()">Export to PDF</button>
     </div>
+    
 
+	
     <script>
     // Initialize an object to store rankings
     const rankings = {};
     let data;
+    let friendsList = [];
+    window.jsPDF = window.jspdf.jsPDF
+    window.html2canvas = html2canvas;
+    
 
+    window.addEventListener('load', () => {
+        loadFriends();
+        populateFriendDropdown();
+        checkFriends();
+        displayFriendsList();
+    });
+	    
+    function loadFriends() {
+            const storedFriends = localStorage.getItem('friendsList');
+            friendsList = storedFriends ? JSON.parse(storedFriends) : [];
+        }
+
+        // Function to save friends to local storage
+        function saveFriends() {
+            localStorage.setItem('friendsList', JSON.stringify(friendsList));
+        }
+	function isPersonInFriendsList(wcaId) {
+	        return friendsList.some(friend => friend.wcaId === wcaId);
+	    }
+        function populateFriendDropdown() {
+	    const friendSelect = document.getElementById('friendSelect');
+	
+	    // Clear existing options
+	    friendSelect.innerHTML = '<option value="">---Select Competitor---</option>';
+	
+	    // Populate options based on data.persons
+	    data.persons.forEach(person => {
+	        if (person.wcaId) { // Only include competitors with WCA IDs
+	            const option = document.createElement('option');
+	            option.value = person.wcaId;
+	            option.textContent = person.name;
+	            friendSelect.appendChild(option);
+	        }
+	    });
+	}
+
+        // Call populateFriendDropdown when the page loads
+        window.addEventListener('load', populateFriendDropdown);
+
+        // Function to check checkboxes for friends
+        function checkFriends() {
+            friendsList.forEach(friend => {
+                const checkbox = document.getElementById(friend);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+
+        // Call loadFriends when the page loads
+        window.addEventListener('load', loadFriends);
+
+	function autofillFriends() {
+    const checkboxes = document.getElementsByName('competitorCheckbox');
+    const friendsNames = friendsList.map(friend => friend.name.toLowerCase());  // Use friend.name
+
+    checkboxes.forEach(checkbox => {
+        const person = data.persons.find(person => person.wcaId === checkbox.value);
+        if (person) {
+            const personName = person.name.toLowerCase();
+
+            // Check if friend's name matches the competitor's name
+            if (friendsNames.includes(personName)) {
+                checkbox.checked = true;
+            }
+        }
+    });
+	handleCheckboxChange(event)
+	displayFriendsList();
+}
+
+	function addFriend() {
+            const friendSelect = document.getElementById('friendSelect');
+            const selectedWcaId = friendSelect.value;
+
+            if (selectedWcaId) {
+                const person = data.persons.find(person => person.wcaId === selectedWcaId);
+
+                if (person) {
+                    const friendName = person.name.trim();
+
+                    // Check if the person is already in the friends list
+                    if (!isPersonInFriendsList(selectedWcaId)) {
+                        // Append the friend to the friends container
+                        const friendsContainer = document.getElementById('friendsContainer');
+                        friendsContainer.innerHTML += `<p>${friendName}</p>`;
+
+                        // Clear the selected option
+                        friendSelect.value = '';
+
+                        // Save the updated friends list to local storage
+                        friendsList.push({ wcaId: person.wcaId, name: friendName });
+                        saveFriends();
+                    } else {
+                        alert(`${friendName} is already in the friends list.`);
+                    }
+                }
+            }
+		displayFriendsList();
+        }
+    function removeFriendOnClick(wcaId, event) {
+    // Remove the friend from the friends list
+    friendsList = friendsList.filter(friend => friend.wcaId !== wcaId);
+
+    // Save the updated friends list to local storage
+    saveFriends(() => {
+        // Callback function to execute after saving is complete
+        // Re-populate the friend dropdown
+        populateFriendDropdown();
+
+        // Trigger handleCheckboxChange after removing a friend
+        handleCheckboxChange(event);
+
+        // Update the displayed friends list
+        displayFriendsList();
+    });
+}
+
+function saveFriends(callback) {
+    localStorage.setItem('friendsList', JSON.stringify(friendsList));
+    if (callback && typeof callback === 'function') {
+        callback();
+    }
+}
+	    
+    function displayFriendsList() {
+        const friendsContainer = document.getElementById('friendsContainer');
+        friendsContainer.innerHTML = '';
+
+        // Display friends list dynamically
+        friendsList.forEach(friend => {
+            const friendContainer = document.createElement('div');
+
+            // Create a paragraph for the friend's name
+            const paragraph = document.createElement('p');
+            paragraph.textContent = friend.name;
+
+            // Create a button to remove the friend
+	const removeButton = document.createElement('button');
+	removeButton.textContent = 'Remove';
+	removeButton.onclick = (event) => removeFriendOnClick(friend.wcaId, event);
+
+            // Append the paragraph and button to the friend container
+            friendContainer.appendChild(paragraph);
+            friendContainer.appendChild(removeButton);
+
+            // Append the friend container to the friends container
+            friendsContainer.appendChild(friendContainer);
+        });
+    }
+
+	    
     function getData() {
         // Get user input
         const userInput = document.getElementById('textInput').value;
+	clearSelectedCompetitors();
 
         // Make an API call to World Cube Association API
         fetch(`https://api.worldcubeassociation.org/competitions/${userInput}/wcif/public?name`)
@@ -126,17 +324,36 @@
 
                 // Display the entire API response as a string below the input
                 const resultContainer = document.getElementById('resultContainer');
-                resultContainer.textContent = JSON.stringify(dataObject, null, 2);
+                // resultContainer.textContent = JSON.stringify(dataObject, null, 2);
 
                 // Call the function to format and display data
                 formatAndDisplayData(dataObject);
+
+		displayCompetitorCheckboxes(data);
+
+		populateFriendDropdown();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 // Handle errors gracefully
             });
     }
+	    
+    function clearSelectedCompetitors() {
+            // Clear the selected competitors list and related information
+            const checkboxContainer = document.getElementById('checkboxContainer');
+            checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
 
+            const selectedCompetitorsInfo = document.getElementById('selectedCompetitorsInfo');
+            selectedCompetitorsInfo.innerHTML = '';
+
+            const selectedCompetitorsContainer = document.getElementById('selectedCompetitorsContainer');
+            selectedCompetitorsContainer.style.display = 'none';
+
+            const createWatchlistBtn = document.getElementById('createWatchlistBtn');
+            createWatchlistBtn.style.display = 'none';
+        }
+	    
     function formatAndDisplayData(dataObject) {
         // Store the data globally for later use
         data = dataObject;
@@ -234,7 +451,7 @@
         data.groups = groups;
 
         // Display the formatted data
-        document.getElementById('resultContainer').textContent = formattedData;
+        // document.getElementById('resultContainer').textContent = formattedData;
 
         const eventsContainer = document.getElementById('eventsContainer');
         eventsContainer.innerHTML = ''; // Clear existing event buttons
@@ -320,66 +537,74 @@
     }
 
     function displayCompetitorCheckboxes(dataObject) {
-    const checkboxContainer = document.getElementById('checkboxContainer');
-    checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
+        const checkboxContainer = document.getElementById('checkboxContainer');
+        checkboxContainer.innerHTML = '<h3>Select Competitors:</h3>';
 
-    // Sort persons array alphabetically by name
-    const sortedPersons = dataObject.persons
-        .slice()
-        .sort((a, b) => a.name.localeCompare(b.name));
+        // Filter out competitors without a WCA ID
+        const filteredPersons = dataObject.persons.filter(person => person.wcaId);
 
-    sortedPersons.forEach(person => {
-        // Exclude "Speedcubing Canada" from the checkbox list
-        if (person.name !== 'Speedcubing Canada') {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = 'competitorCheckbox';
-            checkbox.value = person.wcaId;
-            checkbox.id = person.wcaId;
+        // Sort persons array alphabetically by name
+        const sortedPersons = filteredPersons
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name));
 
-            const label = document.createElement('label');
-            label.htmlFor = person.wcaId;
-            label.appendChild(document.createTextNode(person.name));
+        sortedPersons.forEach(person => {
+            // Exclude "Speedcubing Canada" from the checkbox list
+            if (person.name !== 'Speedcubing Canada') {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'competitorCheckbox';
+                checkbox.value = person.wcaId;
+                checkbox.id = person.wcaId;
 
-            checkboxContainer.appendChild(checkbox);
-            checkboxContainer.appendChild(label);
-            checkboxContainer.appendChild(document.createElement('br'));
-        }
-    });
+                const label = document.createElement('label');
+                label.htmlFor = person.wcaId;
+                label.appendChild(document.createTextNode(person.name));
 
-    // Attach event listener to handle checkbox changes
-checkboxContainer.addEventListener('change', function (event) {
-    if (event.target.name === 'competitorCheckbox') {
-        handleCheckboxChange(event); // Pass the event object
+                checkboxContainer.appendChild(checkbox);
+                checkboxContainer.appendChild(label);
+                checkboxContainer.appendChild(document.createElement('br'));
+            }
+        });
+
+        // Attach event listener to handle checkbox changes
+        checkboxContainer.addEventListener('change', function (event) {
+            if (event.target.name === 'competitorCheckbox') {
+                handleCheckboxChange(event); // Pass the event object
+            }
+        });
+
+        // Show the "Create Watchlist" button
+        const createWatchlistBtn = document.getElementById('createWatchlistBtn');
+        createWatchlistBtn.style.display = 'block';
+
+        console.log('Checkboxes displayed:', sortedPersons.map(person => person.name));
     }
-});
-
-    // Show the "Create Watchlist" button
-    const createWatchlistBtn = document.getElementById('createWatchlistBtn');
-    createWatchlistBtn.style.display = 'block';
-
-    console.log('Checkboxes displayed:', sortedPersons.map(person => person.name));
-}
 
     function handleCheckboxChange(event) {
-    const checkboxes = document.getElementsByName('competitorCheckbox');
-    const selectedCheckboxes = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
+        const checkboxes = document.getElementsByName('competitorCheckbox');
+        const selectedCheckboxes = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
 
-    // Log information about the clicked checkbox and its status
-    console.log('Clicked checkbox:', {
-        id: event.target.id,
-        value: event.target.value,
-        checked: event.target.checked,
-    });
+        // Filter out competitors without a WCA ID
+        const validSelectedCheckboxes = selectedCheckboxes.filter(wcaId =>
+            data.persons.find(person => person.wcaId === wcaId)
+        );
 
-    // Update the "Compete" column in the watchlist table
-    updateCompeteColumn(selectedCheckboxes);
+        // Log information about the clicked checkbox and its status
+        console.log('Clicked checkbox:', {
+            id: event.target.id,
+            value: event.target.value,
+            checked: event.target.checked,
+        });
 
-    // Display names and assignments for selected competitors
-    displaySelectedCompetitorsInfo(selectedCheckboxes);
-}
+        // Update the "Compete" column in the watchlist table
+        updateCompeteColumn(validSelectedCheckboxes);
+
+        // Display names and assignments for selected competitors
+        displaySelectedCompetitorsInfo(validSelectedCheckboxes);
+    }
         
     function displaySelectedCompetitorsInfo(selectedWcaIds) {
             const selectedCompetitorsInfo = document.getElementById('selectedCompetitorsInfo');
@@ -638,60 +863,68 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
             return localTime;
         }
         
-		function exportToPdf() {
+	function exportToPdf() {
     const watchlistTable = document.getElementById('watchlistTable');
 
-    // Convert the table to an HTML string
-    const tableHtml = watchlistTable.outerHTML;
-
-    // Open a new window with the table content
-    const newWindow = window.open('', '_blank');
-    newWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Watchlist</title>
-        </head>
-        <body>
-            ${tableHtml}
-        </body>
-        </html>
-    `);
-
-    // Wait for the content to be fully loaded
-    newWindow.onload = () => {
-        // Trigger the print dialog
-        newWindow.print();
-    };
-}
-
-function getEventName(eventId) {
-    const eventMap = {
-        '222': '2x2',
-        '333': '3x3',
-        '444': '4x4',
-	'555': '5x5',
-	'666': '6x6',
-	'777': '7x7',
-	'333bf': '3BLD',
-	'333fm': 'FMC',
-	'333oh': '3x3 OH',
-	'clock': 'Clock',
-	'minx': 'Mega',
-	'pyram': 'Pyra',
-	'skewb': 'Skewb',
-	'sq1': 'Squan',
-	'444bf': '4BLD',
-	'555bf': '5BLD',
-	'333mbf': 'MBLD',
-        // Add more event IDs and names as needed
+    // Initialize the document definition for pdfmake
+    const documentDefinition = {
+        content: [
+            {
+                table: {
+                    body: [['Time', 'Event', 'Compete', 'Judge', 'Scramble', 'Run']]
+                },
+                layout: 'lightHorizontalLines'
+            }
+        ]
     };
 
-    return eventMap[eventId] || 'Unknown Event';
+    // Populate the pdfmake document definition with data from the watchlistTable
+    for (let i = 1; i < watchlistTable.rows.length; i++) {
+        const row = watchlistTable.rows[i];
+        const rowData = [];
+
+        // Iterate through cells in the row
+        for (let j = 0; j < row.cells.length; j++) {
+            rowData.push(row.cells[j].textContent);
+        }
+
+        // Add the row data to the document definition
+        documentDefinition.content[0].table.body.push(rowData);
+    }
+
+    // Create the PDF
+    const pdf = pdfMake.createPdf(documentDefinition);
+
+    // Download the PDF
+    pdf.download('watchlist.pdf');
 }
 
+	    
+	function getEventName(eventId) {
+	    const eventMap = {
+	        '222': '2x2',
+	        '333': '3x3',
+	        '444': '4x4',
+		'555': '5x5',
+		'666': '6x6',
+		'777': '7x7',
+		'333bf': '3BLD',
+		'333fm': 'FMC',
+		'333oh': '3x3 OH',
+		'clock': 'Clock',
+		'minx': 'Mega',
+		'pyram': 'Pyra',
+		'skewb': 'Skewb',
+		'sq1': 'Squan',
+		'444bf': '4BLD',
+		'555bf': '5BLD',
+		'333mbf': 'MBLD',
+	        // Add more event IDs and names as needed
+	    };
+	
+	    return eventMap[eventId] || 'Unknown Event';
+	}
+	
 
 </script>
 
