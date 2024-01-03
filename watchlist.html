@@ -206,15 +206,6 @@
     let friendsList = localStorage.getItem('friendsList') ? JSON.parse(localStorage.getItem('friendsList')) : [];
     window.jsPDF = window.jspdf.jsPDF
     window.html2canvas = html2canvas;
-
-	
-	function initializeFriendsList() {
-	    console.log('Initializing friends list...');
-	    loadFriends();
-	    displayFriendsList();
-	    console.log('Initialization complete.');
-	}
-
 		    
   	function loadFriends() {
 	    try {
@@ -1021,8 +1012,15 @@ function getSelectedPersonsForGroupAndAssignment(groupId, assignmentCode) {
 	
 	    return eventMap[eventId] || 'Unknown Event';
 	}
-	
-window.addEventListener('load', function() {
+	    
+	function initializeFriendsList() {
+	    console.log('Initializing friends list...');
+	    loadFriends();
+	    displayFriendsList();
+	    console.log('Initialization complete.');
+	}
+	    
+	window.addEventListener('load', function() {
 	    console.log('Page has fully loaded.');
 	    initializeFriendsList(); // Call your initialization function here
 	    // Additional actions you want to perform when the page opens
