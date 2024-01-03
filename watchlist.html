@@ -208,13 +208,9 @@
     window.html2canvas = html2canvas;
     
 
-    document.addEventListener('DOMContentLoaded', () => {
-	    console.log('Page content is loaded.');
-	    initializeFriendsList(); // Change to initializeFriendsList
-	    populateFriendDropdown();
-	    checkFriends();
-	    displayFriendsList();
-	});
+	    // Call initializeFriendsList when the page content is loaded
+	document.addEventListener('DOMContentLoaded', initializeFriendsList);
+
 
 	
 	function initializeFriendsList() {
