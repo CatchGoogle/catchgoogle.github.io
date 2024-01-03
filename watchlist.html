@@ -208,9 +208,11 @@
     window.html2canvas = html2canvas;
     
 
-	    // Call initializeFriendsList when the page content is loaded
-	document.addEventListener('DOMContentLoaded', initializeFriendsList);
-
+	window.addEventListener('load', function() {
+	    console.log('Page has fully loaded.');
+	    initializeFriendsList(); // Call your initialization function here
+	    // Additional actions you want to perform when the page opens
+	});
 
 	
 	function initializeFriendsList() {
