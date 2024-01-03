@@ -167,7 +167,7 @@
 <!-- Add Friends button -->
 <div id="addFriendsContainer">
     <label for="friendSelect">Add Friends:</label>
-    <select id="friendSelect" onchange="addFriend();">
+    <select id="friendSelect" onchange="addFriend(); saveFriends();">
         <!-- Dynamically populate options using JavaScript -->
     </select>
     <button onclick="addFriend()" style="display: none;">Add Friend</button>
