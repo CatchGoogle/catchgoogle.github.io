@@ -217,18 +217,12 @@
 	    
   	function loadFriends() {
 	    const cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)friendsList\s*=\s*([^;]*).*$)|^.*$/, '$1');
-	    console.log('Cookie Value:', cookieValue);
 	    friendsList = cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : [];
-	    console.log('Loaded Friends List:', friendsList);
 	}
 
         // Function to save friends to local storage
         function saveFriends() {
-	    const expirationDate = new Date();
-	    expirationDate.setFullYear(expirationDate.getFullYear() + 1); // Set the expiration to one year from now
-	
-	    const serializedFriends = JSON.stringify(friendsList);
-	    document.cookie = `friendsList=${encodeURIComponent(serializedFriends)}; expires=${expirationDate.toUTCString()}; path=/`;
+	    document.cookie = `friendsList=${encodeURIComponent(JSON.stringify(friendsList))}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
 	}
 
 	function isPersonInFriendsList(wcaId) {
