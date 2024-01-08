@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAN  Ranks</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="3x3icon.png" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
+	</head>
+	<body>
+	
+    <div class="header">
+        <h1>🍁Canadian Speedcubing Provincial Rankings🍁</h1>
+        <p>Website developed by Catch, results obtained using the <a href="https://wca-rest-api.robiningelbrecht.be" target="_blank">wca-rest-api</a></p>
+        <p>Please go to <a href="https://forms.gle/irjy2yMLvZPfoPj16" target="_blank">this form</a> to submit a province affiliation for yourself or another cuber</p>
+        <p class="psmall">This website is independently run and is in NO way endorsed or otherwise affiliated with the World Cube Association</p>
+    	<button class="button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+	<button class="button" onclick="toggleCompactMode()">Toggle Compact Mode</button>
+    </div>
+
+    <div class="dropdown-container">
+        <select class="dropdown" id="province-dropdown">
+            <option value="BC">British Columbia</option>
+            <option value="AB">Alberta</option>
+            <option value="SK">Saskatchewan</option>
+            <option value="MB">Manitoba</option>
+            <option value="ON">Ontario</option>
+            <option value="QC">Quebec</option>
+            <option value="NB">New Brunswick</option>
+	    <option value="PEI">Prince Edward Island</option>
+            <option value="NS">Nova Scotia</option>
+	    <option value="NL">Newfoundland and Labrador</option>
+        </select>
+    
+        <select class="dropdown" id="wcaevent-dropdown">
+            <option value="333">3x3</option>
+            <option value="222">2x2</option>
+	    <option value="444">4x4</option>
+	    <option value="555">5x5</option>
+	    <option value="666">6x6</option>
+	    <option value="777">7x7</option>
+	    <option value="3bld">3BLD</option>
+	    <option value="fmc">FMC</option>
+            <option value="oh">3x3 OH</option>
+	    <option value="clock">Clock</option>
+	    <option value="mega">Megaminx</option>
+	    <option value="pyra">Pyraminx</option>
+	    <option value="skewb">Skewb</option>
+	    <option value="sq1">Square-1</option>
+	    <option value="4bld">4BLD</option>
+	    <option value="5bld">5BLD</option>
+	    <option value="mbld">MBLD</option>
+        </select>
+    </div>
+
+    <div class="table-container" id="tables-container"></div>
+
+    <div class="header">
+    <p-update> </p-update>
+    </div>
+		
+    <script>
+        const tablesContainer = document.getElementById("tables-container"); // comment
+        const provinceDropdown = document.getElementById("province-dropdown");
+        const cubeTypeDropdown = document.getElementById("wcaevent-dropdown");
+        let peopleData = []; // Global array to store API data
+        let parsedData = [];
+        let currentSortColumn = `avg${cubeTypeDropdown.value}`; // 'avg333' or 'avg222'
+      	let currentAvatarPopup = null;
+	      let exportDate = "";
+	    
+        function fetchDataByWcaId(wcaId) {
+        const apiUrl = `https://api.worldcubeassociation.org/persons/${wcaId}`;
+        return fetch(apiUrl)
+            .then(response => response.json())
+            .then(apiResponse => apiResponse.person.personal_records)
+            .catch(error => console.error(`Error fetching data for WCA ID ${wcaId}:`, error));
+    }
+  	function decodeSingleMBLD(value) {
+	  const difference = 99 - parseInt(value.substring(0, 2));
+	  const timeInSeconds = parseInt(value.substring(2, 7));
+	  const missed = parseInt(value.substring(7, 9));
+	  const solved = difference + missed;
+	  const attempted = solved + missed;
+	  return `${solved}/${attempted} ${Math.floor(timeInSeconds / 60).toString().padStart(2, '0')}:${(timeInSeconds % 60).toString().padStart(2, '0')}`;
+	}
+	      // Function to populate peopleData array using WCA IDs from CSV
+    function populatePeopleData() {
+        fetch('provinceID.csv')
+            .then(response => response.text())
+            .then(csvContent => {
+                Papa.parse(csvContent, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: function (results) {
+                        const wcaIdProvinceData = results.data;
+
+                        // Loop through each row in the CSV
+                        const fetchPromises = wcaIdProvinceData.map(row => {
+                            const wcaId = row.WCA_ID;
+                            return fetchDataByWcaId(wcaId)
+                                .then(apiData => {
+                                    // Construct the person object
+                                    const personData = {
+                                        id: apiData.id,
+                                        avg333: handleValue(apiData["333"].average.best),
+                                        province: apiData.region_id ? apiData.location : row.Province,
+                                        // ... (similar structure for other data points)
+                                        name: apiData.name,
+                                    };
+
+                                    // Push the person object to the global array
+                                    peopleData.push(personData);
+                                });
+                        });
+
+                        // Wait for all promises to resolve before proceeding
+                        Promise.all(fetchPromises)
+                            .then(() => {
+                                // Once all data is fetched, show the table
+                                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+                            });
+                    },
+                });
+            })
+            .catch(error => console.error(`Error fetching CSV file:`, error));
+    }
+
+    // Call the function to populate peopleData array
+    populatePeopleData();
+        
+        async function fetchPersonData(wcaId) {
+            try {
+                // Make an API call to retrieve person data
+                const response = await fetch(`https://api.worldcubeassociation.org/persons/${wcaId}`);
+                const data = await response.json();
+        
+                // Extract the relevant information from the API response
+                const person = data.person || {};
+                const id = person.wca_id;
+                const avg333 = person.personal_records['333']?.average?.best || '';
+                const province = person.location || 'BC'; // Default to 'BC' if province is undefined
+                const single333 = person.personal_records['333']?.single?.best || '';
+                const photo = person.avatar?.thumb_url || '';
+                const avg222 = person.personal_records['222']?.average?.best || '';
+                const single222 = person.personal_records['222']?.single?.best || '';
+                const avg444 = person.personal_records['444']?.average?.best || '';
+                const single444 = person.personal_records['444']?.single?.best || '';
+                const avg555 = person.personal_records['555']?.average?.best || '';
+                const single555 = person.personal_records['555']?.single?.best || '';
+                const avg666 = person.personal_records['666']?.average?.best || '';
+                const single666 = person.personal_records['666']?.single?.best || '';
+                const avg777 = person.personal_records['777']?.average?.best || '';
+                const single777 = person.personal_records['777']?.single?.best || '';
+                const avg3bld = person.personal_records['3bld']?.average?.best || '';
+                const single3bld = person.personal_records['3bld']?.single?.best || '';
+                const avgfmc = person.personal_records['fmc']?.average?.best || '';
+                const singlefmc = person.personal_records['fmc']?.single?.best || '';
+                const name = person.name || '';
+        
+                // Add other properties as needed
+        
+                return {
+                    id,
+                    avg333,
+                    province,
+                    single333,
+                    photo,
+                    avg222,
+                    single222,
+                    name,
+                };
+            } catch (error) {
+                console.error('Error fetching person data:', error);
+                return null;
+            }
+        }
+	
+        function parseTimeToNumber(timeValue) {
+            if (timeValue.includes(':')) {
+                const [minutes, seconds] = timeValue.split(':');
+                return parseFloat(minutes) * 60 + parseFloat(seconds);
+            }
+            return parseFloat(timeValue);
+        }
+
+       function createTable(rows, cubeType) {
+    const table = document.createElement("table");
+    table.border = "1";
+    if (compactMode) {
+        table.className = "compact-table";
+    } else {
+        table.className = "dataframe table table-bordered table-hover";
+    }
+	       
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th class="data-sort-column="single${cubeType}">PR Single</th>
+                <th class="data-sort-column="${currentSortColumn}">PR Avg</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    rows = rows.filter(row => !isNaN(parseTimeToNumber(row[`single${cubeType}`])));   // Fix this line
+
+    // Sorting logic
+    rows.sort((a, b) => {
+        const aSingle = parseTimeToNumber(a[`single${cubeType}`]);
+        const bSingle = parseTimeToNumber(b[`single${cubeType}`]);
+
+        // For 'bld' events, sort by single.
+        if (['3bld', '4bld', '5bld'].includes(cubeTypeDropdown.value)) {
+            return aSingle - bSingle;
+        }
+
+        const aAvg = parseTimeToNumber(a[currentSortColumn]);
+        const bAvg = parseTimeToNumber(b[currentSortColumn]);
+
+        // For all other events
+        if (!isNaN(aAvg) && !isNaN(bAvg)) {
+            return aAvg - bAvg;
+        } else if (!isNaN(aAvg)) {
+            return -1;
+        } else if (!isNaN(bAvg)) {
+            return 1;
+        } else {
+            return aSingle - bSingle;
+        }
+    });
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement("tr");
+        const prAvg = row[currentSortColumn] !== 'NaN' ? row[currentSortColumn] : '';
+        const prSingle = (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) !== 'NaN' ? (cubeType === 'mbld' ? decodeSingleMBLD(row[`single${cubeType}`]) : row[`single${cubeType}`]) : '';
+
+        tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td class="name-cell">
+                ${compactMode ? '' : `<a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank"><img src="${row.photo}" alt="${row.name}" width="60" style="margin-right: 10px"></a>`}
+                <a href="https://worldcubeassociation.org/persons/${row.id}" target="_blank">${row.name}</a>
+            </td>
+            <td>${prSingle}</td>
+            <td>${prAvg}</td>
+        `;
+
+        // Add a mouseover event to show the avatar pop-up with a delay
+        let avatarPopupTimer;
+        const avatarImage = tr.querySelector("img");
+
+        if (row.photo !== "https://www.worldcubeassociation.org/assets/missing_avatar_thumb-d77f478a307a91a9d4a083ad197012a391d5410f6dd26cb0b0e3118a5de71438.png") {
+            avatarImage.addEventListener("mouseover", (event) => {
+                avatarPopupTimer = setTimeout(() => {
+                    showAvatarPopup(row.photo, row.name, event);
+                }, 750); // 750ms (0.75 seconds) delay
+            });
+
+            // Add a mouseout event to hide the pop-up when the cursor leaves the image
+            avatarImage.addEventListener("mouseout", () => {
+                clearTimeout(avatarPopupTimer);
+                hideAvatarPopup();
+            });
+        }
+
+        table.querySelector("tbody").appendChild(tr);
+    }
+
+    return table;
+}
+
+	    
+        function showTable(province, cubeType) {
+	    hideAvatarPopup();
+	    tablesContainer.innerHTML = "";
+	    currentSortColumn = `avg${cubeType}`;
+	    const filteredRows = parsedData.filter(row => row.province === province);
+	    tablesContainer.appendChild(createTable(filteredRows, cubeType));
+	}
+	    
+	/* function onHeaderClick(event) { 
+            const clickedColumn = event.target.getAttribute('data-sort-column');
+
+            if (clickedColumn) {
+                currentSortColumn = clickedColumn;
+                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+            }
+        } */
+
+	function toggleDarkMode() {
+	    const body = document.body;
+	    body.classList.toggle("dark-mode");
+	
+	    // Save the dark mode preference to localStorage
+	    if (body.classList.contains("dark-mode")) {
+	        localStorage.setItem("dark-mode", "enabled");
+	    } else {
+	        localStorage.setItem("dark-mode", "disabled");
+	    }
+	}
+
+	function showAvatarPopup(imageUrl, name, event) {
+    // Close the existing avatar popup if needed
+    hideAvatarPopup();
+
+    // Create the avatar pop-up element
+    const avatarPopup = document.createElement("div");
+    avatarPopup.className = "avatar-popup";
+
+    // Create the image element inside the pop-up
+    const avatarImage = document.createElement("img");
+    avatarImage.src = imageUrl;
+    avatarImage.alt = name;
+
+    // Append the image to the pop-up
+    avatarPopup.appendChild(avatarImage);
+
+    // Append the pop-up to the body
+    document.body.appendChild(avatarPopup);
+
+    // Calculate the position based on the cursor's position and the popup dimensions
+    const popupWidth = avatarPopup.offsetWidth;
+    const popupHeight = avatarPopup.offsetHeight;
+
+    const popupX = event.clientX + popupWidth < window.innerWidth
+        ? event.clientX
+        : window.innerWidth - popupWidth;
+
+    const popupY = event.clientY + popupHeight < window.innerHeight
+        ? event.clientY
+        : window.innerHeight - popupHeight;
+
+    // Set the position of the pop-up
+    avatarPopup.style.left = popupX + "px";
+    avatarPopup.style.top = popupY + "px";
+
+    // Display the pop-up
+    avatarPopup.style.display = "block";
+
+    // Set the current open avatar popup
+    currentAvatarPopup = avatarPopup;
+
+    // Make the popup draggable
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    avatarPopup.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - avatarPopup.getBoundingClientRect().left;
+        offsetY = e.clientY - avatarPopup.getBoundingClientRect().top;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            const newX = e.clientX - offsetX;
+            const newY = e.clientY - offsetY;
+            avatarPopup.style.left = newX + "px";
+            avatarPopup.style.top = newY + "px";
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+    // Add styles to ensure image fits within the popup
+    avatarImage.style.maxWidth = "100%";
+    avatarImage.style.maxHeight = "100%";
+    avatarImage.style.objectFit = "contain";
+		
+    // Add an event listener to open the link when clicking on the avatar
+    avatarImage.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent the click from closing the popup
+        window.open(imageUrl, "_blank");
+    });
+}
+	
+	function hideAvatarPopup() {
+	    if (currentAvatarPopup) {
+	        currentAvatarPopup.style.display = "none";
+	        currentAvatarPopup.remove();
+	        currentAvatarPopup = null;
+		
+	            // Remove the event listener to close the pop-up when clicking outside
+	            document.removeEventListener("click", hideAvatarPopup);
+	        }
+	    }
+	
+		if (localStorage.getItem("dark-mode") === "enabled") {
+		    document.body.classList.add("dark-mode");
+		}
+			    
+	        provinceDropdown.addEventListener("change", (event) => {
+	            const selectedProvince = event.target.value;
+	            showTable(selectedProvince, cubeTypeDropdown.value);
+	        });
+	
+	        cubeTypeDropdown.addEventListener("change", (event) => {
+	            const selectedCubeType = event.target.value;
+	            showTable(provinceDropdown.value, selectedCubeType);
+	        });
+	
+	        fetch(`final_sorted_RESULTS.html`)
+	            .then(response => response.text())
+	            .then(tableHTML => {
+
+			const lastUpdatedMatch = tableHTML.match(/<p>Last updated on (.+)<\/p>/);
+			        if (lastUpdatedMatch) {
+			            exportDate = lastUpdatedMatch[1];
+			        }
+			    
+	                parsedData = parseTable(tableHTML);
+	                showTable(provinceDropdown.value, cubeTypeDropdown.value);
+	            	const lastUpdatedParagraph = document.querySelector('.header p-update'); // Adjust the selector as needed
+		        if (lastUpdatedParagraph) {
+		            lastUpdatedParagraph.innerHTML = `Last updated on ${exportDate}`;
+		        }
+		    })
+	            .catch(error => console.error(error));
+	
+		// avatarImage.addEventListener("mouseout", () => {
+		//     clearTimeout(avatarPopupTimer);
+		//     hideAvatarPopup();
+		// });
+			    
+	        // document.addEventListener('click', (event) => {
+	        //     if (event.target.classList.contains('sortable-header')) {
+	        //         // onHeaderClick(event); 
+	        //     }
+	        // });
+
+	let compactMode = false;
+
+	function toggleCompactMode() {
+	    compactMode = !compactMode;
+	    showTable(provinceDropdown.value, cubeTypeDropdown.value);
+	}
+		
+    </script>
+</body>
+</html>
